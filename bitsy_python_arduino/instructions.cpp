@@ -65,6 +65,7 @@ bool is_instr_arg(uint8_t ins) {
 	case DELETE_GLOBAL:
 	case CALL_FUNCTION:
 	case COMPARE_OP:
+	case LOAD_ATTR:
 		return true;
 	}
 	return false;

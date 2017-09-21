@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-namespace bitsy_python {
+//namespace bitsy_python {
 
 class Variable {
 public:
@@ -19,7 +19,9 @@ public:
 		enum {
 			USER_FUNCTION,
 			GLOBAL_VARIABLE,
-			BUILTIN_FUNCTION
+			BUILTIN_FUNCTION,
+			USER_MODULE,
+			USER_MODULE_FUNCTION,
 		};
 		uint8_t type : 4;
 		uint16_t val : 12;
@@ -34,11 +36,15 @@ public:
 	} val;
 	unsigned char type : 3;
 	
-	static Variable FunctionVariable(uint8_t val);
+	static Variable Zero();
+	static Variable FunctionVariable(uint8_t id);
+	static Variable ModuleVariable(uint8_t id);
+	static Variable ModuleFunctionVariable(const Variable& module, uint8_t id);
 
 	Variable();
 	
 	bool as_bool() const;
+	uint8_t as_uint8() const;
 	int16_t as_int16() const;
 	int32_t as_int32() const;
 	float as_float() const;
@@ -53,5 +59,5 @@ public:
 	static uint8_t get_type_from_size_and_extra_bits(uint8_t size, uint8_t extra);
 };
 
-}
+//}
 #endif /* VARIABLE_H_ */

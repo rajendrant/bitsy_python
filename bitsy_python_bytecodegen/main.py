@@ -5,6 +5,7 @@ import importlib
 import math
 import sys
 import types
+import userlibs
 
 builtins = {
   'range',
@@ -43,6 +44,7 @@ ins_supported = set((
   'BREAK_LOOP', 'CONTINUE_LOOP',
   'SETUP_LOOP', 'POP_BLOCK',
   'JUMP_ABSOLUTE',
+  'LOAD_ATTR',
 	'NOP', 'STOP_CODE',
 ))
 
@@ -75,6 +77,8 @@ ins_order = (
   #'BREAK_LOOP', 'CONTINUE_LOOP',
   #'SETUP_LOOP', 'POP_BLOCK',
 
+  'LOAD_ATTR',
+
   'INPLACE_POWER', 'INPLACE_MULTIPLY',
   'INPLACE_FLOOR_DIVIDE', 'INPLACE_TRUE_DIVIDE',
   'INPLACE_MODULO',
@@ -102,6 +106,7 @@ ins_arg2 = {
   'JUMP_IF_TRUE_OR_POP', 'JUMP_IF_FALSE_OR_POP', 
   'JUMP_FORWARD', 'JUMP_ABSOLUTE',
   'FOR_ITER', 'CONTINUE_LOOP', 'SETUP_LOOP',
+  'LOAD_ATTR',
 }
 
 # instructions that have a target bytecode address or target bytecode delta in
@@ -132,6 +137,7 @@ def print_dis(m):
   #print dis.dis(m)
   globalls = {}
   functions = {'main':0}
+  modules = {}
   assert 'main' in dir(m)
   for k in dir(m):
     f = getattr(m, k)
@@ -139,6 +145,9 @@ def print_dis(m):
       functions[k] = len(functions)
     elif type(f) in (types.BooleanType, types.IntType, types.LongType):
       globalls[k] = len(globalls)
+    elif type(f) == types.ModuleType:
+      assert(k in userlibs.userlibs)
+      modules[k] = f
   functions['main']=0
   codes = []
   for k,i in sorted(functions.items(), key=lambda x:x[1]):
@@ -152,7 +161,7 @@ def print_dis(m):
     number_encode(f.__code__.co_argcount, code)
     number_encode(len(f.__code__.co_varnames), code)
     #print 'fn:', k
-    dump_code(f, globalls, functions, code)
+    dump_code(f, globalls, functions, modules, code)
     if len(code)%8 != 0:
       code.append(bitstring.BitArray(uint=0, length=8-(len(code)%8)))
     #print len(code)
@@ -218,11 +227,12 @@ def const_encode(var, newcode):
   if isinstance(var, (int,long,float)):
     number_encode(var, newcode)
 
-def dump_code(f, globalls, functions, newcode):
+def dump_code(f, globalls, functions, modules, newcode):
   bytecode_counter = 0    # counter for the bytecode
   bytecode_map = []       # map of bytecode address to its bitsycode address.
   target_address_loc = []
   nested_loops = []
+  modules_stack = []
   bytecode = bytearray(f.__code__.co_code)
   while bytecode_counter < len(bytecode):
     var = None
@@ -260,6 +270,11 @@ def dump_code(f, globalls, functions, newcode):
       elif var in builtins:
         newcode.append(bitstring.BitArray(bin='10'))
         const_encode(builtins[var], newcode)
+      elif var in modules:
+        assert(var in userlibs.userlibs)
+        modules_stack.insert(0, modules[var])
+        newcode.append(bitstring.BitArray(bin='11'))
+        const_encode(userlibs.userlibs[var]['id'], newcode)
       else:
         print var
         assert False
@@ -276,7 +291,12 @@ def dump_code(f, globalls, functions, newcode):
         var += bytecode_counter
       if insname=='BREAK_LOOP': var = nested_loops[-1]
       target_address_loc.append((len(newcode), var))
-    
+    elif insname=='LOAD_ATTR':
+      var = f.__code__.co_names[var]
+      m = next((userlibs.userlibs[i.__name__] for i in modules_stack if getattr(i, var)), None)
+      assert m
+      const_encode(m['functions'][var], newcode)
+
     if insname=='SETUP_LOOP':
       nested_loops.append(var+bytecode_counter)
     elif insname=='POP_BLOCK':

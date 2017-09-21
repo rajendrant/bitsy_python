@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #include "instructions.h"
+#include "userlibs/userlibs.h"
 #include "variable.h"
 
 namespace bitsy_python {
@@ -179,12 +180,18 @@ bool BitsyPythonVM::executeOneStep() {
             argvars[argcount-i-1] = exec_stack.pop();
         }
         auto v = exec_stack.pop();
-        assert(v.type==Variable::CUSTOM && v.val.custom_type.type==Variable::CustomType::USER_FUNCTION);
-        auto fn = prog.setup_function_call(v.val.custom_type.val);
-        assert(fn.args == argcount);
-        function_stack.setup_function_call(fn.args, fn.vars, fn.old_ins_ptr);
-        for(uint8_t i=0; i<argcount; i++) {
-            function_stack.setNthVariable(i, argvars[i]);
+        assert(v.type==Variable::CUSTOM);
+        if (v.val.custom_type.type==Variable::CustomType::USER_FUNCTION) {
+            auto fn = prog.setup_function_call(v.val.custom_type.val);
+            assert(fn.args == argcount);
+            function_stack.setup_function_call(fn.args, fn.vars, fn.old_ins_ptr);
+            for(uint8_t i=0; i<argcount; i++) {
+                function_stack.setNthVariable(i, argvars[i]);
+            }
+        } else if (v.val.custom_type.type==Variable::CustomType::USER_MODULE_FUNCTION) {
+            exec_stack.push(call_userlib_function((v.val.custom_type.val>>6)&0x3F, v.val.custom_type.val&0x3F, argcount, argvars));
+        } else {
+            assert(false);
         }
         break;
     }
@@ -270,6 +277,10 @@ bool BitsyPythonVM::executeOneStep() {
     case CONTINUE_LOOP:
         prog.jump_to_target(arg.as_int16());
         break;*/
+    case LOAD_ATTR: {
+        exec_stack.push(Variable::ModuleFunctionVariable(exec_stack.pop(), (uint16_t)arg.as_int16()));
+        break;
+    }
     default:
         printf("UNSUPPORTED INS %d\n", ins);
         assert(false);

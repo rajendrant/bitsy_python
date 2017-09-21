@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
-namespace bitsy_python {
+//namespace bitsy_python {
 
 Variable::Variable() : type(UINT8) {
     val.uint8 = 0;
@@ -34,6 +34,16 @@ void Variable::set_int32(int32_t v) {
 void Variable::set_float(float v) {
     type = FLOAT;
     val.float32 = v;
+}
+
+uint8_t Variable::as_uint8() const {
+    if (type==INT16)
+        return val.int16;
+    if (type==UINT8)
+        return val.uint8;
+    if (type==CUSTOM)
+        return val.custom_type.val;
+    return 0;
 }
 
 int16_t Variable::as_int16() const {
@@ -83,12 +93,43 @@ bool Variable::as_bool() const {
 }
 
 //static
+Variable Variable::Zero() {
+    Variable v;
+    v.set_int16(0);
+    return v;
+}
+
+//static
 Variable Variable::FunctionVariable(uint8_t id) {
     Variable v;
     assert(sizeof(v.val.custom_type) == 2);
-    v.type = CUSTOM;
+    v.type = Variable::CUSTOM;
     v.val.custom_type.type = Variable::CustomType::USER_FUNCTION;
     v.val.custom_type.val = id;
+    return v;
+}
+
+//static
+Variable Variable::ModuleVariable(uint8_t id) {
+    assert(id <= 0x3F);
+    Variable v;
+    assert(sizeof(v.val.custom_type) == 2);
+    v.type = Variable::CUSTOM;
+    v.val.custom_type.type = Variable::CustomType::USER_MODULE;
+    v.val.custom_type.val = id;
+    return v;
+}
+
+//static
+Variable Variable::ModuleFunctionVariable(const Variable& module, uint8_t id) {
+    assert(id <= 0x3f);
+    assert(module.type == Variable::CUSTOM && module.val.custom_type.type == Variable::CustomType::USER_MODULE);
+    assert(module.val.custom_type.val <= 0x3F);
+    Variable v;
+    assert(sizeof(v.val.custom_type) == 2);
+    v.type = Variable::CUSTOM;
+    v.val.custom_type.type = Variable::CustomType::USER_MODULE_FUNCTION;
+    v.val.custom_type.val = (module.val.custom_type.val &0x3F)<<6 | (id&0x3F);
     return v;
 }
 
@@ -140,4 +181,4 @@ uint8_t Variable::get_type_from_size_and_extra_bits(uint8_t size, uint8_t extra)
 }
 
 
-}
+//}
