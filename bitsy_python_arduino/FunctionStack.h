@@ -21,8 +21,6 @@ private:
 	uint8_t get_var_hdr(uint8_t n) const;
 	void set_var_hdr(uint8_t n, uint8_t val);
 
-	uint8_t *stack;
-
 	// Start and top location of the current function call.
 	uint16_t start = 0, top = 0;
 };

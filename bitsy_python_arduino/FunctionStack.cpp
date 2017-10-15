@@ -15,9 +15,10 @@ bool FunctionStack::is_empty() {
 #define HDR_START 5
 #define HDR_SIZE_FOR_VARS(v) ((((v)-1)*2)/4+1)
 
+#define stack ((uint8_t*)blocks)
+
 FunctionStack::FunctionStack() {
 	init();
-	stack = (uint8_t*)blocks;
 }
 
 void FunctionStack::setup_function_call(uint8_t args, uint8_t vars, uint16_t old_ins_ptr) {
