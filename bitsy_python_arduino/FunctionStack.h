@@ -9,6 +9,8 @@ namespace bitsy_python {
 
 class FunctionStack {
 public:
+	FunctionStack();
+
 	bool is_empty();
 	void setup_function_call(uint8_t args, uint8_t vars, uint16_t old_ins_ptr);
 	bool return_function(uint16_t *old_ins_ptr);
@@ -19,7 +21,7 @@ private:
 	uint8_t get_var_hdr(uint8_t n) const;
 	void set_var_hdr(uint8_t n, uint8_t val);
 
-	uint8_t stack[BYTES_FUNCTION_STACK];
+	uint8_t *stack;
 
 	// Start and top location of the current function call.
 	uint16_t start = 0, top = 0;

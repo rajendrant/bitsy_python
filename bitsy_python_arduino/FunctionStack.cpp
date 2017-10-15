@@ -2,8 +2,9 @@
 
 #include <assert.h>
 #include <string.h>
-
 #include <stdio.h>
+
+#include "bitsy_alloc.h"
 
 namespace bitsy_python {
 
@@ -14,7 +15,16 @@ bool FunctionStack::is_empty() {
 #define HDR_START 5
 #define HDR_SIZE_FOR_VARS(v) ((((v)-1)*2)/4+1)
 
+FunctionStack::FunctionStack() {
+	init();
+	stack = (uint8_t*)blocks;
+}
+
 void FunctionStack::setup_function_call(uint8_t args, uint8_t vars, uint16_t old_ins_ptr) {
+	// TODO(rajendrant): sequential_stack_alloc may need to happen in setNthVariable too.
+	while (sequential_stack_size() < top+HDR_START+vars*5) {
+		sequential_stack_alloc();
+	}
 	stack[top] = vars;
 	memcpy(stack+top+1, &old_ins_ptr, 2);
 	memcpy(stack+top+3, &start, 2);
@@ -27,6 +37,9 @@ bool FunctionStack::return_function(uint16_t *old_ins_ptr) {
 	top = start;
 	memcpy(old_ins_ptr, stack+start+1, 2);
 	memcpy(&start, stack+start+3, 2);
+	while (sequential_stack_size() > top+100) {
+		sequential_stack_free();
+	}
 	return is_empty();
 }
 

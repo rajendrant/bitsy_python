@@ -1,5 +1,5 @@
 #!/bin/bash
-SRC=( BlockStack.cpp ByteStack.cpp BitStack.cpp BitString.cpp \
+SRC=( bitsy_alloc.cpp BlockStack.cpp ByteStack.cpp BitStack.cpp BitString.cpp \
 FunctionStack.cpp  ExecStack.cpp \
 Program.cpp instructions.cpp variable.cpp bitsy_python_vm.cpp )
 OPT="-std=c++11 -Wall -g -I../bitsy_python_arduino/"
