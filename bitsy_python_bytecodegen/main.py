@@ -5,7 +5,7 @@ import importlib
 import math
 import sys
 import types
-import userlibs
+import userlibsgen
 
 builtins = {
   'range',
@@ -146,8 +146,8 @@ def print_dis(m):
     elif type(f) in (types.BooleanType, types.IntType, types.LongType):
       globalls[k] = len(globalls)
     elif type(f) == types.ModuleType:
-      assert(k in userlibs.userlibs)
-      modules[k] = f
+      assert('userlibs.'+k in userlibsgen.userlibs)
+      modules['userlibs.'+k] = f
   functions['main']=0
   codes = []
   for k,i in sorted(functions.items(), key=lambda x:x[1]):
@@ -270,11 +270,11 @@ def dump_code(f, globalls, functions, modules, newcode):
       elif var in builtins:
         newcode.append(bitstring.BitArray(bin='10'))
         const_encode(builtins[var], newcode)
-      elif var in modules:
-        assert(var in userlibs.userlibs)
-        modules_stack.insert(0, modules[var])
+      elif 'userlibs.'+var in modules:
+        assert('userlibs.'+var in userlibsgen.userlibs)
+        modules_stack.insert(0, modules['userlibs.'+var])
         newcode.append(bitstring.BitArray(bin='11'))
-        const_encode(userlibs.userlibs[var]['id'], newcode)
+        const_encode(userlibsgen.userlibs['userlibs.'+var]['id'], newcode)
       else:
         print var
         assert False
@@ -293,7 +293,7 @@ def dump_code(f, globalls, functions, modules, newcode):
       target_address_loc.append((len(newcode), var))
     elif insname=='LOAD_ATTR':
       var = f.__code__.co_names[var]
-      m = next((userlibs.userlibs[i.__name__] for i in modules_stack if getattr(i, var)), None)
+      m = next((userlibsgen.userlibs[i.__name__] for i in modules_stack if getattr(i, var)), None)
       assert m
       const_encode(m['functions'][var], newcode)
 
