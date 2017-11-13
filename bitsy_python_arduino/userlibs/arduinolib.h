@@ -1,5 +1,5 @@
 #ifdef ARDUINO
-#include <arduino.h>
+#include <Arduino.h>
 #endif
 
 namespace arduinolib {
@@ -77,7 +77,8 @@ Variable micros(uint8_t argcount, Variable arg[]) {
 
 Variable attachInterrupt(uint8_t argcount, Variable arg[]) {
     if (argcount==3) {
-        ::attachInterrupt(digitalPinToInterrupt(arg[0].as_uint8()), arg[1].as_uint8(), arg[2].as_uint8());
+        // TODO(rajendrant): Add a callback scheme per pin.
+        //::attachInterrupt(digitalPinToInterrupt(arg[0].as_uint8()), arg[1].as_uint8(), arg[2].as_uint8());
     }
     return Variable::Zero();
 }

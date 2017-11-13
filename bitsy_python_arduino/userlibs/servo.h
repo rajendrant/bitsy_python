@@ -13,13 +13,13 @@ static byte len=0;
 static Servo *GetOrAlloc(uint8_t pin) {
     for(byte i=0; i<len; i++) {
         if (map[i].pin==pin)
-            return map[i].s;
+            return &map[i].s;
     }
     len++;
-    map = realloc(map, sizeof(ServoPinMap)*len);
+    map = (ServoPinMap*) realloc(map, sizeof(ServoPinMap)*len);
     if (map) {
         map[len-1].pin = pin;
-        return map[len-1].s;
+        return &map[len-1].s;
     }
     return NULL;
 }
@@ -29,7 +29,7 @@ void Dealloc(uint8_t pin) {
         if (map[i].pin==pin) {
             map[i] = map[len-1];
             len--;
-            map = realloc(map, sizeof(ServoPinMap)*len);
+            map = (ServoPinMap*) realloc(map, sizeof(ServoPinMap)*len);
         }
     }
 }
@@ -54,7 +54,7 @@ Variable read(uint8_t argcount, Variable arg[]) {
     Variable ret;
     if (argcount==1) {
         Servo *s=GetOrAlloc(arg[0].as_uint8());
-        ret.set_uint8(s->read());
+        ret.set_int16(s->read());
     }
     return ret;
 }
@@ -62,7 +62,7 @@ Variable read(uint8_t argcount, Variable arg[]) {
 Variable write(uint8_t argcount, Variable arg[]) {
     if (argcount==2) {
         Servo *s=GetOrAlloc(arg[0].as_uint8());
-        s->write(arg[1].as_uint8())
+        s->write(arg[1].as_uint8());
     }
     return Variable::Zero();
 }

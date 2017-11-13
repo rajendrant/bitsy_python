@@ -14,6 +14,7 @@ SRCDIR=$WORKSPACEDIR/bitsy_python_arduino
 OPT="-std=c++11 -Wall -g -I$SRCDIR"
 LIBS=
 
+mkdir -p $BUILD
 
 # Build the executable
 for var in "${SRC[@]}"
