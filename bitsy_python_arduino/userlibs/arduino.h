@@ -1,5 +1,5 @@
 #ifdef ARDUINO
-#include "arduino.h"
+#include <arduino.h>
 #endif
 
 namespace arduino {

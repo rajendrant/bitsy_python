@@ -10,15 +10,15 @@ userlibs_list = [
     },
     {
         'name': 'spi',
-        'functions': [],
+        'functions': ['begin', 'end', 'beginTransaction', 'endTransaction', 'transfer'],
     },
     {
         'name': 'i2c',
-        'functions': [],
+        'functions': ['begin', 'beginTransmission', 'endTransmission', 'write', 'available', 'read'],
     },
     {
         'name': 'servo',
-        'functions': [],
+        'functions': ['attach', 'detach', 'read', 'write'],
     },
     {
         'name': 'nrf24',
@@ -26,7 +26,7 @@ userlibs_list = [
     },
     {
         'name': 'eeprom',
-        'functions': [],
+        'functions': ['read', 'write', 'update'],
     },
     {
         'name': 'testuserlib',
