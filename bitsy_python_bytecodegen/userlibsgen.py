@@ -1,7 +1,7 @@
 # Add custom user libraries and functions to the below list.
 userlibs_list = [
     {
-        'name': 'arduino',
+        'name': 'arduinolib',
         'functions': ['digitalRead', 'digitalWrite', 'pinMode'],
     },
     {
@@ -51,10 +51,9 @@ def main():
 
 """)
     for m in userlibs_list:
-        if not m['name'].startswith('test'):
-            out.write("#ifdef ARDUINO\n")
+        out.write("#if%sdef ARDUINO\n"%('n' if m['name'].startswith('test') else ''))
         out.write("""\
-#include "userlibs/%s.h"
+#include "../%s.h"
 """ % (m['name']))
         out.write("""
 Variable userlib_module_%s(uint8_t function, uint8_t argcount, Variable arg[]) {
@@ -72,8 +71,7 @@ Variable userlib_module_%s(uint8_t function, uint8_t argcount, Variable arg[]) {
     return Variable::Zero();
 }
 """)
-        if not m['name'].startswith('test'):
-            out.write("#endif\n\n")
+        out.write("#endif\n\n")
 
     out.write("""\
 
@@ -81,14 +79,12 @@ Variable call_userlib_function(uint8_t module, uint8_t function, uint8_t argcoun
     switch(module) {
 """)
     for i, m in enumerate(userlibs_list):
-        if not m['name'].startswith('test'):
-            out.write("#ifdef ARDUINO\n")
+        out.write("#if%sdef ARDUINO\n"%('n' if m['name'].startswith('test') else ''))
         out.write("""\
     case %d:
         return userlib_module_%s(function, argcount, arg);
 """ % (i, m['name']))
-        if not m['name'].startswith('test'):
-            out.write("#endif\n\n")
+        out.write("#endif\n\n")
     out.write("""\
     default:
         assert(false);

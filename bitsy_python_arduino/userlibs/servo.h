@@ -1,14 +1,16 @@
 #include <Servo.h>
 
+namespace servo {
+
 struct ServoPinMap {
     byte pin;
     Servo s;
 };
 
-ServoPinMap *map = NULL;
-byte len=0;
+static ServoPinMap *map = NULL;
+static byte len=0;
 
-Servo *GetOrAlloc(uint8_t pin) {
+static Servo *GetOrAlloc(uint8_t pin) {
     for(byte i=0; i<len; i++) {
         if (map[i].pin==pin)
             return map[i].s;
@@ -64,3 +66,5 @@ Variable write(uint8_t argcount, Variable arg[]) {
     }
     return Variable::Zero();
 }
+
+};

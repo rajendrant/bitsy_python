@@ -2,7 +2,7 @@
 #include <arduino.h>
 #endif
 
-namespace arduino {
+namespace arduinolib {
 
 Variable digitalRead(uint8_t argcount, Variable arg[]) {
     if (argcount==1) {
