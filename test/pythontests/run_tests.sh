@@ -10,6 +10,8 @@ BYTECODEGENDIR=$WORKSPACEDIR/bitsy_python_bytecodegen
 
 export PYTHONPATH=$PYTHONPATH:.:$BYTECODEGENDIR
 
+$BUILD/make.sh
+
 for var in "${TESTS[@]}"
 do
 printf "\n\nTEST %s\n" "${var}"

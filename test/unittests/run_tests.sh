@@ -1,7 +1,8 @@
 #!/bin/bash
+
 SRC=( bitsy_alloc.cpp BlockStack.cpp ByteStack.cpp BitStack.cpp BitString.cpp \
 FunctionStack.cpp  ExecStack.cpp \
-Program.cpp instructions.cpp variable.cpp bitsy_python_vm.cpp )
+Program.cpp instructions.cpp variable.cpp )
 
 UNITTESTS=( BlockStack_test ByteStack_test BitStack_test \
 FunctionStack_test ExecStack_test BitString_test Program_test )
@@ -11,18 +12,16 @@ WORKSPACEDIR="$( cd "$(dirname "$UNITTESTDIR")/.." ; pwd -P )"
 BUILD=$WORKSPACEDIR/build
 SRCDIR=$WORKSPACEDIR/bitsy_python_arduino
 
-OPT="-std=c++11 -Wall -g -I$SRCDIR"
+OPT="-std=c++11 -Wall -Wno-array-bounds -O3 -I$SRCDIR"
 LIBS=
 
-mkdir -p $BUILD
-
 # Build the executable
+$BUILD/make.sh
+
 for var in "${SRC[@]}"
 do
 LIBS="$LIBS $SRCDIR/${var}"
 done
-
-g++ $OPT $LIBS $SRCDIR/main.cpp -o $BUILD/bytecoderunner.out
 
 # Build and run the unittests
 for var in "${UNITTESTS[@]}"

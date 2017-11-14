@@ -1,0 +1,20 @@
+#!/bin/bash
+
+SRC=( bitsy_alloc.cpp BlockStack.cpp ByteStack.cpp BitStack.cpp BitString.cpp \
+FunctionStack.cpp  ExecStack.cpp \
+Program.cpp instructions.cpp variable.cpp bitsy_python_vm.cpp )
+
+BUILD="$( cd "$(dirname "$0")" ; pwd -P )"
+WORKSPACEDIR="$( cd "$(dirname "$BUILD")" ; pwd -P )"
+SRCDIR=$WORKSPACEDIR/bitsy_python_arduino
+
+OPT="-std=c++11 -Wall -Wno-array-bounds -O3 -I$SRCDIR"
+LIBS=
+
+# Build the executable
+for var in "${SRC[@]}"
+do
+LIBS="$LIBS $SRCDIR/${var}"
+done
+
+g++ $OPT $LIBS $SRCDIR/main.cpp -o $BUILD/bytecoderunner.out

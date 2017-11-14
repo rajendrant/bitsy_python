@@ -189,7 +189,9 @@ bool BitsyPythonVM::executeOneStep() {
                 function_stack.setNthVariable(i, argvars[i]);
             }
         } else if (v.val.custom_type.type==Variable::CustomType::USER_MODULE_FUNCTION) {
-            exec_stack.push(call_userlib_function((v.val.custom_type.val>>6)&0x3F, v.val.custom_type.val&0x3F, argcount, argvars));
+            uint8_t module_id=(v.val.custom_type.val>>6)&0x3F;
+            if (is_userlib_module_enabled((v.val.custom_type.val>>6)&0x3F))
+                exec_stack.push(call_userlib_function(module_id, v.val.custom_type.val&0x3F, argcount, argvars));
         } else {
             assert(false);
         }
