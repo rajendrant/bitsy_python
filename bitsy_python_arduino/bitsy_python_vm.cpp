@@ -206,14 +206,12 @@ bool BitsyPythonVM::executeOneStep() {
 
     case PRINT_ITEM: {
         auto v = exec_stack.pop();
-        if (v.type==Variable::FLOAT)
-            printf("%g ", v.as_float());
-        else
-            printf("%d ", v.as_int32());
+        BITSY_PYTHON_PRINT_VAR(v);
+        BITSY_PYTHON_PRINT(" ");
         break;
     }
     case PRINT_NEWLINE:
-        printf("\n");
+        BITSY_PYTHON_PRINT("\n");
         break;
     case COMPARE_OP: {
         auto v1 = exec_stack.pop();
@@ -240,7 +238,8 @@ bool BitsyPythonVM::executeOneStep() {
             break;
         default:
             // in, not-in, is, is-not, exception-match, BAD
-            assert("COMPARE_OP not supported operator\n");
+            BITSY_PYTHON_PRINT("COMPARE_OP not supported operator\n");
+            assert(false);
         }
         exec_stack.push(ret);
         break;
@@ -283,9 +282,13 @@ bool BitsyPythonVM::executeOneStep() {
         exec_stack.push(Variable::ModuleFunctionVariable(exec_stack.pop(), (uint16_t)arg.as_int16()));
         break;
     }
-    default:
-        printf("UNSUPPORTED INS %d\n", ins);
+    default: {
+        Variable tmp_ins;
+        BITSY_PYTHON_PRINT("UNSUPPORTED INS ");
+        tmp_ins.set_int16(ins);
+        BITSY_PYTHON_PRINT_VAR(tmp_ins);
         assert(false);
+    }
     }
     return true;
 }
