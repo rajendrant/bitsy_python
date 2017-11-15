@@ -1,10 +1,10 @@
+#ifdef DESKTOP
+
 #include "bitsylimit.h"
 #include "bitsy_python_vm.h"
 
 #define ENABLE_BITSY_USERLIB_TESTUSERLIB
 #include "bitsy_python_userlibs.h"
-
-#ifdef DESKTOP
 
 int main(int argc, char **argv) {
     if (argc != 2)

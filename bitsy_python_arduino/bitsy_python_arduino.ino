@@ -1,6 +1,13 @@
 //#include <NRF24_low_latency.h>
 #include "bitsy_python_vm.h"
 
+#define ENABLE_BITSY_USERLIB_ARDUINOLIB
+#define ENABLE_BITSY_USERLIB_EEPROM
+#define ENABLE_BITSY_USERLIB_SPI
+#define ENABLE_BITSY_USERLIB_NRF24
+
+#include "bitsy_python_userlibs.h"
+
 bitsy_python::BitsyPythonVM vm;
 //NRF24 nrf24;
 
@@ -20,7 +27,7 @@ void setup() {
     Serial.println("setRF failed");
     */
 
-  Serial.println("initialised");
+  //Serial.println("initialised");
 }
 
 void loop() {
