@@ -1,8 +1,10 @@
 # Add custom user libraries and functions to the below list.
 userlibs_list = [
     {
-        'name': 'arduinolib',
-        'functions': ['digitalRead', 'digitalWrite', 'pinMode'],
+        'name': 'arduino',
+        'functions': ['digitalRead', 'digitalWrite', 'pinMode', 'analogRead', 'analogWrite',
+                      'delay', 'delayMicroseconds', 'millis', 'micros', 'attachInterrupt',
+                      'detachInterrupt'],
     },
     {
         'name': 'serial',
@@ -22,7 +24,9 @@ userlibs_list = [
     },
     {
         'name': 'nrf24',
-        'functions': [],
+        'functions': ['begin', 'setChannel', 'setAddressWidth', 'setPALevel',
+                      'openReadingPipe', 'openWritingPipe', 'startListening', 'stopListening',
+                      'write', 'available', 'read', ],
     },
     {
         'name': 'eeprom',

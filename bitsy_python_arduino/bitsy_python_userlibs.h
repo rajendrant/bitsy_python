@@ -21,14 +21,14 @@ void BITSY_PYTHON_PRINT_VAR(const Variable &v) {
 
 #elif defined(ENABLE_BITSY_USERLIB_SERIAL)
 void BITSY_PYTHON_PRINT(const char* str) {
-    Serial.print(str);
+  Serial.println(str);
 }
 
 void BITSY_PYTHON_PRINT_VAR(const Variable &v) {
     if (v.type==Variable::FLOAT)
-        Serial.print(v.as_float());
+      Serial.print(v.as_float());
     else
-        Serial.print(v.as_int32());
+      Serial.print(v.as_int32());
 }
 
 #else

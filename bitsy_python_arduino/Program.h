@@ -31,7 +31,7 @@ public:
 	
 	void jump_to_target(uint16_t target);
 
-//private:
+private:
 	friend class ProgramTest;
 	Program(BitString bits) : bits(bits) {}
 

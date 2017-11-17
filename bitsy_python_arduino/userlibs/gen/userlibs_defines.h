@@ -3,17 +3,33 @@
 
 #include <assert.h>
 
-#ifdef ENABLE_BITSY_USERLIB_ARDUINOLIB
-#include "../arduinolib.h"
+#ifdef ENABLE_BITSY_USERLIB_ARDUINO
+#include "../arduino.h"
 
-Variable userlib_module_arduinolib(uint8_t function, uint8_t argcount, Variable arg[]) {
+Variable userlib_module_arduino(uint8_t function, uint8_t argcount, Variable arg[]) {
     switch(function) {
     case 0:
-        return arduinolib::digitalRead(argcount, arg);
+        return arduino::digitalRead(argcount, arg);
     case 1:
-        return arduinolib::digitalWrite(argcount, arg);
+        return arduino::digitalWrite(argcount, arg);
     case 2:
-        return arduinolib::pinMode(argcount, arg);
+        return arduino::pinMode(argcount, arg);
+    case 3:
+        return arduino::analogRead(argcount, arg);
+    case 4:
+        return arduino::analogWrite(argcount, arg);
+    case 5:
+        return arduino::delay(argcount, arg);
+    case 6:
+        return arduino::delayMicroseconds(argcount, arg);
+    case 7:
+        return arduino::millis(argcount, arg);
+    case 8:
+        return arduino::micros(argcount, arg);
+    case 9:
+        return arduino::attachInterrupt(argcount, arg);
+    case 10:
+        return arduino::detachInterrupt(argcount, arg);
     default:
         assert(false);
     }
@@ -155,8 +171,8 @@ Variable userlib_module_testuserlib(uint8_t function, uint8_t argcount, Variable
 
 bool is_userlib_module_enabled(uint8_t module) {
     switch(module) {
-#ifdef ENABLE_BITSY_USERLIB_ARDUINOLIB
-    case 0: // arduinolib
+#ifdef ENABLE_BITSY_USERLIB_ARDUINO
+    case 0: // arduino
 #endif
 #ifdef ENABLE_BITSY_USERLIB_SERIAL
     case 1: // serial
@@ -186,9 +202,9 @@ bool is_userlib_module_enabled(uint8_t module) {
 
 Variable call_userlib_function(uint8_t module, uint8_t function, uint8_t argcount, Variable arg[]) {
     switch(module) {
-#ifdef ENABLE_BITSY_USERLIB_ARDUINOLIB
+#ifdef ENABLE_BITSY_USERLIB_ARDUINO
     case 0:
-        return userlib_module_arduinolib(function, argcount, arg);
+        return userlib_module_arduino(function, argcount, arg);
 #endif
 #ifdef ENABLE_BITSY_USERLIB_SERIAL
     case 1:
