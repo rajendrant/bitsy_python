@@ -56,7 +56,7 @@ void test_all() {
 }
 
 int main() {
-	bitsy_python::test_all();
-	printf(__FILE__ " passed\n");
-	return 0;
+  bitsy_python::test_all();
+  printf(__FILE__ " passed\n");
+  return 0;
 }

@@ -18,7 +18,7 @@ public:
     static Variable GetIndex(const Variable& v, uint8_t ind);
 
     static void Print(const Variable& v, void (*print)(char));
-    
+
     BitsyHeap::var_id_t id;
 private:
 };

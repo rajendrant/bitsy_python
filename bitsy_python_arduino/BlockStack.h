@@ -9,16 +9,16 @@ namespace bitsy_python {
 
 class BlockStack {
 public:
-	BlockStack();
-	void AllocTopBlock();
-	void FreeTopBlock();
-	uint8_t *top() const;
-	uint8_t blocksize() const;
+  BlockStack();
+  void AllocTopBlock();
+  void FreeTopBlock();
+  uint8_t *top() const;
+  uint8_t blocksize() const;
 private:
-	friend class BlockStackTest;
-	uint8_t GetSizeForTesting() const;
+  friend class BlockStackTest;
+  uint8_t GetSizeForTesting() const;
 
-	uint8_t _top : BITS_PER_BLOCK_ID;
+  uint8_t _top : BITS_PER_BLOCK_ID;
 };
 
 }

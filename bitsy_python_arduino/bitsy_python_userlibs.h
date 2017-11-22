@@ -26,7 +26,7 @@ void BITSY_PYTHON_PRINT_VAR(const Variable &v) {
         Serial.print(v.as_float());
 #endif
     } else if (v.type==Variable::CUSTOM &&
-        (v.val.custom_type.type==Variable::CustomType::CHARACTER || 
+        (v.val.custom_type.type==Variable::CustomType::CHARACTER ||
          v.val.custom_type.type==Variable::CustomType::STRING)) {
         bitsy_python::DataType::Print(v, bitsy_print);
     } else {

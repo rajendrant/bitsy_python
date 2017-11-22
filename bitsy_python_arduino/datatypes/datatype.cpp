@@ -13,8 +13,8 @@ Variable DataType::CreateStr(const char* str, uint8_t len) {
     uint8_t *var;
     uint8_t id = bitsy_heap.CreateVar(len, &var);
     strncpy((char*)var, str, len);
-	v.set_CustomType(Variable::CustomType::STRING, id);
-	return v;
+  v.set_CustomType(Variable::CustomType::STRING, id);
+  return v;
 }
 
 //static
@@ -25,7 +25,7 @@ Variable DataType::CreateForType(uint8_t t, uint8_t argcount, Variable args[]) {
         assert(argcount == 1);
         uint8_t *var;
         uint8_t id = bitsy_heap.CreateVar(args[0].as_int16(), &var);
-		v.set_CustomType(t, id);
+    v.set_CustomType(t, id);
         break;
     }
     default:

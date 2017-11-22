@@ -11,6 +11,6 @@ void test1() {
 }
 
 int main() {
-	printf(__FILE__ " passed\n");
-	return 0;
+  printf(__FILE__ " passed\n");
+  return 0;
 }

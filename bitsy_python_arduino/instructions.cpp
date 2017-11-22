@@ -48,29 +48,29 @@ const char* get_ins_name(uint8_t ins) {
   "DUP_TOP",
   "ROT_TWO", "ROT_THREE", "ROT_FOUR",
 
-	"NOP", "STOP_CODE",
+  "NOP", "STOP_CODE",
 
   "BINARY_SUBSCR", "STORE_SUBSCR",
-	};
+  };
   return ins_order[ins];
 }
 #endif
 
 bool is_instr_arg(uint8_t ins) {
-	switch(ins) {
-	case LOAD_CONST:
-	case LOAD_FAST:
-	case STORE_FAST:
-	case DELETE_FAST:
-	case LOAD_GLOBAL:
-	case STORE_GLOBAL:
-	case DELETE_GLOBAL:
-	case CALL_FUNCTION:
-	case COMPARE_OP:
-	case LOAD_ATTR:
-		return true;
-	}
-	return false;
+  switch(ins) {
+  case LOAD_CONST:
+  case LOAD_FAST:
+  case STORE_FAST:
+  case DELETE_FAST:
+  case LOAD_GLOBAL:
+  case STORE_GLOBAL:
+  case DELETE_GLOBAL:
+  case CALL_FUNCTION:
+  case COMPARE_OP:
+  case LOAD_ATTR:
+    return true;
+  }
+  return false;
 }
 
 }

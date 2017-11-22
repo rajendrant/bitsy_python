@@ -50,7 +50,7 @@ ins_supported = set((
   'SETUP_LOOP', 'POP_BLOCK',
   'JUMP_ABSOLUTE',
   'LOAD_ATTR',
-	'NOP', 'STOP_CODE',
+  'NOP', 'STOP_CODE',
 ))
 
 ins_order = (
@@ -99,7 +99,7 @@ ins_order = (
   'DUP_TOP',
   'ROT_TWO', 'ROT_THREE', 'ROT_FOUR',
 
-	'NOP', 'STOP_CODE',
+  'NOP', 'STOP_CODE',
 
   'BINARY_SUBSCR', 'STORE_SUBSCR',
 )

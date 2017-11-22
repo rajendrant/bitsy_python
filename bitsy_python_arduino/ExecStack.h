@@ -12,11 +12,11 @@ namespace bitsy_python {
 
 class ExecStack {
 public:
-	void push(const Variable &v);
-	Variable pop();
+  void push(const Variable &v);
+  Variable pop();
 private:
-	BitStack hdr;
-	ByteStack data;
+  BitStack hdr;
+  ByteStack data;
 };
 
 }

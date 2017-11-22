@@ -20,27 +20,27 @@ void freelist_sanity_check() {
 }
 
 void init() {
-	if (freelist != INVALID_BLOCK)
-		return;
-	for(uint8_t i=TOTAL_BLOCKS-1; i>0; i--) {
-		blocks[i].next = i-1;
-		blocks[i].prev = i+1;
-	}
-	blocks[0].prev = 1;
-	blocks[0].next = INVALID_BLOCK;
-	blocks[TOTAL_BLOCKS-1].prev = INVALID_BLOCK;
-	freelist = TOTAL_BLOCKS-1;
-	freelist_sanity_check();
+  if (freelist != INVALID_BLOCK)
+    return;
+  for(uint8_t i=TOTAL_BLOCKS-1; i>0; i--) {
+    blocks[i].next = i-1;
+    blocks[i].prev = i+1;
+  }
+  blocks[0].prev = 1;
+  blocks[0].next = INVALID_BLOCK;
+  blocks[TOTAL_BLOCKS-1].prev = INVALID_BLOCK;
+  freelist = TOTAL_BLOCKS-1;
+  freelist_sanity_check();
 }
 
 uint8_t alloc_block() {
-	uint8_t next = freelist;
-	freelist = blocks[next].next;
-	blocks[next].next = INVALID_BLOCK;
-	assert(blocks[next].prev == INVALID_BLOCK);
-	blocks[freelist].prev = INVALID_BLOCK;
-	freelist_sanity_check();
-	return next;
+  uint8_t next = freelist;
+  freelist = blocks[next].next;
+  blocks[next].next = INVALID_BLOCK;
+  assert(blocks[next].prev == INVALID_BLOCK);
+  blocks[freelist].prev = INVALID_BLOCK;
+  freelist_sanity_check();
+  return next;
 }
 
 void free_block(uint8_t tofree) {
@@ -50,15 +50,15 @@ void free_block(uint8_t tofree) {
         prev = next;
         next=blocks[next].next;
     }
-	blocks[tofree].prev = prev;
-	blocks[tofree].next = next;
+  blocks[tofree].prev = prev;
+  blocks[tofree].next = next;
     if (next!=INVALID_BLOCK)
-    	blocks[next].prev = tofree;
+      blocks[next].prev = tofree;
     if (prev!=INVALID_BLOCK)
-    	blocks[prev].next = tofree;
-	if (prev==INVALID_BLOCK)
-	    freelist = tofree;
-	freelist_sanity_check();
+      blocks[prev].next = tofree;
+  if (prev==INVALID_BLOCK)
+      freelist = tofree;
+  freelist_sanity_check();
 }
 
 /**
@@ -75,13 +75,13 @@ void sequential_stack_alloc() {
     assert(prev==sequential_stack_next);
     blocks[blocks[sequential_stack_next].prev].next = INVALID_BLOCK;
     sequential_stack_next++;
-	freelist_sanity_check();
+  freelist_sanity_check();
 }
 
 void sequential_stack_free() {
     sequential_stack_next--;
     free_block(sequential_stack_next);
-	freelist_sanity_check();
+  freelist_sanity_check();
 }
 
 uint16_t sequential_stack_size() {
