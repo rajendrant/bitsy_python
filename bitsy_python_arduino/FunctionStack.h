@@ -1,14 +1,14 @@
 #ifndef FUNCTIONSTACK_H_
 #define FUNCTIONSTACK_H_
 
+#include <stdint.h>
 #include "bitsylimit.h"
 #include "variable.h"
-#include <stdint.h>
 
 namespace bitsy_python {
 
 class FunctionStack {
-public:
+ public:
   FunctionStack();
 
   bool is_empty();
@@ -17,14 +17,14 @@ public:
 
   Variable getNthVariable(uint8_t n) const;
   void setNthVariable(uint8_t n, const Variable v);
-private:
+
+ private:
   uint8_t get_var_hdr(uint8_t n) const;
   void set_var_hdr(uint8_t n, uint8_t val);
 
   // Start and top location of the current function call.
   uint16_t start = 0, top = 0;
 };
-
 }
 
 #endif /* FUNCTIONSTACK_H_ */

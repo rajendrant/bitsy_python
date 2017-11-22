@@ -30,31 +30,27 @@ void setup() {
   Serial.println("init");
 }
 
-int loopcount=0;
+int loopcount = 0;
 
 void loop() {
   if (Serial.available()) {
     char buf[16];
     Serial.readBytesUntil('\n', buf, sizeof(buf));
-    if (String(buf).indexOf("BEGIN\r")==-1)
-      return;
+    if (String(buf).indexOf("BEGIN\r") == -1) return;
     Serial.print("\r\nREADY\r\n");
 
     Serial.readBytesUntil('\n', buf, sizeof(buf));
-    if (strncmp("LEN ", buf, 3))
-      return;
-    int len = String(buf+4).toInt();
-    int addr=0;
-    while(len>0) {
-      if (Serial.readBytes(buf, 1) != 1)
-        return;
+    if (strncmp("LEN ", buf, 3)) return;
+    int len = String(buf + 4).toInt();
+    int addr = 0;
+    while (len > 0) {
+      if (Serial.readBytes(buf, 1) != 1) return;
       EEPROM.update(addr, buf[0]);
       len--;
       addr++;
     }
     Serial.readBytesUntil('\n', buf, sizeof(buf));
-    if (String(buf).indexOf("END\r")==-1)
-      return;
+    if (String(buf).indexOf("END\r") == -1) return;
     Serial.print("\r\nRESET\r\n");
     delay(1000);
     arduino_util::soft_reset();
@@ -66,4 +62,3 @@ void loop() {
     vm.initExecution();
   }
 }
-

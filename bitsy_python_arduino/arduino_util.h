@@ -5,7 +5,6 @@
 namespace arduino_util {
 
 void soft_reset();
-
 };
 #endif
 

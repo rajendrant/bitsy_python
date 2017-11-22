@@ -3,8 +3,6 @@
 
 #include "datatype.h"
 
-namespace bitsy_python {
-
-}
+namespace bitsy_python {}
 
 #endif /* STR_H__ */

@@ -6,13 +6,13 @@
 namespace bitsy_python {
 
 class BitStack : ByteStack {
-public:
+ public:
   BitStack();
   void pushThreeBits(uint8_t bits);
   uint8_t popThreeBits();
-private:
-  uint16_t byte=0, pos = 0;
-};
 
+ private:
+  uint16_t byte = 0, pos = 0;
+};
 }
 #endif /* BITSTACK_H_ */

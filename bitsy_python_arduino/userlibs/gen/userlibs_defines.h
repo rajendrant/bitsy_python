@@ -6,236 +6,245 @@
 #ifdef ENABLE_BITSY_USERLIB_ARDUINO
 #include "../arduino.h"
 
-Variable userlib_module_arduino(uint8_t function, uint8_t argcount, Variable arg[]) {
-    switch(function) {
+Variable userlib_module_arduino(uint8_t function, uint8_t argcount,
+                                Variable arg[]) {
+  switch (function) {
     case 0:
-        return arduino::digitalRead(argcount, arg);
+      return arduino::digitalRead(argcount, arg);
     case 1:
-        return arduino::digitalWrite(argcount, arg);
+      return arduino::digitalWrite(argcount, arg);
     case 2:
-        return arduino::pinMode(argcount, arg);
+      return arduino::pinMode(argcount, arg);
     case 3:
-        return arduino::analogRead(argcount, arg);
+      return arduino::analogRead(argcount, arg);
     case 4:
-        return arduino::analogWrite(argcount, arg);
+      return arduino::analogWrite(argcount, arg);
     case 5:
-        return arduino::delay(argcount, arg);
+      return arduino::delay(argcount, arg);
     case 6:
-        return arduino::delayMicroseconds(argcount, arg);
+      return arduino::delayMicroseconds(argcount, arg);
     case 7:
-        return arduino::millis(argcount, arg);
+      return arduino::millis(argcount, arg);
     case 8:
-        return arduino::micros(argcount, arg);
+      return arduino::micros(argcount, arg);
     case 9:
-        return arduino::attachInterrupt(argcount, arg);
+      return arduino::attachInterrupt(argcount, arg);
     case 10:
-        return arduino::detachInterrupt(argcount, arg);
+      return arduino::detachInterrupt(argcount, arg);
     default:
-        assert(false);
-    }
-    return Variable::Zero();
+      assert(false);
+  }
+  return Variable::Zero();
 }
 #endif
 
 #ifdef ENABLE_BITSY_USERLIB_SERIAL
 #include "../serial.h"
 
-Variable userlib_module_serial(uint8_t function, uint8_t argcount, Variable arg[]) {
-    switch(function) {
+Variable userlib_module_serial(uint8_t function, uint8_t argcount,
+                               Variable arg[]) {
+  switch (function) {
     case 0:
-        return serial::printstr(argcount, arg);
+      return serial::printstr(argcount, arg);
     case 1:
-        return serial::println(argcount, arg);
+      return serial::println(argcount, arg);
     default:
-        assert(false);
-    }
-    return Variable::Zero();
+      assert(false);
+  }
+  return Variable::Zero();
 }
 #endif
 
 #ifdef ENABLE_BITSY_USERLIB_SPI
 #include "../spi.h"
 
-Variable userlib_module_spi(uint8_t function, uint8_t argcount, Variable arg[]) {
-    switch(function) {
+Variable userlib_module_spi(uint8_t function, uint8_t argcount,
+                            Variable arg[]) {
+  switch (function) {
     case 0:
-        return spi::begin(argcount, arg);
+      return spi::begin(argcount, arg);
     case 1:
-        return spi::end(argcount, arg);
+      return spi::end(argcount, arg);
     case 2:
-        return spi::beginTransaction(argcount, arg);
+      return spi::beginTransaction(argcount, arg);
     case 3:
-        return spi::endTransaction(argcount, arg);
+      return spi::endTransaction(argcount, arg);
     case 4:
-        return spi::transfer(argcount, arg);
+      return spi::transfer(argcount, arg);
     default:
-        assert(false);
-    }
-    return Variable::Zero();
+      assert(false);
+  }
+  return Variable::Zero();
 }
 #endif
 
 #ifdef ENABLE_BITSY_USERLIB_I2C
 #include "../i2c.h"
 
-Variable userlib_module_i2c(uint8_t function, uint8_t argcount, Variable arg[]) {
-    switch(function) {
+Variable userlib_module_i2c(uint8_t function, uint8_t argcount,
+                            Variable arg[]) {
+  switch (function) {
     case 0:
-        return i2c::begin(argcount, arg);
+      return i2c::begin(argcount, arg);
     case 1:
-        return i2c::beginTransmission(argcount, arg);
+      return i2c::beginTransmission(argcount, arg);
     case 2:
-        return i2c::endTransmission(argcount, arg);
+      return i2c::endTransmission(argcount, arg);
     case 3:
-        return i2c::write(argcount, arg);
+      return i2c::write(argcount, arg);
     case 4:
-        return i2c::available(argcount, arg);
+      return i2c::available(argcount, arg);
     case 5:
-        return i2c::read(argcount, arg);
+      return i2c::read(argcount, arg);
     default:
-        assert(false);
-    }
-    return Variable::Zero();
+      assert(false);
+  }
+  return Variable::Zero();
 }
 #endif
 
 #ifdef ENABLE_BITSY_USERLIB_SERVO
 #include "../servo.h"
 
-Variable userlib_module_servo(uint8_t function, uint8_t argcount, Variable arg[]) {
-    switch(function) {
+Variable userlib_module_servo(uint8_t function, uint8_t argcount,
+                              Variable arg[]) {
+  switch (function) {
     case 0:
-        return servo::attach(argcount, arg);
+      return servo::attach(argcount, arg);
     case 1:
-        return servo::detach(argcount, arg);
+      return servo::detach(argcount, arg);
     case 2:
-        return servo::read(argcount, arg);
+      return servo::read(argcount, arg);
     case 3:
-        return servo::write(argcount, arg);
+      return servo::write(argcount, arg);
     default:
-        assert(false);
-    }
-    return Variable::Zero();
+      assert(false);
+  }
+  return Variable::Zero();
 }
 #endif
 
 #ifdef ENABLE_BITSY_USERLIB_NRF24
 #include "../nrf24.h"
 
-Variable userlib_module_nrf24(uint8_t function, uint8_t argcount, Variable arg[]) {
-    switch(function) {
+Variable userlib_module_nrf24(uint8_t function, uint8_t argcount,
+                              Variable arg[]) {
+  switch (function) {
     default:
-        assert(false);
-    }
-    return Variable::Zero();
+      assert(false);
+  }
+  return Variable::Zero();
 }
 #endif
 
 #ifdef ENABLE_BITSY_USERLIB_EEPROM
 #include "../eeprom.h"
 
-Variable userlib_module_eeprom(uint8_t function, uint8_t argcount, Variable arg[]) {
-    switch(function) {
+Variable userlib_module_eeprom(uint8_t function, uint8_t argcount,
+                               Variable arg[]) {
+  switch (function) {
     case 0:
-        return eeprom::read(argcount, arg);
+      return eeprom::read(argcount, arg);
     case 1:
-        return eeprom::write(argcount, arg);
+      return eeprom::write(argcount, arg);
     case 2:
-        return eeprom::update(argcount, arg);
+      return eeprom::update(argcount, arg);
     default:
-        assert(false);
-    }
-    return Variable::Zero();
+      assert(false);
+  }
+  return Variable::Zero();
 }
 #endif
 
 #ifdef ENABLE_BITSY_USERLIB_TESTUSERLIB
 #include "../testuserlib.h"
 
-Variable userlib_module_testuserlib(uint8_t function, uint8_t argcount, Variable arg[]) {
-    switch(function) {
+Variable userlib_module_testuserlib(uint8_t function, uint8_t argcount,
+                                    Variable arg[]) {
+  switch (function) {
     case 0:
-        return testuserlib::printstr(argcount, arg);
+      return testuserlib::printstr(argcount, arg);
     case 1:
-        return testuserlib::println(argcount, arg);
+      return testuserlib::println(argcount, arg);
     case 2:
-        return testuserlib::math_add(argcount, arg);
+      return testuserlib::math_add(argcount, arg);
     case 3:
-        return testuserlib::math_power(argcount, arg);
+      return testuserlib::math_power(argcount, arg);
     default:
-        assert(false);
-    }
-    return Variable::Zero();
+      assert(false);
+  }
+  return Variable::Zero();
 }
 #endif
 
 bool is_userlib_module_enabled(uint8_t module) {
-    switch(module) {
+  switch (module) {
 #ifdef ENABLE_BITSY_USERLIB_ARDUINO
-    case 0: // arduino
+    case 0:  // arduino
 #endif
 #ifdef ENABLE_BITSY_USERLIB_SERIAL
-    case 1: // serial
+    case 1:  // serial
 #endif
 #ifdef ENABLE_BITSY_USERLIB_SPI
-    case 2: // spi
+    case 2:  // spi
 #endif
 #ifdef ENABLE_BITSY_USERLIB_I2C
-    case 3: // i2c
+    case 3:  // i2c
 #endif
 #ifdef ENABLE_BITSY_USERLIB_SERVO
-    case 4: // servo
+    case 4:  // servo
 #endif
 #ifdef ENABLE_BITSY_USERLIB_NRF24
-    case 5: // nrf24
+    case 5:  // nrf24
 #endif
 #ifdef ENABLE_BITSY_USERLIB_EEPROM
-    case 6: // eeprom
+    case 6:  // eeprom
 #endif
 #ifdef ENABLE_BITSY_USERLIB_TESTUSERLIB
-    case 7: // testuserlib
+    case 7:  // testuserlib
 #endif
-        return true;
-    }
-    return false;
+      return true;
+  }
+  return false;
 }
 
-Variable call_userlib_function(uint8_t module, uint8_t function, uint8_t argcount, Variable arg[]) {
-    switch(module) {
+Variable call_userlib_function(uint8_t module, uint8_t function,
+                               uint8_t argcount, Variable arg[]) {
+  switch (module) {
 #ifdef ENABLE_BITSY_USERLIB_ARDUINO
     case 0:
-        return userlib_module_arduino(function, argcount, arg);
+      return userlib_module_arduino(function, argcount, arg);
 #endif
 #ifdef ENABLE_BITSY_USERLIB_SERIAL
     case 1:
-        return userlib_module_serial(function, argcount, arg);
+      return userlib_module_serial(function, argcount, arg);
 #endif
 #ifdef ENABLE_BITSY_USERLIB_SPI
     case 2:
-        return userlib_module_spi(function, argcount, arg);
+      return userlib_module_spi(function, argcount, arg);
 #endif
 #ifdef ENABLE_BITSY_USERLIB_I2C
     case 3:
-        return userlib_module_i2c(function, argcount, arg);
+      return userlib_module_i2c(function, argcount, arg);
 #endif
 #ifdef ENABLE_BITSY_USERLIB_SERVO
     case 4:
-        return userlib_module_servo(function, argcount, arg);
+      return userlib_module_servo(function, argcount, arg);
 #endif
 #ifdef ENABLE_BITSY_USERLIB_NRF24
     case 5:
-        return userlib_module_nrf24(function, argcount, arg);
+      return userlib_module_nrf24(function, argcount, arg);
 #endif
 #ifdef ENABLE_BITSY_USERLIB_EEPROM
     case 6:
-        return userlib_module_eeprom(function, argcount, arg);
+      return userlib_module_eeprom(function, argcount, arg);
 #endif
 #ifdef ENABLE_BITSY_USERLIB_TESTUSERLIB
     case 7:
-        return userlib_module_testuserlib(function, argcount, arg);
+      return userlib_module_testuserlib(function, argcount, arg);
 #endif
     default:
-        assert(false);
-    }
-    return Variable::Zero();
+      assert(false);
+  }
+  return Variable::Zero();
 }

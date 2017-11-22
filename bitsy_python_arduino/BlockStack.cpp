@@ -33,23 +33,20 @@ uint8_t* BlockStack::top() const {
 
 uint8_t BlockStack::GetSizeForTesting() const {
   uint8_t size = 0, size2 = 0, last = INVALID_BLOCK;
-  for(uint8_t curr=_top; curr!=INVALID_BLOCK; curr=blocks[curr].prev) {
+  for (uint8_t curr = _top; curr != INVALID_BLOCK; curr = blocks[curr].prev) {
     size++;
     last = curr;
   }
-  if (size>0) {
+  if (size > 0) {
     assert(blocks[_top].next == INVALID_BLOCK);
     assert(blocks[last].prev == INVALID_BLOCK);
   }
-  for(uint8_t curr=last; curr!=INVALID_BLOCK; curr=blocks[curr].next) {
+  for (uint8_t curr = last; curr != INVALID_BLOCK; curr = blocks[curr].next) {
     size2++;
   }
-  assert(size==size2);
+  assert(size == size2);
   return size;
 }
 
-uint8_t BlockStack::blocksize() const {
-  return BYTES_PER_BLOCK;
-}
-
+uint8_t BlockStack::blocksize() const { return BYTES_PER_BLOCK; }
 }

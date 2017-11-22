@@ -1,2 +1,1 @@
-bytecode KEYWORD1
-python KEYWORD1
+bytecode KEYWORD1 python KEYWORD1

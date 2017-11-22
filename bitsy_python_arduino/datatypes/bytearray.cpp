@@ -1,5 +1,3 @@
 #include "bytearray.h"
 
-namespace bitsy_python {
-
-}
+namespace bitsy_python {}

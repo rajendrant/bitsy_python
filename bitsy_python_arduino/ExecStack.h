@@ -1,24 +1,24 @@
 #ifndef EXECSTACK_H_
 #define EXECSTACK_H_
 
+#include "BitStack.h"
+#include "ByteStack.h"
 #include "bitsylimit.h"
 #include "variable.h"
-#include "ByteStack.h"
-#include "BitStack.h"
 
 #include <stdint.h>
 
 namespace bitsy_python {
 
 class ExecStack {
-public:
+ public:
   void push(const Variable &v);
   Variable pop();
-private:
+
+ private:
   BitStack hdr;
   ByteStack data;
 };
-
 }
 
 #endif /* EXECSTACK_H_ */

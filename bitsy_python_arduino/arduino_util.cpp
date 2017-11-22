@@ -5,9 +5,8 @@
 namespace arduino_util {
 
 void soft_reset() {
-  volatile void(* resetFunc) (void) = 0;
+  volatile void (*resetFunc)(void) = 0;
   resetFunc();
 }
-
 };
 #endif
