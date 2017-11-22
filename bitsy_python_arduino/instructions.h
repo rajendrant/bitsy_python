@@ -50,6 +50,8 @@ enum instruction {
 	  ROT_TWO, ROT_THREE, ROT_FOUR,
 
 	  NOP, STOP_CODE,
+
+      BINARY_SUBSCR, STORE_SUBSCR,
 };
 
 bool is_instr_arg(uint8_t ins);

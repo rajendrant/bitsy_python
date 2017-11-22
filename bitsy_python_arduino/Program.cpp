@@ -1,6 +1,7 @@
 #include "Program.h"
 
 #include "instructions.h"
+#include "datatypes/datatype.h"
 
 #include <assert.h>
 #include <stdio.h>
@@ -40,8 +41,8 @@ uint8_t Program::get_next_instruction(Variable *arg) {
 			*arg = Variable::FunctionVariable(arg->as_int32());
 			break;
 		case 2:
-			// TODO: builtin functions.
-			assert(false);
+			arg->set_CustomType(Variable::CustomType::BUILTIN_FUNCTION, arg->as_int16());
+			break;
 		case 3:
 			*arg = Variable::ModuleVariable(arg->as_int16());
 			break;
@@ -107,6 +108,16 @@ Variable Program::get_number(uint16_t pos, uint8_t *next) {
 			v.val.int32 = bits.get_bit32(pos+4, 32);
 			v.set_float(v.val.float32);
 			return v;
+		case 3: {
+			// String
+			uint8_t len = bits.get_bit8(pos+4, 8);
+			char str[len];
+			for(uint8_t i=0; i<len; i++)
+				str[i] = bits.get_bit8(pos+4+8+i*8, 8);
+			v = DataType::CreateStr(str, len);
+			*next = 4 + 8 + len*8;
+			break;
+		}
 		default:
 			assert(false);
 		}

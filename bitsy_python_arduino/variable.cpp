@@ -133,6 +133,12 @@ Variable Variable::ModuleFunctionVariable(const Variable& module, uint8_t id) {
     return v;
 }
 
+void Variable::set_CustomType(uint8_t t, uint16_t v) {
+    type = Variable::CUSTOM;
+    val.custom_type.type = t;
+    val.custom_type.val = v;
+}
+
 uint8_t Variable::size() const {
     switch(type) {
     case UINT8:

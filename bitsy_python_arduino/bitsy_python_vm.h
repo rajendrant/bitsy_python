@@ -1,11 +1,15 @@
 #ifndef BITSY_PYTHON_VM_H_
 #define BITSY_PYTHON_VM_H_
 
+#include "BitsyHeap.h"
 #include "Program.h"
 #include "ExecStack.h"
 #include "FunctionStack.h"
 
 namespace bitsy_python {
+
+extern BitsyHeap bitsy_heap;
+
 class BitsyPythonVM {
 public:
 #ifdef DESKTOP

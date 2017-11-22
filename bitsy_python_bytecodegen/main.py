@@ -3,17 +3,21 @@ import bitstring
 import dis
 import importlib
 import math
+import os
 import sys
 import types
 import userlibsgen
 
-builtins = {
+builtins = [
+  # This should be in sync with BitsyBuiltin in Builtins.h
   'range',
   'type',
   'iter',
   'getattr',
-}
-builtins = {k: v for v, k in enumerate(builtins)}
+  'bytearray',
+  'len',
+]
+builtins = {k: idd for idd, k in enumerate(builtins)}
 
 ins_supported = set((
   'LOAD_CONST',
@@ -29,6 +33,7 @@ ins_supported = set((
   'BINARY_ADD', 'BINARY_SUBTRACT',
   'BINARY_LSHIFT', 'BINARY_RSHIFT',
   'BINARY_AND', 'BINARY_XOR', 'BINARY_OR',
+  'BINARY_SUBSCR', 'STORE_SUBSCR',
   'INPLACE_POWER', 'INPLACE_MULTIPLY', 'INPLACE_DIVIDE',
   'INPLACE_FLOOR_DIVIDE', 'INPLACE_TRUE_DIVIDE',
   'INPLACE_MODULO',
@@ -95,6 +100,8 @@ ins_order = (
   'ROT_TWO', 'ROT_THREE', 'ROT_FOUR',
 
 	'NOP', 'STOP_CODE',
+
+  'BINARY_SUBSCR', 'STORE_SUBSCR',
 )
 
 ins_arg2 = {
@@ -219,8 +226,11 @@ def const_encode(var, newcode):
   elif vartype in (types.IntType, types.LongType, types.FloatType):
     pass
   elif vartype==types.StringType:
-    print 'not yet handled'
-    var = 0
+    newcode.append(bitstring.BitArray(bin='1111'))
+    newcode.append(bitstring.BitArray(uint=len(var)+1, length=8))
+    for c in var:
+      newcode.append(bitstring.BitArray(uint=ord(c), length=8))
+    newcode.append(bitstring.BitArray(uint=0, length=8))
   else:
     print var, vartype
     assert False
@@ -321,4 +331,8 @@ sanity-check:
 """
 
 if len(sys.argv)==3:
-  print_dis(importlib.import_module(sys.argv[1])).tofile(open(sys.argv[2], 'wb'))
+  pyfile = sys.argv[1]
+  sys.path.append(os.path.abspath(os.path.dirname(pyfile)))
+  if pyfile.endswith('.py'): # Remove the .py extension
+    pyfile=pyfile[:-3]
+  print_dis(importlib.import_module(os.path.basename(pyfile))).tofile(open(sys.argv[2], 'wb'))

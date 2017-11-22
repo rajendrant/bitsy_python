@@ -49,6 +49,8 @@ const char* get_ins_name(uint8_t ins) {
   "ROT_TWO", "ROT_THREE", "ROT_FOUR",
 
 	"NOP", "STOP_CODE",
+
+  "BINARY_SUBSCR", "STORE_SUBSCR",
 	};
   return ins_order[ins];
 }

@@ -3,11 +3,15 @@
 #include <assert.h>
 #include <stdio.h>
 
+#include "Builtins.h"
+#include "datatypes/datatype.h"
 #include "instructions.h"
 #include "userlibs/userlibs.h"
 #include "variable.h"
 
 namespace bitsy_python {
+
+BitsyHeap bitsy_heap;
 
 #ifdef DESKTOP
 BitsyPythonVM::BitsyPythonVM(const char *fname) : prog(Program::FromFile(fname)) {}
@@ -77,6 +81,9 @@ void BitsyPythonVM::binary_arithmetic(uint8_t ins) {
         case BINARY_OR:
         case INPLACE_OR:
             ret.set_int32(v2.as_int32() | v1.as_int32());
+            break;
+        case BINARY_SUBSCR:
+            ret = DataType::GetIndex(v2, v1.as_uint8());
             break;
         default:
             assert(false);
@@ -152,6 +159,7 @@ bool BitsyPythonVM::executeOneStep() {
     case INPLACE_AND:
     case INPLACE_XOR:
     case INPLACE_OR:
+    case BINARY_SUBSCR:
         binary_arithmetic(ins);
         break;
 
@@ -192,6 +200,8 @@ bool BitsyPythonVM::executeOneStep() {
             uint8_t module_id=(v.val.custom_type.val>>6)&0x3F;
             if (is_userlib_module_enabled((v.val.custom_type.val>>6)&0x3F))
                 exec_stack.push(call_userlib_function(module_id, v.val.custom_type.val&0x3F, argcount, argvars));
+        } else if (v.val.custom_type.type==Variable::CustomType::BUILTIN_FUNCTION) {
+            exec_stack.push(handle_builtin_call((BitsyBuiltin)v.val.custom_type.val, argcount, argvars));
         } else {
             assert(false);
         }
@@ -282,15 +292,27 @@ bool BitsyPythonVM::executeOneStep() {
         exec_stack.push(Variable::ModuleFunctionVariable(exec_stack.pop(), (uint16_t)arg.as_int16()));
         break;
     }
+    case STORE_SUBSCR:
+        assert(false);
+        break;
     default: {
         Variable tmp_ins;
         BITSY_PYTHON_PRINT("UNSUPPORTED INS ");
         tmp_ins.set_int16(ins);
         BITSY_PYTHON_PRINT_VAR(tmp_ins);
+        BITSY_PYTHON_PRINT(get_ins_name(ins));
         assert(false);
     }
     }
     return true;
 }
 
+}
+
+void bitsy_print(char ch) {
+#if defined(DESKTOP)
+    printf("%c", ch);
+#elif defined(ENABLE_BITSY_USERLIB_SERIAL)
+  Serial.print(ch);
+#endif
 }

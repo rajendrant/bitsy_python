@@ -22,6 +22,14 @@ public:
 			BUILTIN_FUNCTION,
 			USER_MODULE,
 			USER_MODULE_FUNCTION,
+			CHARACTER,
+
+			// These variables live in the heap and their ID is stored in val
+			STRING,
+			LIST,
+			BYTEARRAY,
+			RANGE,
+			ITER,
 		};
 		uint8_t type : 4;
 		uint16_t val : 12;
@@ -37,6 +45,7 @@ public:
 	unsigned char type : 3;
 	
 	static Variable Zero();
+	static Variable CustomTypeVariable(uint8_t type, uint16_t val);
 	static Variable FunctionVariable(uint8_t id);
 	static Variable ModuleVariable(uint8_t id);
 	static Variable ModuleFunctionVariable(const Variable& module, uint8_t id);
@@ -49,6 +58,7 @@ public:
 	int32_t as_int32() const;
 	float as_float() const;
 
+	void set_CustomType(uint8_t type, uint16_t val);
 	void set_int16(int16_t v);
 	void set_int32(int32_t v);
 	void set_float(float v);

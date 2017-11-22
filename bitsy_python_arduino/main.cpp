@@ -1,6 +1,6 @@
-#ifdef DESKTOP
-
 #include "bitsylimit.h"
+
+#ifdef DESKTOP
 #include "bitsy_python_vm.h"
 
 #define ENABLE_BITSY_USERLIB_TESTUSERLIB
