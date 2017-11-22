@@ -300,7 +300,7 @@ bool BitsyPythonVM::executeOneStep() {
         BITSY_PYTHON_PRINT("UNSUPPORTED INS ");
         tmp_ins.set_int16(ins);
         BITSY_PYTHON_PRINT_VAR(tmp_ins);
-        BITSY_PYTHON_PRINT(get_ins_name(ins));
+        //BITSY_PYTHON_PRINT(get_ins_name(ins));
         assert(false);
     }
     }

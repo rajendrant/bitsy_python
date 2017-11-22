@@ -1,9 +1,10 @@
 #include "bitsy_python_vm.h"
 
-#include <cassert>
-
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "test_common.h"
 
 void test1() {
     

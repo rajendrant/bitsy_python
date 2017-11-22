@@ -1,11 +1,13 @@
 #include "ByteStack.h"
 
-#include <cassert>
-#include <cstring>
 #include <stack>
 
+#include <assert.h>
+#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "test_common.h"
 
 bitsy_python::ByteStack stack;
 std::stack<uint8_t> stack_size;

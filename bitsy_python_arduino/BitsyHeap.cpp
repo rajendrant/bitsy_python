@@ -1,10 +1,8 @@
 #include "BitsyHeap.h"
 
-#include <cassert>
-#include <stdio.h>
+#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
-
 
 namespace bitsy_python {
 

@@ -1,8 +1,8 @@
 #ifndef DATATYPES_H_
 #define DATATYPES_H_
 
-#include "BitsyHeap.h"
-#include "variable.h"
+#include "../BitsyHeap.h"
+#include "../variable.h"
 
 #include <stdint.h>
 

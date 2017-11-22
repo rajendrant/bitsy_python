@@ -1,9 +1,10 @@
 #include "BlockStack.h"
 
-#include <cassert>
-#include <cstring>
-
+#include <assert.h>
+#include <string.h>
 #include <stdio.h>
+
+#include "test_common.h"
 
 namespace bitsy_python {
 

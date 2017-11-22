@@ -1,8 +1,9 @@
 #include "BitString.h"
 
-#include <cassert>
-
+#include <assert.h>
 #include <stdio.h>
+
+#include "test_common.h"
 
 int main() {
 	uint8_t BUF[10];

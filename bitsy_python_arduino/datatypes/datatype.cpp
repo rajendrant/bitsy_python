@@ -1,9 +1,9 @@
 #include "datatype.h"
 
-#include <cassert>
+#include <assert.h>
 #include <string.h>
 
-#include "bitsy_python_vm.h"
+#include "../bitsy_python_vm.h"
 
 namespace bitsy_python {
 

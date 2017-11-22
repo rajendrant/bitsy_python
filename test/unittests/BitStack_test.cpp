@@ -1,5 +1,7 @@
 #include "BitStack.h"
 
+#include "test_common.h"
+
 #include <cassert>
 #include <cstring>
 #include <stack>
