@@ -25,7 +25,7 @@ void freelist_sanity_check() {
 #endif
 }
 
-void init() {
+void bitsy_alloc_init() {
   if (freelist != INVALID_BLOCK) return;
   uint8_t prev = freelist = TOTAL_BLOCKS/2;
   for (uint8_t i = 1; i <= TOTAL_BLOCKS/2; i++) {

@@ -45,7 +45,7 @@ void BitsyHeapHeader::extend(uint8_t id, uint16_t increase) {
 }
 
 BitsyHeap::BitsyHeap() {
-  init();
+  bitsy_alloc_init();
 }
 
 BitsyHeap::~BitsyHeap() {

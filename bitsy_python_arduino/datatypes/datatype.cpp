@@ -8,23 +8,23 @@
 namespace bitsy_python {
 
 // static
-Variable DataType::CreateStr(const char *str, uint8_t len) {
+Variable DataType::CreateStr(BitsyHeap &heap, const char *str, uint8_t len) {
   Variable v;
   uint8_t *var;
-  uint8_t id = bitsy_heap.CreateVar(len, &var);
+  uint8_t id = heap.CreateVar(len, &var);
   strncpy((char *)var, str, len);
   v.set_CustomType(Variable::CustomType::STRING, id);
   return v;
 }
 
 // static
-Variable DataType::CreateForType(uint8_t t, uint8_t argcount, Variable args[]) {
+Variable DataType::CreateForType(BitsyHeap &heap, uint8_t t, uint8_t argcount, Variable args[]) {
   Variable v;
   switch (t) {
     case Variable::CustomType::BYTEARRAY: {
       assert(argcount == 1);
       uint8_t *var;
-      uint8_t id = bitsy_heap.CreateVar(args[0].as_int16(), &var);
+      uint8_t id = heap.CreateVar(args[0].as_int16(), &var);
       v.set_CustomType(t, id);
       break;
     }
@@ -35,11 +35,11 @@ Variable DataType::CreateForType(uint8_t t, uint8_t argcount, Variable args[]) {
 }
 
 // static
-Variable DataType::GetIndex(const Variable &v, uint8_t ind) {
+Variable DataType::GetIndex(BitsyHeap &heap, const Variable &v, uint8_t ind) {
   Variable ret;
   assert(v.type == Variable::CUSTOM);
   uint8_t *var;
-  uint8_t len = bitsy_heap.GetVar(v.val.custom_type.val, &var);
+  uint8_t len = heap.GetVar(v.val.custom_type.val, &var);
   switch (v.val.custom_type.type) {
     case Variable::CustomType::BYTEARRAY:
       assert(false);
@@ -55,10 +55,10 @@ Variable DataType::GetIndex(const Variable &v, uint8_t ind) {
 }
 
 // static
-uint16_t DataType::Len(const Variable &v) {
+uint16_t DataType::Len(BitsyHeap &heap, const Variable &v) {
   assert(v.type == Variable::CUSTOM);
   uint8_t *var;
-  uint8_t len = bitsy_heap.GetVar(v.val.custom_type.val, &var);
+  uint8_t len = heap.GetVar(v.val.custom_type.val, &var);
   switch (v.val.custom_type.type) {
     case Variable::CustomType::CHARACTER:
       return 1;
@@ -71,13 +71,19 @@ uint16_t DataType::Len(const Variable &v) {
 }
 
 // static
-void DataType::Print(const Variable &v, void (*print)(char)) {
+void DataType::Print(BitsyHeap &heap, const Variable &v, void (*print)(char)) {
   assert(v.type == Variable::CUSTOM);
-  uint8_t *var;
-  uint8_t len = bitsy_heap.GetVar(v.val.custom_type.val, &var);
   switch (v.val.custom_type.type) {
     case Variable::CustomType::CHARACTER:
       print((char)v.val.custom_type.val);
+      return;
+  }
+
+  uint8_t *var;
+  uint8_t len = heap.GetVar(v.val.custom_type.val, &var);
+  switch (v.val.custom_type.type) {
+    case Variable::CustomType::CHARACTER:
+      // Already handled above.
       break;
     case Variable::CustomType::BYTEARRAY:
       assert(false);

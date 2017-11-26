@@ -9,6 +9,7 @@
 
 namespace bitsy_python {
 
+// TODO(rajendrant): Move this to inside BitsyPythonVM class.
 extern BitsyHeap bitsy_heap;
 
 class BitsyPythonVM {

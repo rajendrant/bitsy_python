@@ -15,7 +15,7 @@ bool FunctionStack::is_empty() { return top == 0; }
 
 #define stack ((uint8_t *)blocks)
 
-FunctionStack::FunctionStack() { init(); }
+FunctionStack::FunctionStack() { }
 
 void FunctionStack::setup_function_call(uint8_t args, uint8_t vars,
                                         uint16_t old_ins_ptr) {

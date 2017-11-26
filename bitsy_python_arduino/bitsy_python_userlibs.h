@@ -18,7 +18,7 @@ void BITSY_PYTHON_PRINT(const char* str) {
 #endif
 }
 
-void BITSY_PYTHON_PRINT_VAR(const Variable& v) {
+void BITSY_PYTHON_PRINT_VAR(bitsy_python::BitsyHeap &heap, const Variable& v) {
   if (v.type == Variable::FLOAT) {
 #if defined(DESKTOP)
     printf("%g", v.as_float());
@@ -28,7 +28,7 @@ void BITSY_PYTHON_PRINT_VAR(const Variable& v) {
   } else if (v.type == Variable::CUSTOM &&
              (v.val.custom_type.type == Variable::CustomType::CHARACTER ||
               v.val.custom_type.type == Variable::CustomType::STRING)) {
-    bitsy_python::DataType::Print(v, bitsy_print);
+    bitsy_python::DataType::Print(heap, v, bitsy_print);
   } else {
 #if defined(DESKTOP)
     printf("%d", v.as_int32());

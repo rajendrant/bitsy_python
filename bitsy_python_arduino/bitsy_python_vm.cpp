@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <stdio.h>
 
+#include "bitsy_alloc.h"
 #include "Builtins.h"
 #include "datatypes/datatype.h"
 #include "instructions.h"
@@ -15,10 +16,12 @@ BitsyHeap bitsy_heap;
 
 #ifdef DESKTOP
 BitsyPythonVM::BitsyPythonVM(const char *fname)
-    : prog(Program::FromFile(fname)) {}
+    : prog(Program::FromFile(fname)) {
 #elif defined(ARDUINO)
-BitsyPythonVM::BitsyPythonVM() : prog(Program::FromEEPROM()) {}
+BitsyPythonVM::BitsyPythonVM() : prog(Program::FromEEPROM()) {
 #endif
+  bitsy_alloc_init();
+}
 
 void BitsyPythonVM::binary_arithmetic(uint8_t ins) {
   auto v1 = exec_stack.pop();
@@ -84,7 +87,7 @@ void BitsyPythonVM::binary_arithmetic(uint8_t ins) {
       ret.set_int32(v2.as_int32() | v1.as_int32());
       break;
     case BINARY_SUBSCR:
-      ret = DataType::GetIndex(v2, v1.as_uint8());
+      ret = DataType::GetIndex(bitsy_heap, v2, v1.as_uint8());
       break;
     default:
       assert(false);
@@ -93,9 +96,11 @@ void BitsyPythonVM::binary_arithmetic(uint8_t ins) {
 }
 
 void BitsyPythonVM::initExecution() {
-  auto fn = prog.setup_function_call(0);
-  function_stack.setup_function_call(fn.args, fn.vars, fn.old_ins_ptr);
-  // printf("main %d %d %d\n", fn.args, fn.vars, fn.len);
+  if (prog.sanity_check()) {
+    auto fn = prog.setup_function_call(0);
+    function_stack.setup_function_call(fn.args, fn.vars, fn.old_ins_ptr);
+    // printf("main %d %d %d\n", fn.args, fn.vars, fn.len);
+  }
 }
 
 void BitsyPythonVM::execute() {
@@ -104,6 +109,9 @@ void BitsyPythonVM::execute() {
 }
 
 bool BitsyPythonVM::executeOneStep() {
+  if (!prog.is_sane())
+    return false;
+
   Variable arg;
   auto ins = prog.get_next_instruction(&arg);
   // printf("ins %s %d\n", get_ins_name(ins), arg.as_int32());
@@ -206,7 +214,7 @@ bool BitsyPythonVM::executeOneStep() {
               module_id, v.val.custom_type.val & 0x3F, argcount, argvars));
       } else if (v.val.custom_type.type ==
                  Variable::CustomType::BUILTIN_FUNCTION) {
-        exec_stack.push(handle_builtin_call((BitsyBuiltin)v.val.custom_type.val,
+        exec_stack.push(handle_builtin_call(bitsy_heap, (BitsyBuiltin)v.val.custom_type.val,
                                             argcount, argvars));
       } else {
         assert(false);
@@ -222,7 +230,7 @@ bool BitsyPythonVM::executeOneStep() {
 
     case PRINT_ITEM: {
       auto v = exec_stack.pop();
-      BITSY_PYTHON_PRINT_VAR(v);
+      BITSY_PYTHON_PRINT_VAR(bitsy_heap, v);
       BITSY_PYTHON_PRINT(" ");
       break;
     }
@@ -306,7 +314,7 @@ bool BitsyPythonVM::executeOneStep() {
       Variable tmp_ins;
       BITSY_PYTHON_PRINT("UNSUPPORTED INS ");
       tmp_ins.set_int16(ins);
-      BITSY_PYTHON_PRINT_VAR(tmp_ins);
+      BITSY_PYTHON_PRINT_VAR(bitsy_heap, tmp_ins);
       // BITSY_PYTHON_PRINT(get_ins_name(ins));
       assert(false);
     }

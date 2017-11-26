@@ -4,6 +4,7 @@ import dis
 import importlib
 import math
 import os
+import random
 import sys
 import types
 import userlibsgen
@@ -43,7 +44,7 @@ ins_supported = set((
   'PRINT_ITEM', 'PRINT_NEWLINE',
   'CALL_FUNCTION', 'RETURN_VALUE',
   'COMPARE_OP', 'POP_JUMP_IF_TRUE', 'POP_JUMP_IF_FALSE',
-  'JUMP_IF_TRUE_OR_POP', 'JUMP_IF_FALSE_OR_POP', 
+  'JUMP_IF_TRUE_OR_POP', 'JUMP_IF_FALSE_OR_POP',
   'JUMP_FORWARD', 'JUMP_ABSOLUTE',
   'GET_ITER', 'FOR_ITER',
   'BREAK_LOOP', 'CONTINUE_LOOP',
@@ -75,9 +76,9 @@ ins_order = (
   'BINARY_AND', 'BINARY_XOR', 'BINARY_OR',
 
   'COMPARE_OP', 'POP_JUMP_IF_TRUE', 'POP_JUMP_IF_FALSE',
-  'JUMP_IF_TRUE_OR_POP', 'JUMP_IF_FALSE_OR_POP', 
+  'JUMP_IF_TRUE_OR_POP', 'JUMP_IF_FALSE_OR_POP',
   'JUMP_ABSOLUTE',
-  
+
   'GET_ITER', 'FOR_ITER',
   #'BREAK_LOOP', 'CONTINUE_LOOP',
   #'SETUP_LOOP', 'POP_BLOCK',
@@ -110,7 +111,7 @@ ins_arg2 = {
   'LOAD_GLOBAL', 'STORE_GLOBAL', 'DELETE_GLOBAL',
   'CALL_FUNCTION',
   'COMPARE_OP', 'POP_JUMP_IF_TRUE', 'POP_JUMP_IF_FALSE',
-  'JUMP_IF_TRUE_OR_POP', 'JUMP_IF_FALSE_OR_POP', 
+  'JUMP_IF_TRUE_OR_POP', 'JUMP_IF_FALSE_OR_POP',
   'JUMP_FORWARD', 'JUMP_ABSOLUTE',
   'FOR_ITER', 'CONTINUE_LOOP', 'SETUP_LOOP',
   'LOAD_ATTR',
@@ -120,7 +121,7 @@ ins_arg2 = {
 # them.
 ins_with_target_bytecode_address = set((
   'POP_JUMP_IF_TRUE', 'POP_JUMP_IF_FALSE',
-  'JUMP_IF_TRUE_OR_POP', 'JUMP_IF_FALSE_OR_POP', 
+  'JUMP_IF_TRUE_OR_POP', 'JUMP_IF_FALSE_OR_POP',
   'JUMP_FORWARD', 'JUMP_ABSOLUTE',
   'CONTINUE_LOOP', 'FOR_ITER',
   'BREAK_LOOP',
@@ -167,15 +168,16 @@ def print_dis(m):
     code = bitstring.BitArray()
     number_encode(f.__code__.co_argcount, code)
     number_encode(len(f.__code__.co_varnames), code)
-    #print 'fn:', k
     dump_code(f, globalls, functions, modules, code)
     if len(code)%8 != 0:
       code.append(bitstring.BitArray(uint=0, length=8-(len(code)%8)))
-    #print len(code)
     codes.append(code)
   # append header
   allcode = bitstring.BitArray()
-  prevlen=int(math.ceil(10.0*(len(codes)+1)/8))
+  prevlen=int(math.ceil(10.0*(len(codes)+1)/8)) + 2
+  allcode.append(bitstring.BitArray(uint=len(codes), length=8))
+  sanitychecker = random.randint(0, 255)
+  allcode.append(bitstring.BitArray(uint=sanitychecker, length=8))
   for c in codes:
     allcode.append(bitstring.BitArray(uint=prevlen, length=10))
     prevlen += len(c)/8
@@ -183,6 +185,7 @@ def print_dis(m):
   if len(allcode)%8 != 0:
     allcode.append(bitstring.BitArray(uint=0, length=8-(len(allcode)%8)))
   for c in codes: allcode.append(c)
+  allcode.append(bitstring.BitArray(uint=sanitychecker, length=8))
   return allcode
 
 def ins_encode(insname, newcode):
@@ -249,13 +252,13 @@ def dump_code(f, globalls, functions, modules, newcode):
     ins = bytecode[bytecode_counter]
     bytecode_map.append([len(newcode), bytecode_counter])
     bytecode_counter += 1
-    
+
     insname = dis.opname[ins]
     assert insname in ins_supported
     is_load = insname.startswith('LOAD_')
     is_store = insname.startswith('STORE_')
     is_delete = insname.startswith('DELETE_')
-    
+
     if insname not in ins_transform:
       ins_encode(insname, newcode)
     elif ins_transform[insname]:

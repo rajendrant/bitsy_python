@@ -1,5 +1,6 @@
 #include "Program.h"
 
+#include "bitsy_python_vm.h"
 #include "datatypes/datatype.h"
 #include "instructions.h"
 
@@ -7,7 +8,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define HEADER_PER_FUNCTION 10
+#define MODULE_HEADER 16 /* bits */
+#define HEADER_PER_FUNCTION 10 /* bits */
 
 namespace bitsy_python {
 
@@ -27,9 +29,7 @@ uint8_t Program::get_next_instruction(Variable *arg) {
     ins_ptr += 2;
   }
   if (is_instr_arg(ins)) {
-    uint8_t next;
-    *arg = get_number(ins_ptr, &next);
-    ins_ptr += next;
+    *arg = get_number();
     // printf("arg %d\n", arg->as_int32());
   }
   if (ins == LOAD_GLOBAL || ins == STORE_GLOBAL || ins == DELETE_GLOBAL) {
@@ -68,54 +68,65 @@ uint8_t Program::get_next_instruction(Variable *arg) {
   return ins;
 }
 
+bool Program::sanity_check() {
+  uint8_t total_functions = bits.get_bit8(0, 8);
+  uint16_t module_len = bits.get_bit16(MODULE_HEADER + total_functions * HEADER_PER_FUNCTION, HEADER_PER_FUNCTION) * 8;
+  if(bits.get_bit8(8, 8) != bits.get_bit8(module_len, 8)) {
+    ins_ptr = 0;
+    return false;
+  }
+  return true;
+}
+
+bool Program::is_sane() {
+  return ins_ptr;
+}
+
 Program::FunctionParams Program::setup_function_call(uint8_t fn) {
   Program::FunctionParams ret;
   ret.old_ins_ptr = ins_ptr;
-  ins_ptr = bits.get_bit16(fn * HEADER_PER_FUNCTION, HEADER_PER_FUNCTION) * 8;
+  ins_ptr = bits.get_bit16(MODULE_HEADER + fn * HEADER_PER_FUNCTION, HEADER_PER_FUNCTION) * 8;
   ins_ptr_function_start = ins_ptr;
   ret.len =
-      bits.get_bit16((fn + 1) * HEADER_PER_FUNCTION, HEADER_PER_FUNCTION) * 8;
-  uint8_t next;
-  ret.args = get_number(ins_ptr, &next).as_int32();
-  ins_ptr += next;
-  ret.vars = get_number(ins_ptr, &next).as_int32();
-  ins_ptr += next;
+      bits.get_bit16(MODULE_HEADER + (fn + 1) * HEADER_PER_FUNCTION, HEADER_PER_FUNCTION) * 8;
+  ret.args = get_number().as_int32();
+  ret.vars = get_number().as_int32();
   return ret;
 }
 
 void Program::return_function(uint16_t ins_ptr) { this->ins_ptr = ins_ptr; }
 
-Variable Program::get_number(uint16_t pos, uint8_t *next) {
+Variable Program::get_number() {
   Variable v;
-  if (bits.get_bit8(pos, 1) == 0) {
-    *next = 4;
-    v.set_int32(bits.get_bit8(pos + 1, 3));
-  } else if (bits.get_bit8(pos + 1, 1) == 0) {
-    *next = 8;
-    v.set_int32(bits.get_bit8(pos + 2, 6));
+  if (bits.get_bit8(ins_ptr, 1) == 0) {
+    v.set_int32(bits.get_bit8(ins_ptr + 1, 3));
+    ins_ptr += 4;
+  } else if (bits.get_bit8(ins_ptr + 1, 1) == 0) {
+    v.set_int32(bits.get_bit8(ins_ptr + 2, 6));
+    ins_ptr += 8;
   } else {
-    switch (bits.get_bit8(pos + 2, 2)) {
+    switch (bits.get_bit8(ins_ptr + 2, 2)) {
       case 0:
-        *next = 16;
-        v.set_int32(bits.get_bit16(pos + 4, 12));
+        v.set_int32(bits.get_bit16(ins_ptr + 4, 12));
+        ins_ptr += 16;
         return v;
       case 1:
-        *next = 36;
-        v.set_int32(bits.get_bit32(pos + 4, 32));
+        v.set_int32(bits.get_bit32(ins_ptr + 4, 32));
+        ins_ptr += 36;
         return v;
       case 2:
-        *next = 36;
-        v.val.int32 = bits.get_bit32(pos + 4, 32);
+        v.val.int32 = bits.get_bit32(ins_ptr + 4, 32);
         v.set_float(v.val.float32);
+        ins_ptr += 36;
         return v;
       case 3: {
         // String
-        uint8_t len = bits.get_bit8(pos + 4, 8);
+        uint8_t len = bits.get_bit8(ins_ptr + 4, 8);
         char str[len];
         for (uint8_t i = 0; i < len; i++)
-          str[i] = bits.get_bit8(pos + 4 + 8 + i * 8, 8);
-        v = DataType::CreateStr(str, len);
-        *next = 4 + 8 + len * 8;
+          str[i] = bits.get_bit8(ins_ptr + 4 + 8 + i * 8, 8);
+        v = DataType::CreateStr(bitsy_heap, str, len);
+        ins_ptr += 4 + 8 + len * 8;
         break;
       }
       default:

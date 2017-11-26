@@ -8,7 +8,6 @@
 namespace bitsy_python {
 
 BlockStack::BlockStack() {
-  init();
   _top = INVALID_BLOCK;
 }
 

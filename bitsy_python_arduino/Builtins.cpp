@@ -6,17 +6,17 @@
 
 namespace bitsy_python {
 
-Variable handle_builtin_call(BitsyBuiltin type, uint8_t argcount,
+Variable handle_builtin_call(BitsyHeap &heap, BitsyBuiltin type, uint8_t argcount,
                              Variable arg[]) {
   Variable v;
   switch (type) {
     case BitsyBuiltin::LEN:
       assert(argcount == 1);
-      v.set_int16(DataType::Len(arg[0]));
+      v.set_int16(DataType::Len(heap, arg[0]));
       break;
     case BitsyBuiltin::BYTEARRAY: {
       assert(argcount == 1);
-      v = DataType::CreateForType(Variable::CustomType::BYTEARRAY, argcount,
+      v = DataType::CreateForType(heap, Variable::CustomType::BYTEARRAY, argcount,
                                   arg);
       break;
     }

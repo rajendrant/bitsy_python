@@ -23,8 +23,16 @@ class Program {
   static Program FromEEPROM();
 #endif
 
+  // Checks if the full module is available, by checking a byte at the end of
+  // the module.
+  bool sanity_check();
+
+  bool is_sane();
+
   uint8_t get_next_instruction(Variable *arg);
-  Variable get_number(uint16_t pos, uint8_t *next);
+
+  // Gets the number at the current ins pointer, and updates the ins_ptr.
+  Variable get_number();
 
   FunctionParams setup_function_call(uint8_t fn);
   void return_function(uint16_t ins_ptr);

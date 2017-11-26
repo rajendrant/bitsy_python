@@ -17,7 +17,7 @@ typedef struct {
 
 extern Block blocks[TOTAL_BLOCKS];
 
-extern void init();
+extern void bitsy_alloc_init();
 
 extern uint8_t alloc_block();
 
