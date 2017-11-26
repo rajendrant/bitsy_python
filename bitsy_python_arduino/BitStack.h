@@ -5,14 +5,16 @@
 
 namespace bitsy_python {
 
-class BitStack : ByteStack {
+class BitStack {
  public:
   BitStack();
   void pushThreeBits(uint8_t bits);
   uint8_t popThreeBits();
 
  private:
-  uint16_t byte = 0, pos = 0;
+  uint16_t *bytes;
+  uint16_t pos;
+  uint8_t len;
 };
 }
 #endif /* BITSTACK_H_ */

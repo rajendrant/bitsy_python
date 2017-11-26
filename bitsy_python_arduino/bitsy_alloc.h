@@ -5,6 +5,8 @@
 
 #include "bitsylimit.h"
 
+#define BLOCKS_END (((uint8_t*)blocks) + sizeof(blocks))
+
 #define INVALID_BLOCK 0xF
 
 typedef struct {
@@ -13,7 +15,7 @@ typedef struct {
   uint8_t prev : BITS_PER_BLOCK_ID;
 } Block;
 
-extern Block blocks[];
+extern Block blocks[TOTAL_BLOCKS];
 
 extern void init();
 
@@ -21,10 +23,16 @@ extern uint8_t alloc_block();
 
 extern void free_block(uint8_t tofree);
 
-extern void sequential_stack_alloc();
+extern void top_block_alloc();
 
-extern void sequential_stack_free();
+extern void top_block_free();
 
-extern uint16_t sequential_stack_size();
+extern uint16_t top_block_size();
+
+extern void bottom_block_alloc();
+
+extern void bottom_block_free();
+
+extern uint16_t bottom_block_size();
 
 #endif /* BITSY_ALLOC_H_ */

@@ -19,10 +19,10 @@ FunctionStack::FunctionStack() { init(); }
 
 void FunctionStack::setup_function_call(uint8_t args, uint8_t vars,
                                         uint16_t old_ins_ptr) {
-  // TODO(rajendrant): sequential_stack_alloc may need to happen in
+  // TODO(rajendrant): top_block_alloc may need to happen in
   // setNthVariable too.
-  while (sequential_stack_size() < top + HDR_START + vars * 5) {
-    sequential_stack_alloc();
+  while (top_block_size() < top + HDR_START + vars * 5) {
+    top_block_alloc();
   }
   stack[top] = vars;
   memcpy(stack + top + 1, &old_ins_ptr, 2);
@@ -36,8 +36,8 @@ bool FunctionStack::return_function(uint16_t *old_ins_ptr) {
   top = start;
   memcpy(old_ins_ptr, stack + start + 1, 2);
   memcpy(&start, stack + start + 3, 2);
-  while (sequential_stack_size() > top + 100) {
-    sequential_stack_free();
+  while (top_block_size() > top + 100) {
+    top_block_free();
   }
   return is_empty();
 }

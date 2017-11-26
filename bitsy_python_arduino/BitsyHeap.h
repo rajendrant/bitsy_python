@@ -6,24 +6,35 @@
 
 namespace bitsy_python {
 
+class BitsyHeapHeader {
+public:
+  BitsyHeapHeader();
+  uint8_t create(uint8_t size, uint16_t *start);
+  uint8_t get(uint8_t id, uint16_t *start, uint16_t *rem=0);
+  void extend(uint8_t id, uint16_t increase);
+private:
+  struct Header {
+    uint16_t v0 : 12;
+    uint16_t v1 : 12;
+  }__attribute__((packed)) *hdr;
+  uint8_t len, last;
+};
+
 class BitsyHeap {
  public:
   typedef uint8_t var_id_t;
 
   BitsyHeap();
+  ~BitsyHeap();
+
   var_id_t CreateVar(uint8_t size, uint8_t **val);
   uint8_t GetVar(var_id_t id, uint8_t **val);
-  bool ExtendVar(var_id_t id, uint8_t *val, uint8_t new_size);
+  uint8_t* ExtendVar(var_id_t id, uint8_t *val, uint8_t new_size);
   void FreeVar(var_id_t id);
 
  private:
-  bool hdr_extend();
-
-  uint8_t *hdr;
-  uint8_t hdr_len, hdr_last;
-  uint8_t *mem;
-  uint16_t mem_len;
-};
+  BitsyHeapHeader hdr;
 };
 
+}
 #endif /* BITSY_HEAP_H_ */
