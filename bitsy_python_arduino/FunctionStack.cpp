@@ -85,4 +85,11 @@ void FunctionStack::setNthVariable(uint8_t n, const Variable v) {
   }
   memcpy(stack + pre, &v.val, size);
 }
+
+uint32_t FunctionStack::getCustomHeapVariableMap(uint8_t start_id) const {
+  uint32_t map = 0;
+  // TODO(rajendrant): Implement this
+  return map;
+}
+
 }

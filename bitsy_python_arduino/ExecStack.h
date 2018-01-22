@@ -14,6 +14,7 @@ class ExecStack {
  public:
   void push(const Variable &v);
   Variable pop();
+  uint32_t getCustomHeapVariableMap(uint8_t start_id) const;
 
  private:
   BitStack hdr;

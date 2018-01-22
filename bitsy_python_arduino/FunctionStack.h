@@ -18,6 +18,8 @@ class FunctionStack {
   Variable getNthVariable(uint8_t n) const;
   void setNthVariable(uint8_t n, const Variable v);
 
+  uint32_t getCustomHeapVariableMap(uint8_t start_id) const;
+
  private:
   uint8_t get_var_hdr(uint8_t n) const;
   void set_var_hdr(uint8_t n, uint8_t val);
