@@ -1,6 +1,7 @@
 #include "ByteStack.h"
 
 #include <string.h>
+#include <stdio.h>
 
 namespace bitsy_python {
 
@@ -49,4 +50,12 @@ uint8_t ByteStack::popByte() {
   }
   return top()[_top_byte];
 }
+
+bool ByteStack::getNextByte(uint32_t *p, uint8_t **bytes, uint8_t *len) const {
+  if(!getNextBlock(p, bytes))
+    return false;
+  *len = (*bytes == top()) ? _top_byte : blocksize();
+  return true;
+}
+
 }

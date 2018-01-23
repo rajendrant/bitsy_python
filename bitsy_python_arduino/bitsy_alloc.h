@@ -9,6 +9,8 @@
 
 #define INVALID_BLOCK 0xF
 
+#define INVALID_ITERATOR 0xFFFFFFFF
+
 typedef struct {
   uint8_t bytes[BYTES_PER_BLOCK];
   uint8_t next : BITS_PER_BLOCK_ID;

@@ -8,14 +8,20 @@
 
 namespace bitsy_python {
 
-bool FunctionStack::is_empty() { return top == 0; }
+typedef struct {
+  uint8_t var_count;
+  uint16_t ins_ptr;
+  uint16_t start;
+}__attribute__((packed)) FunctionStackHeader;
 
-#define HDR_START 5
+#define HDR_START sizeof(FunctionStackHeader)
 #define HDR_SIZE_FOR_VARS(v) ((((v)-1) * 2) / 4 + 1)
 
 #define stack ((uint8_t *)blocks)
 
 FunctionStack::FunctionStack() { }
+
+bool FunctionStack::is_empty() { return top == 0; }
 
 void FunctionStack::setup_function_call(uint8_t args, uint8_t vars,
                                         uint16_t old_ins_ptr) {
@@ -24,9 +30,10 @@ void FunctionStack::setup_function_call(uint8_t args, uint8_t vars,
   while (top_block_size() < top + HDR_START + vars * 5) {
     top_block_alloc();
   }
-  stack[top] = vars;
-  memcpy(stack + top + 1, &old_ins_ptr, 2);
-  memcpy(stack + top + 3, &start, 2);
+  FunctionStackHeader *hdr = (FunctionStackHeader*)(stack+top);
+  hdr->var_count = vars;
+  hdr->ins_ptr = old_ins_ptr;
+  hdr->start = start;
   start = top;
   top += HDR_START + HDR_SIZE_FOR_VARS(vars) + vars;
   memset(stack + start + HDR_START, 0, top - start);
@@ -34,8 +41,9 @@ void FunctionStack::setup_function_call(uint8_t args, uint8_t vars,
 
 bool FunctionStack::return_function(uint16_t *old_ins_ptr) {
   top = start;
-  memcpy(old_ins_ptr, stack + start + 1, 2);
-  memcpy(&start, stack + start + 3, 2);
+  FunctionStackHeader *hdr = (FunctionStackHeader*)(stack+start);
+  old_ins_ptr = &hdr->ins_ptr;
+  start = hdr->start;
   while (top_block_size() > top + 100) {
     top_block_free();
   }
@@ -53,28 +61,30 @@ void FunctionStack::set_var_hdr(uint8_t n, uint8_t val) {
 }
 
 Variable FunctionStack::getNthVariable(uint8_t n) const {
-  assert(n < stack[start]);
+  FunctionStackHeader *hdr = (FunctionStackHeader*)(stack+start);
+  assert(n < hdr->var_count);
   Variable v;
-  uint16_t pre = start + HDR_START + HDR_SIZE_FOR_VARS(stack[start]);
+  uint16_t pre = start + HDR_START + HDR_SIZE_FOR_VARS(hdr->var_count);
   for (uint8_t i = 0; i < n; i++) {
     pre += get_var_hdr(i) + 1;
   }
   auto size = get_var_hdr(n) + 1;
   v.type = Variable::get_type_from_size_and_extra_bits(
-      size, get_var_hdr(n + stack[start]));
+      size, get_var_hdr(n + hdr->var_count));
   memcpy(&v.val, stack + pre, size);
   return v;
 }
 
 void FunctionStack::setNthVariable(uint8_t n, const Variable v) {
-  assert(n < stack[start]);
+  FunctionStackHeader *hdr = (FunctionStackHeader*)(stack+start);
+  assert(n < hdr->var_count);
   uint16_t pre = start + HDR_START + HDR_SIZE_FOR_VARS(stack[start]);
   for (uint8_t i = 0; i < n; i++) {
     pre += get_var_hdr(i) + 1;
   }
   auto old_size = get_var_hdr(n) + 1;
   auto size = v.size();
-  set_var_hdr(n + stack[start], v.get_extra_bits());
+  set_var_hdr(n + hdr->var_count, v.get_extra_bits());
   if (size != old_size) {
     set_var_hdr(n, size - 1);
     memmove(stack + pre + size, stack + pre + old_size, top - pre - old_size);
@@ -88,7 +98,30 @@ void FunctionStack::setNthVariable(uint8_t n, const Variable v) {
 
 uint32_t FunctionStack::getCustomHeapVariableMap(uint8_t start_id) const {
   uint32_t map = 0;
-  // TODO(rajendrant): Implement this
+  for(uint16_t f=start; f<top;) {
+    FunctionStackHeader *hdr = (FunctionStackHeader*)(stack+f);
+    uint16_t pre = f + HDR_START + HDR_SIZE_FOR_VARS(hdr->var_count);
+    for(uint8_t v=0; v<hdr->var_count; v++) {
+      uint8_t size, extra;
+      size = ((stack[f + HDR_START + v / 4] >> (2 * (v % 4))) & 0x3) + 1;
+      extra = ((stack[f + HDR_START + (v + hdr->var_count) / 4] >>
+              (2 * ((v + hdr->var_count) % 4))) & 0x3);
+      if (Variable::get_type_from_size_and_extra_bits(size, extra) ==
+          Variable::CUSTOM) {
+        Variable var;
+        var.type = Variable::CUSTOM;
+        memcpy(&var.val, stack + pre, size);
+        if (var.is_custom_heap_type() &&
+            var.val.custom_type.val>=start_id &&
+            var.val.custom_type.val<start_id+32) {
+          map |= 0x1<<(var.val.custom_type.val-start_id);
+        }
+      }
+      pre += size;
+    }
+    if(f==0 && hdr->start==0) break;
+    f=hdr->start;
+  }
   return map;
 }
 

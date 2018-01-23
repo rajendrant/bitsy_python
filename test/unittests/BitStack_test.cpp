@@ -5,14 +5,14 @@
 #include <cassert>
 #include <cstring>
 #include <stack>
+#include <vector>
 
 #include <stdio.h>
 #include <stdlib.h>
 
-bitsy_python::BitStack stack;
-std::stack<uint8_t> stack_expected;
-
 void test1() {
+  bitsy_python::BitStack stack;
+  std::stack<uint8_t> stack_expected;
   for(int i=0; i<20000; i++) {
     if (stack_expected.empty() || rand()%2==0) {
       uint8_t d = rand() % 8;
@@ -25,8 +25,44 @@ void test1() {
   }
 }
 
+bool checkIterator(const bitsy_python::BitStack &s, uint8_t count,
+                   uint8_t b0=0, uint8_t b1=0, uint8_t b2=0) {
+  std::vector<uint8_t> actual;
+  uint32_t id = INVALID_ITERATOR;
+  uint8_t ret;
+  while(s.getNextThreeBits(&ret, &id))
+    actual.push_back(ret);
+  if (count != actual.size())
+    return false;
+  return !((count>0 && b0!=actual[0]) || (count>1 && b1!=actual[1]) ||
+           (count>2 && b2!=actual[2]));
+}
+
+void testIterator() {
+  bitsy_python::BitStack s;
+  assert(checkIterator(s, 0));
+  s.pushThreeBits(4);
+  assert(checkIterator(s, 1, 4));
+  s.popThreeBits();
+  assert(checkIterator(s, 0));
+  s.pushThreeBits(1);
+  assert(checkIterator(s, 1, 1));
+  s.pushThreeBits(2);
+  assert(checkIterator(s, 2, 1, 2));
+  s.pushThreeBits(3);
+  assert(checkIterator(s, 3, 1, 2, 3));
+
+  s.popThreeBits();
+  assert(checkIterator(s, 2, 1, 2));
+  s.popThreeBits();
+  assert(checkIterator(s, 1, 1));
+  s.popThreeBits();
+  assert(checkIterator(s, 0));
+}
+
 int main() {
   test1();
+  testIterator();
   printf(__FILE__ " passed\n");
   return 0;
 }

@@ -3,8 +3,6 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include "bitsy_alloc.h"
-
 namespace bitsy_python {
 
 BlockStack::BlockStack() {
@@ -30,22 +28,23 @@ uint8_t* BlockStack::top() const {
   return blocks[_top].bytes;
 }
 
-uint8_t BlockStack::GetSizeForTesting() const {
-  uint8_t size = 0, size2 = 0, last = INVALID_BLOCK;
-  for (uint8_t curr = _top; curr != INVALID_BLOCK; curr = blocks[curr].prev) {
-    size++;
-    last = curr;
-  }
-  if (size > 0) {
-    assert(blocks[_top].next == INVALID_BLOCK);
-    assert(blocks[last].prev == INVALID_BLOCK);
-  }
-  for (uint8_t curr = last; curr != INVALID_BLOCK; curr = blocks[curr].next) {
-    size2++;
-  }
-  assert(size == size2);
-  return size;
-}
+Block* BlockStack::GetBlocksForTesting() const { return blocks; }
 
 uint8_t BlockStack::blocksize() const { return BYTES_PER_BLOCK; }
+
+bool BlockStack::getNextBlock(uint32_t *id, uint8_t **ret) const {
+  if(_top==INVALID_BLOCK)
+    return false;
+  if (*id==INVALID_ITERATOR) {
+    for (uint8_t curr = _top; curr != INVALID_BLOCK; curr = blocks[curr].prev)
+      *id = curr;
+  } else {
+      *id = blocks[*id].next;
+  }
+  if (*id==INVALID_BLOCK)
+    return false;
+  *ret = blocks[*id].bytes;
+  return true;
+}
+
 }

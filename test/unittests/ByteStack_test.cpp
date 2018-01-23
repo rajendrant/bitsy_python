@@ -6,6 +6,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <vector>
 
 #include "test_common.h"
 
@@ -53,9 +54,58 @@ void test2() {
   }
 }
 
+bool checkIterator(const bitsy_python::ByteStack &s,
+                   std::vector<uint8_t> expected) {
+  std::vector<uint8_t> actual;
+  uint8_t *bytes, len;
+  uint32_t p=INVALID_ITERATOR;
+  while(s.getNextByte(&p, &bytes, &len)) {
+    for(int i=0; i<len; i++)
+      actual.push_back(bytes[i]);
+  }
+  return expected == actual;
+}
+
+void testIterator() {
+  bitsy_python::ByteStack s;
+  assert(checkIterator(s, {}));
+  s.pushByte(101);
+  assert(checkIterator(s, {101}));
+  s.pushByte(23);
+  assert(checkIterator(s, {101, 23}));
+  s.pushByte(45);
+  assert(checkIterator(s, {101, 23, 45}));
+
+  s.popByte();
+  assert(checkIterator(s, {101, 23}));
+  s.popByte();
+  assert(checkIterator(s, {101}));
+  s.popByte();
+  assert(checkIterator(s, {}));
+}
+
+void testIterator2() {
+  bitsy_python::ByteStack s;
+  std::vector<uint8_t> expected;
+  for(int iter=0; iter<1000; iter++) {
+    uint8_t v = rand()%200;
+    s.pushByte(v);
+    expected.push_back(v);
+    assert(checkIterator(s, expected));
+
+    if (rand()%2==0) {
+      s.popByte();
+      expected.pop_back();
+      assert(checkIterator(s, expected));
+    }
+  }
+}
+
 int main() {
   test1();
   test2();
+  testIterator();
+  testIterator2();
   printf(__FILE__ " passed\n");
   return 0;
 }

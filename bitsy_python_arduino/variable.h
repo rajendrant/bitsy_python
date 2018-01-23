@@ -23,6 +23,7 @@ class Variable {
       USER_MODULE,
       USER_MODULE_FUNCTION,
       CHARACTER,
+      INT12,
 
       // These variables live in the heap and their ID is stored in val
       STRING,
@@ -65,6 +66,8 @@ class Variable {
 
   uint8_t size() const;
   uint8_t get_extra_bits() const;
+
+  bool is_custom_heap_type() const;
 
   static uint8_t get_type_from_size_and_extra_bits(uint8_t size, uint8_t extra);
 };

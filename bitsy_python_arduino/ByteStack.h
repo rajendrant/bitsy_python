@@ -12,6 +12,7 @@ class ByteStack : BlockStack {
   void popBytes(uint8_t *dst, uint8_t len);
   void pushByte(uint8_t src);
   uint8_t popByte();
+  bool getNextByte(uint32_t *p, uint8_t **bytes, uint8_t *len) const;
 
  private:
   uint8_t _top_byte = 0;

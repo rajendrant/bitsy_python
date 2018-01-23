@@ -10,6 +10,7 @@ class BitStack {
   BitStack();
   void pushThreeBits(uint8_t bits);
   uint8_t popThreeBits();
+  bool getNextThreeBits(uint8_t *ret, uint32_t *p) const;
 
  private:
   uint16_t *bytes;

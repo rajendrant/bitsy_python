@@ -172,4 +172,19 @@ uint8_t Variable::get_type_from_size_and_extra_bits(uint8_t size,
   }
 }
 
+bool Variable::is_custom_heap_type() const {
+  if (type==CUSTOM) {
+    switch(val.custom_type.type) {
+    case CustomType::STRING:
+    case CustomType::LIST:
+    case CustomType::BYTEARRAY:
+    case CustomType::RANGE:
+    case CustomType::ITER:
+      return true;
+    }
+  }
+  return false;
+}
+
+
 //}

@@ -16,7 +16,25 @@ Variable ExecStack::pop() {
 
 uint32_t ExecStack::getCustomHeapVariableMap(uint8_t start_id) const {
   uint32_t map = 0;
-  // TODO(rajendrant): Implement this
+  uint8_t bits, *bytes, bytelen=0, byteind=0;
+  uint32_t p1=INVALID_ITERATOR, p2=INVALID_ITERATOR;
+  while(hdr.getNextThreeBits(&bits, &p1)) {
+    Variable var;
+    var.type = bits;
+    for(int i=0; i<var.size(); i++) {
+      if (bytelen==byteind) {
+        data.getNextByte(&p2, &bytes, &bytelen);
+        byteind = 0;
+      }
+      ((uint8_t *)&var.val)[i] = bytes[byteind];
+      byteind++;
+    }
+    if (bits == Variable::CUSTOM && var.is_custom_heap_type() &&
+        var.val.custom_type.val>=start_id &&
+        var.val.custom_type.val<start_id+32) {
+      map |= 0x1<<(var.val.custom_type.val-start_id);
+    }
+  }
   return map;
 }
 

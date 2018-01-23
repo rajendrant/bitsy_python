@@ -78,12 +78,50 @@ void test2() {
     }
   }
 }
+
+void testCustomHeapVaiable() {
+  ExecStack s;
+  Variable heap_0, heap_1, heap_2;
+  heap_0.type = Variable::CUSTOM;
+  heap_0.val.custom_type.type = Variable::CustomType::STRING;
+  heap_1 = heap_2 = heap_0;
+  heap_0.val.custom_type.val = 0;
+  heap_1.val.custom_type.val = 1;
+  heap_2.val.custom_type.val = 2;
+
+  assert(s.getCustomHeapVariableMap(0) == 0x0);
+  s.push(heap_2);
+  assert(s.getCustomHeapVariableMap(0) == 0x4);
+  s.pop();
+  assert(s.getCustomHeapVariableMap(0) == 0x0);
+  assert(s.getCustomHeapVariableMap(32) == 0x0);
+
+  s.push(heap_1);
+  assert(s.getCustomHeapVariableMap(0) == 0x2);
+  s.push(heap_2);
+  assert(s.getCustomHeapVariableMap(0) == 0x6);
+  s.pop();
+  assert(s.getCustomHeapVariableMap(0) == 0x2);
+  s.push(heap_0);
+  assert(s.getCustomHeapVariableMap(0) == 0x3);
+  s.push(heap_2);
+  assert(s.getCustomHeapVariableMap(0) == 0x7);
+  assert(s.getCustomHeapVariableMap(32) == 0x0);
+
+  s.pop();
+  assert(s.getCustomHeapVariableMap(0) == 0x3);
+  s.pop();
+  assert(s.getCustomHeapVariableMap(0) == 0x2);
+  s.pop();
+  assert(s.getCustomHeapVariableMap(0) == 0x0);
+}
 }
 
 int main() {
   bitsy_python::initvars();
   bitsy_python::test1();
   bitsy_python::test2();
+  bitsy_python::testCustomHeapVaiable();
   printf(__FILE__ " passed\n");
   return 0;
 }

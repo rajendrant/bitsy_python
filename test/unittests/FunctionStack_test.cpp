@@ -151,12 +151,40 @@ void testvarmultiple() {
   assert(f.is_empty());
 }
 
+void testCustomHeapVaiable() {
+  Variable heap_0, heap_1, heap_2;
+  heap_0.type = Variable::CUSTOM;
+  heap_0.val.custom_type.type = Variable::CustomType::STRING;
+  heap_1 = heap_2 = heap_0;
+  heap_0.val.custom_type.val = 0;
+  heap_1.val.custom_type.val = 1;
+  heap_2.val.custom_type.val = 2;
+
+  assert(f.is_empty());
+  f.setup_function_call(0, 5, ins_ptr);
+  assert(f.getCustomHeapVariableMap(0) == 0x0);
+  f.setNthVariable(0, heap_0);
+  assert(f.getCustomHeapVariableMap(0) == 0x1);
+  f.setNthVariable(1, heap_1);
+  assert(f.getCustomHeapVariableMap(0) == 0x3);
+
+  f.setup_function_call(0, 3, ins_ptr);
+  assert(f.getCustomHeapVariableMap(0) == 0x3);
+  f.setNthVariable(0, heap_2);
+  assert(f.getCustomHeapVariableMap(0) == 0x7);
+
+  f.return_function(&ins_ptr);
+  f.return_function(&ins_ptr);
+  assert(f.getCustomHeapVariableMap(0) == 0x0);
+}
+
 void test_all() {
   initvars();
   test1();
   test2();
   testvar1();
   testvarmultiple();
+  testCustomHeapVaiable();
 }
 
 }

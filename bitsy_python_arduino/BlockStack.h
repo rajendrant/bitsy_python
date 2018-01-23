@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 #include "bitsylimit.h"
+#include "bitsy_alloc.h"
 
 namespace bitsy_python {
 
@@ -15,9 +16,11 @@ class BlockStack {
   uint8_t *top() const;
   uint8_t blocksize() const;
 
+  bool getNextBlock(uint32_t *id, uint8_t **ret) const;
+
  private:
   friend class BlockStackTest;
-  uint8_t GetSizeForTesting() const;
+  Block* GetBlocksForTesting() const;
 
   uint8_t _top : BITS_PER_BLOCK_ID;
 };

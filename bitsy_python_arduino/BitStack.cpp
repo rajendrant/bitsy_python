@@ -33,4 +33,15 @@ uint8_t BitStack::popThreeBits() {
   pos -= 3;
   return GET_3BIT_AT_POS(bytes[pos/5], ((pos%5)*3));
 }
+
+bool BitStack::getNextThreeBits(uint8_t *ret, uint32_t *p) const {
+  if (*p==INVALID_ITERATOR)
+    *p=0;
+  if (*p >= pos)
+    return false;
+  *ret = GET_3BIT_AT_POS(bytes[*p/5], ((*p%5)*3));
+  *p += 3;
+  return true;
+}
+
 }
