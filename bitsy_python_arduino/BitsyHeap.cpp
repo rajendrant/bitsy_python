@@ -5,10 +5,9 @@
 #include <string.h>
 
 #include "bitsy_alloc.h"
+#include "gc.h"
 
 namespace bitsy_python {
-
-#define INVALID_VARID 0xFF
 
 BitsyHeapHeader::BitsyHeapHeader() {
   assert(sizeof(BitsyHeapHeader::Header)==3);
@@ -59,6 +58,12 @@ BitsyHeap::~BitsyHeap() {
 BitsyHeap::var_id_t BitsyHeap::CreateVar(uint8_t size, uint8_t **val) {
   uint16_t start;
   uint8_t id;
+
+  assert(size>0);
+
+  // Attempt to garbage collect before creating a new heap variable.
+  gc();
+
   if (hdr.free_id != INVALID_VARID) {
     // TODO(rajendrant): Use the free ids only after certain (>100) variables
     // have been used.
@@ -94,6 +99,8 @@ uint8_t BitsyHeap::GetVar(BitsyHeap::var_id_t id, uint8_t **val) const {
 
 uint8_t* BitsyHeap::ExtendVar(BitsyHeap::var_id_t id, uint8_t *val,
                           uint8_t new_size) {
+  assert(new_size>0);
+
   uint16_t start, rem;
   uint8_t old_size = hdr.get(id, &start, &rem);
   hdr.extend(id, new_size-old_size);
@@ -105,6 +112,7 @@ uint8_t* BitsyHeap::ExtendVar(BitsyHeap::var_id_t id, uint8_t *val,
 }
 
 void BitsyHeap::FreeVar(var_id_t id) {
+  assert(id < hdr.last);
   // Create a link list of free variable ids.
   uint8_t *ptr;
   GetVar(id, &ptr);

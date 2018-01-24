@@ -75,7 +75,7 @@ Variable FunctionStack::getNthVariable(uint8_t n) const {
   return v;
 }
 
-void FunctionStack::setNthVariable(uint8_t n, const Variable v) {
+void FunctionStack::setNthVariable(uint8_t n, const Variable& v) {
   FunctionStackHeader *hdr = (FunctionStackHeader*)(stack+start);
   assert(n < hdr->var_count);
   uint16_t pre = start + HDR_START + HDR_SIZE_FOR_VARS(stack[start]);

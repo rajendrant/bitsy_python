@@ -9,8 +9,9 @@
 
 namespace bitsy_python {
 
-// TODO(rajendrant): Move this to inside BitsyPythonVM class.
 extern BitsyHeap bitsy_heap;
+extern ExecStack exec_stack;
+extern FunctionStack function_stack;
 
 class BitsyPythonVM {
  public:
@@ -27,8 +28,6 @@ class BitsyPythonVM {
  private:
   void binary_arithmetic(uint8_t ins);
 
-  ExecStack exec_stack;
-  FunctionStack function_stack;
   Program prog;
 };
 }

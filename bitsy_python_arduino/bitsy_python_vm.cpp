@@ -13,6 +13,8 @@
 namespace bitsy_python {
 
 BitsyHeap bitsy_heap;
+ExecStack exec_stack;
+FunctionStack function_stack;
 
 #ifdef DESKTOP
 BitsyPythonVM::BitsyPythonVM(const char *fname)

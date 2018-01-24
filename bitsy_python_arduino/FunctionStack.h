@@ -16,7 +16,7 @@ class FunctionStack {
   bool return_function(uint16_t *old_ins_ptr);
 
   Variable getNthVariable(uint8_t n) const;
-  void setNthVariable(uint8_t n, const Variable v);
+  void setNthVariable(uint8_t n, const Variable& v);
 
   uint32_t getCustomHeapVariableMap(uint8_t start_id) const;
 
