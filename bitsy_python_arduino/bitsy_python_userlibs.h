@@ -25,9 +25,7 @@ void BITSY_PYTHON_PRINT_VAR(bitsy_python::BitsyHeap &heap, const Variable& v) {
 #elif defined(ENABLE_BITSY_USERLIB_SERIAL)
     Serial.print(v.as_float());
 #endif
-  } else if (v.type == Variable::CUSTOM &&
-             (v.val.custom_type.type == Variable::CustomType::CHARACTER ||
-              v.val.custom_type.type == Variable::CustomType::STRING)) {
+  } else if (v.type == Variable::CUSTOM) {
     bitsy_python::DataType::Print(heap, v, bitsy_print);
   } else {
 #if defined(DESKTOP)

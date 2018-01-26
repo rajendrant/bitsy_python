@@ -17,6 +17,8 @@ class DataType {
 
   static Variable GetIndex(BitsyHeap &heap, const Variable& v, uint8_t ind);
 
+  static void SetIndex(BitsyHeap &heap, Variable &v, uint8_t ind, const Variable& val);
+
   static void Print(BitsyHeap &heap, const Variable& v, void (*print)(char));
 
   BitsyHeap::var_id_t id;

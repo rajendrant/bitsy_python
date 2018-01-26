@@ -1,7 +1,6 @@
 #include "FunctionStack.h"
 
 #include <assert.h>
-#include <stdio.h>
 #include <string.h>
 
 #include "bitsy_alloc.h"
@@ -42,7 +41,7 @@ void FunctionStack::setup_function_call(uint8_t args, uint8_t vars,
 bool FunctionStack::return_function(uint16_t *old_ins_ptr) {
   top = start;
   FunctionStackHeader *hdr = (FunctionStackHeader*)(stack+start);
-  old_ins_ptr = &hdr->ins_ptr;
+  *old_ins_ptr = hdr->ins_ptr;
   start = hdr->start;
   while (top_block_size() > top + 100) {
     top_block_free();

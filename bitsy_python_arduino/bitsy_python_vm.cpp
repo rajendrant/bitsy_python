@@ -309,9 +309,12 @@ bool BitsyPythonVM::executeOneStep() {
           exec_stack.pop(), (uint16_t)arg.as_int16()));
       break;
     }
-    case STORE_SUBSCR:
-      assert(false);
+    case STORE_SUBSCR: {
+      auto v1 = exec_stack.pop();
+      auto v2 = exec_stack.pop();
+      DataType::SetIndex(bitsy_heap, v2, v1.as_uint8(), exec_stack.pop());
       break;
+    }
     default: {
       Variable tmp_ins;
       BITSY_PYTHON_PRINT("UNSUPPORTED INS ");

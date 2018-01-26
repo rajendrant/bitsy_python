@@ -1,7 +1,8 @@
 def main():
-    s=bytearray(4)
+    s=bytearray(1)
+    s[0]='A'
     print s
-    iterate()
+    #iterate()
     indexing()
     length()
 
@@ -15,12 +16,12 @@ def indexing():
     s[0]='a'
     s[1]='b'
     s[2]='c'
-    print s[0]
-    print s[1]
-    print s[2]
+    s[3]='d'
+    print s
     s[0]='A'
     s[1]='B'
     s[2]='C'
+    s[3]='D'
     print s
 
 def length():
