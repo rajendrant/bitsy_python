@@ -2,12 +2,16 @@ def main():
     s=bytearray(1)
     s[0]='A'
     print s
-    #iterate()
+    iterate()
     indexing()
     length()
 
 def iterate():
     s=bytearray(4)
+    s[0]='1'
+    s[1]='2'
+    s[2]='3'
+    s[3]='4'
     for ch in s:
         print ch
 

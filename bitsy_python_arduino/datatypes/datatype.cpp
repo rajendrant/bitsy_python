@@ -2,8 +2,10 @@
 
 #include <assert.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "../bitsy_python_vm.h"
+#include "iter.h"
 
 namespace bitsy_python {
 
@@ -28,6 +30,9 @@ Variable DataType::CreateForType(BitsyHeap &heap, uint8_t t, uint8_t argcount, V
       v.set_CustomType(t, id);
       break;
     }
+    case Variable::CustomType::ITER:
+      assert(argcount == 1);
+      return IterCreate(args[0]);
     default:
       assert(false);
   }
@@ -70,6 +75,8 @@ void DataType::SetIndex(BitsyHeap &heap, Variable &v, uint8_t ind, const Variabl
         var[ind] = val.as_uint8();
       }
       break;
+    case Variable::CustomType::STRING:
+      // TypeError: 'str' object does not support item assignment
     default:
       assert(false);
   }
@@ -99,6 +106,12 @@ void DataType::Print(BitsyHeap &heap, const Variable &v, void (*print)(char)) {
     case Variable::CustomType::CHARACTER:
       print((char)v.val.custom_type.val);
       return;
+    case Variable::CustomType::INT12: {
+      char buf[5];
+      uint8_t no=snprintf(buf, 5, "%d", v.val.custom_type.val);
+      for(uint8_t i=0; i<no; i++) print(buf[i]);
+      return;
+    }
   }
 
   uint8_t *var;
@@ -109,9 +122,6 @@ void DataType::Print(BitsyHeap &heap, const Variable &v, void (*print)(char)) {
       break;
     case Variable::CustomType::STRING:
       for (uint8_t i = 0; i < len - 1; i++) print(var[i]);
-      break;
-    case Variable::CustomType::CHARACTER:
-      // Already handled above.
       break;
     default:
       assert(false);

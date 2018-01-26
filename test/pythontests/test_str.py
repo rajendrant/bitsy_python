@@ -1,7 +1,7 @@
 def main():
     s='123'
     print s
-    #iterate()
+    iterate()
     indexing()
     length()
 
@@ -15,6 +15,7 @@ def indexing():
     print s[0]
     print s[1]
     print s[2]
+    print s
 
 def length():
     s='abcd'

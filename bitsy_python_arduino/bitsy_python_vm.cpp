@@ -6,6 +6,7 @@
 #include "bitsy_alloc.h"
 #include "Builtins.h"
 #include "datatypes/datatype.h"
+#include "datatypes/iter.h"
 #include "instructions.h"
 #include "userlibs/userlibs.h"
 #include "variable.h"
@@ -295,6 +296,23 @@ bool BitsyPythonVM::executeOneStep() {
     case JUMP_ABSOLUTE:
       prog.jump_to_target(arg.as_int16());
       break;
+    case GET_ITER: {
+      Variable argvars[] = {exec_stack.pop()};
+      exec_stack.push(DataType::CreateForType(bitsy_heap,
+            Variable::CustomType::ITER, 1, argvars));
+      break;
+    }
+    case FOR_ITER: {
+      Variable iter, elem;
+      iter = exec_stack.pop();
+      if(IterForLoop(iter, &elem)) {
+        exec_stack.push(iter);
+        exec_stack.push(elem);
+      } else {
+        prog.jump_to_target(arg.as_int16());
+      }
+      break;
+    }
     /*case SETUP_LOOP:
     case POP_BLOCK:
         break;
