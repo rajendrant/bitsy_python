@@ -21,6 +21,8 @@ class DataType {
 
   static void Print(BitsyHeap &heap, const Variable& v, void (*print)(char));
 
+  static void updateUsedContainers(uint8_t start_id, const Variable &v, uint32_t *map);
+
   BitsyHeap::var_id_t id;
 
  private:

@@ -66,7 +66,7 @@ void BitsyPythonVM::binary_arithmetic(uint8_t ins) {
       break;
     case BINARY_FLOOR_DIVIDE:
     case INPLACE_FLOOR_DIVIDE:
-      ret.set_float((int32_t)(v2.as_float() / v1.as_float()));
+      ret.set_int32((int32_t)(v2.as_float() / v1.as_float()));
       break;
 
     case BINARY_LSHIFT:
@@ -298,8 +298,11 @@ bool BitsyPythonVM::executeOneStep() {
       break;
     case GET_ITER: {
       Variable argvars[] = {exec_stack.pop()};
-      exec_stack.push(DataType::CreateForType(bitsy_heap,
-            Variable::CustomType::ITER, 1, argvars));
+      exec_stack.push(argvars[0]);
+      auto v=DataType::CreateForType(bitsy_heap,
+              Variable::CustomType::ITER, 1, argvars);
+      exec_stack.pop();
+      exec_stack.push(v);
       break;
     }
     case FOR_ITER: {

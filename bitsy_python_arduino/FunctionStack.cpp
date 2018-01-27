@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "bitsy_alloc.h"
+#include "gc.h"
 
 namespace bitsy_python {
 
@@ -110,11 +111,7 @@ uint32_t FunctionStack::getCustomHeapVariableMap(uint8_t start_id) const {
         Variable var;
         var.type = Variable::CUSTOM;
         memcpy(&var.val, stack + pre, size);
-        if (var.is_custom_heap_type() &&
-            var.val.custom_type.val>=start_id &&
-            var.val.custom_type.val<start_id+32) {
-          map |= 0x1<<(var.val.custom_type.val-start_id);
-        }
+        updateCustomHeapVariableMap(start_id, var, &map);
       }
       pre += size;
     }

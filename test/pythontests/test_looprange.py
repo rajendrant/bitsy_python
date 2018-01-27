@@ -24,7 +24,19 @@ def print_odds():
 
 def print_primes():
     for i in range(3,100):
-        for j in range(3, i//2):
+        is_prime = True
+        for j in range(2, i//2):
+            if not i%j:
+                is_prime = False
+        if is_prime:
+            print i
+
+"""
+# below is not working
+def print_primes():
+    for i in range(3,12):
+        for j in range(2, i//2):
             if not i%j: break
         else:
             print i
+"""

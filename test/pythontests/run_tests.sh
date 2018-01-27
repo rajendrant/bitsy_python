@@ -22,6 +22,7 @@ python main_helper.py ${var} > expected.txt
 
 python $BYTECODEGENDIR/main.py ${var} ${var}.bitsy
 $BUILD/bytecoderunner.out ${var}.bitsy > actual.txt
+
 diff -Z expected.txt actual.txt | head -30
 
 if [ $? -ne 0 ]; then

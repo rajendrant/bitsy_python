@@ -25,8 +25,8 @@ uint8_t Program::get_next_instruction(Variable *arg) {
   uint8_t global_type = 0;
   if (ins == LOAD_GLOBAL || ins == STORE_GLOBAL || ins == DELETE_GLOBAL) {
     // 2 bit indicates whether its a function, global, builtin, module.
-    global_type = bits.get_bit8(ins_ptr, 2);
-    ins_ptr += 2;
+    global_type = bits.get_bit8(ins_ptr, 3);
+    ins_ptr += 3;
   }
   if (is_instr_arg(ins)) {
     *arg = get_number();
@@ -46,6 +46,9 @@ uint8_t Program::get_next_instruction(Variable *arg) {
         break;
       case 3:
         *arg = Variable::ModuleVariable(arg->as_int16());
+        break;
+      case 4:
+        // True or False
         break;
       default:
         assert(false);

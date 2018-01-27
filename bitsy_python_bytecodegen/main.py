@@ -275,19 +275,22 @@ def dump_code(f, globalls, functions, modules, newcode):
     elif insname.endswith('_GLOBAL'):
       var = f.__code__.co_names[var]
       if var in globalls:
-        newcode.append(bitstring.BitArray(bin='00'))
+        newcode.append(bitstring.BitArray(bin='000'))
         const_encode(globalls[var], newcode)
       elif var in functions:
-        newcode.append(bitstring.BitArray(bin='01'))
+        newcode.append(bitstring.BitArray(bin='001'))
         const_encode(functions[var], newcode)
       elif var in builtins:
-        newcode.append(bitstring.BitArray(bin='10'))
+        newcode.append(bitstring.BitArray(bin='010'))
         const_encode(builtins[var], newcode)
       elif 'userlibs.'+var in modules:
         assert('userlibs.'+var in userlibsgen.userlibs)
         modules_stack.insert(0, modules['userlibs.'+var])
-        newcode.append(bitstring.BitArray(bin='11'))
+        newcode.append(bitstring.BitArray(bin='011'))
         const_encode(userlibsgen.userlibs['userlibs.'+var]['id'], newcode)
+      elif var in ('True', 'False'):
+        newcode.append(bitstring.BitArray(bin='100'))
+        const_encode(var=='True', newcode)
       else:
         print var
         assert False

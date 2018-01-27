@@ -1,5 +1,7 @@
 #include "ExecStack.h"
 
+#include "gc.h"
+
 namespace bitsy_python {
 
 void ExecStack::push(const Variable &v) {
@@ -29,11 +31,8 @@ uint32_t ExecStack::getCustomHeapVariableMap(uint8_t start_id) const {
       ((uint8_t *)&var.val)[i] = bytes[byteind];
       byteind++;
     }
-    if (bits == Variable::CUSTOM && var.is_custom_heap_type() &&
-        var.val.custom_type.val>=start_id &&
-        var.val.custom_type.val<start_id+32) {
-      map |= 0x1<<(var.val.custom_type.val-start_id);
-    }
+    if (bits == Variable::CUSTOM)
+      updateCustomHeapVariableMap(start_id, var, &map);
   }
   return map;
 }

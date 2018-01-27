@@ -33,6 +33,28 @@ Variable DataType::CreateForType(BitsyHeap &heap, uint8_t t, uint8_t argcount, V
     case Variable::CustomType::ITER:
       assert(argcount == 1);
       return IterCreate(args[0]);
+    case Variable::CustomType::RANGE: {
+      int32_t start=0, end, inc=1;
+      if (argcount==1) {
+        end = args[0].as_int32();
+      } else if (argcount==2) {
+        start = args[0].as_int32();
+        end = args[1].as_int32();
+      } else if (argcount==3) {
+        start = args[0].as_int32();
+        end = args[1].as_int32();
+        inc = args[2].as_int32();
+      } else {
+        assert(false);
+      }
+      uint32_t *var;
+      auto id=heap.CreateVar(12, (uint8_t**)&var);
+      v.set_CustomType(t, id);
+      var[0]=start;
+      var[1]=end;
+      var[2]=inc;
+      break;
+    }
     default:
       assert(false);
   }
@@ -127,4 +149,26 @@ void DataType::Print(BitsyHeap &heap, const Variable &v, void (*print)(char)) {
       assert(false);
   }
 }
+
+// static
+void DataType::updateUsedContainers(uint8_t start_id, const Variable &v, uint32_t *map) {
+  assert(v.type == Variable::CUSTOM);
+  switch (v.val.custom_type.type) {
+    case Variable::CustomType::ITER: {
+      uint16_t *val;
+      bitsy_heap.GetVar(v.val.custom_type.val, (uint8_t**)&val);
+      Variable iter;
+      iter.type = Variable::CUSTOM;
+      memcpy(&iter.val.custom_type, val, 2);
+      if (iter.is_custom_heap_type() && iter.val.custom_type.val>=start_id &&
+          iter.val.custom_type.val<start_id+32) {
+        *map |= 0x1<<(iter.val.custom_type.val-start_id);
+      }
+      break;
+    }
+    case Variable::CustomType::LIST:
+      break;
+  }
+}
+
 }
