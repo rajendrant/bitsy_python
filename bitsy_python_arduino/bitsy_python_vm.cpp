@@ -275,21 +275,17 @@ bool BitsyPythonVM::executeOneStep() {
       jump_arithmetic(ins, arg.as_int16());
       break;
 
+    case LOAD_FAST:
+      arg = function_stack.getNthVariable(arg.as_uint8());
     case LOAD_CONST:
+    case LOAD_GLOBAL:
       exec_stack.push(arg);
       break;
-    case LOAD_FAST:
-      exec_stack.push(function_stack.getNthVariable(arg.as_int32()));
-      break;
     case STORE_FAST:
-      function_stack.setNthVariable(arg.as_int32(), exec_stack.pop());
+      function_stack.setNthVariable(arg.as_uint8(), exec_stack.pop());
       break;
     case DELETE_FAST:
       // TODO - support needed ?
-      break;
-
-    case LOAD_GLOBAL:
-      exec_stack.push(arg);
       break;
 
     case CALL_FUNCTION: {
@@ -339,14 +335,13 @@ bool BitsyPythonVM::executeOneStep() {
     case PRINT_NEWLINE:
       BITSY_PYTHON_PRINT("\n");
       break;
-    case GET_ITER: {
-      Variable argvars[] = {exec_stack.pop()};
-      exec_stack.push(argvars[0]);
-      auto v=DataType::CreateForType(Variable::CustomType::ITER, 1, argvars);
+    case GET_ITER:
+      arg = exec_stack.pop();
+      exec_stack.push(arg);
+      arg = DataType::CreateForType(Variable::CustomType::ITER, 1, &arg);
       exec_stack.pop();
-      exec_stack.push(v);
+      exec_stack.push(arg);
       break;
-    }
     case FOR_ITER: {
       Variable iter, elem;
       iter = exec_stack.pop();

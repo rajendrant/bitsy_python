@@ -47,7 +47,7 @@ uint8_t Program::get_next_instruction(Variable *arg) {
         *arg = Variable::ModuleVariable(arg->as_int16());
         break;
       case 4:
-        // True or False
+        // None or True or False
         break;
       default:
         BITSY_ASSERT(false);
@@ -62,7 +62,7 @@ uint8_t Program::get_next_instruction(Variable *arg) {
     // case CONTINUE_LOOP:
     // case SETUP_LOOP:
     case FOR_ITER:
-      // case BREAK_LOOP:
+    // case BREAK_LOOP:
       arg->set_int16(bits.get_bit16(ins_ptr, 10));
       ins_ptr += 10;
       break;
