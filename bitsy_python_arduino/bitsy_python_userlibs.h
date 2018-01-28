@@ -18,7 +18,7 @@ void BITSY_PYTHON_PRINT(const char* str) {
 #endif
 }
 
-void BITSY_PYTHON_PRINT_VAR(bitsy_python::BitsyHeap &heap, const Variable& v) {
+void BITSY_PYTHON_PRINT_VAR(const Variable& v) {
   if (v.type == Variable::FLOAT) {
 #if defined(DESKTOP)
     printf("%g", v.as_float());
@@ -26,7 +26,7 @@ void BITSY_PYTHON_PRINT_VAR(bitsy_python::BitsyHeap &heap, const Variable& v) {
     Serial.print(v.as_float());
 #endif
   } else if (v.type == Variable::CUSTOM) {
-    bitsy_python::DataType::Print(heap, v, bitsy_print);
+    bitsy_python::DataType::Print(v, bitsy_print);
   } else {
 #if defined(DESKTOP)
     printf("%d", v.as_int32());

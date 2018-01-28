@@ -16,7 +16,7 @@ enum BitsyBuiltin {
   LEN,
 };
 
-Variable handle_builtin_call(BitsyHeap &heap, BitsyBuiltin type, uint8_t argcount,
+Variable handle_builtin_call(BitsyBuiltin type, uint8_t argcount,
                              Variable arg[]);
 }
 

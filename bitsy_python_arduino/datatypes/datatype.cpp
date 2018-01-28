@@ -3,29 +3,30 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "bitsylimit.h"
 #include "../bitsy_python_vm.h"
 #include "iter.h"
 
 namespace bitsy_python {
 
 // static
-Variable DataType::CreateStr(BitsyHeap &heap, const char *str, uint8_t len) {
+Variable DataType::CreateStr(const char *str, uint8_t len) {
   Variable v;
   uint8_t *var;
-  uint8_t id = heap.CreateVar(len, &var);
+  uint8_t id = bitsy_heap.CreateVar(len, &var);
   strncpy((char *)var, str, len);
   v.set_CustomType(Variable::CustomType::STRING, id);
   return v;
 }
 
 // static
-Variable DataType::CreateForType(BitsyHeap &heap, uint8_t t, uint8_t argcount, Variable args[]) {
+Variable DataType::CreateForType(uint8_t t, uint8_t argcount, Variable args[]) {
   Variable v;
   switch (t) {
     case Variable::CustomType::BYTEARRAY: {
       BITSY_ASSERT(argcount == 1);
       uint8_t *var;
-      uint8_t id = heap.CreateVar(args[0].as_int16(), &var);
+      uint8_t id = bitsy_heap.CreateVar(args[0].as_int16(), &var);
       v.set_CustomType(t, id);
       break;
     }
@@ -48,7 +49,7 @@ Variable DataType::CreateForType(BitsyHeap &heap, uint8_t t, uint8_t argcount, V
         break;
       }
       uint32_t *var;
-      auto id=heap.CreateVar(12, (uint8_t**)&var);
+      auto id=bitsy_heap.CreateVar(12, (uint8_t**)&var);
       v.set_CustomType(t, id);
       var[0]=start;
       var[1]=end;
@@ -62,11 +63,11 @@ Variable DataType::CreateForType(BitsyHeap &heap, uint8_t t, uint8_t argcount, V
 }
 
 // static
-Variable DataType::GetIndex(BitsyHeap &heap, const Variable &v, uint8_t ind) {
+Variable DataType::GetIndex(const Variable &v, uint8_t ind) {
   Variable ret;
   BITSY_ASSERT(v.type == Variable::CUSTOM);
   uint8_t *var;
-  uint8_t len = heap.GetVar(v.val.custom_type.val, &var);
+  uint8_t len = bitsy_heap.GetVar(v.val.custom_type.val, &var);
   BITSY_ASSERT(ind < len);
   switch (v.val.custom_type.type) {
     case Variable::CustomType::BYTEARRAY:
@@ -83,16 +84,16 @@ Variable DataType::GetIndex(BitsyHeap &heap, const Variable &v, uint8_t ind) {
 }
 
 // static
-void DataType::SetIndex(BitsyHeap &heap, Variable &v, uint8_t ind, const Variable& val) {
+void DataType::SetIndex(Variable &v, uint8_t ind, const Variable& val) {
   BITSY_ASSERT(v.type == Variable::CUSTOM);
   uint8_t *var;
-  uint8_t len = heap.GetVar(v.val.custom_type.val, &var);
+  uint8_t len = bitsy_heap.GetVar(v.val.custom_type.val, &var);
   BITSY_ASSERT(ind < len);
   switch (v.val.custom_type.type) {
     case Variable::CustomType::BYTEARRAY:
       if (val.type == Variable::CUSTOM &&
           val.val.custom_type.type == Variable::CustomType::STRING) {
-        var[ind] = GetIndex(heap, val, 0).as_uint8();
+        var[ind] = GetIndex(val, 0).as_uint8();
       } else {
         var[ind] = val.as_uint8();
       }
@@ -105,10 +106,10 @@ void DataType::SetIndex(BitsyHeap &heap, Variable &v, uint8_t ind, const Variabl
 }
 
 // static
-uint16_t DataType::Len(BitsyHeap &heap, const Variable &v) {
+uint16_t DataType::Len(const Variable &v) {
   BITSY_ASSERT(v.type == Variable::CUSTOM);
   uint8_t *var;
-  uint8_t len = heap.GetVar(v.val.custom_type.val, &var);
+  uint8_t len = bitsy_heap.GetVar(v.val.custom_type.val, &var);
   switch (v.val.custom_type.type) {
     case Variable::CustomType::CHARACTER:
       return 1;
@@ -123,22 +124,24 @@ uint16_t DataType::Len(BitsyHeap &heap, const Variable &v) {
 }
 
 // static
-void DataType::Print(BitsyHeap &heap, const Variable &v, void (*print)(char)) {
+void DataType::Print(const Variable &v, void (*print)(char)) {
   BITSY_ASSERT(v.type == Variable::CUSTOM);
   switch (v.val.custom_type.type) {
     case Variable::CustomType::CHARACTER:
       print((char)v.val.custom_type.val);
       return;
     case Variable::CustomType::INT12: {
+#ifdef DESKTOP
       char buf[5];
       uint8_t no=snprintf(buf, 5, "%d", v.val.custom_type.val);
       for(uint8_t i=0; i<no; i++) print(buf[i]);
+#endif
       return;
     }
   }
 
   uint8_t *var;
-  uint8_t len = heap.GetVar(v.val.custom_type.val, &var);
+  uint8_t len = bitsy_heap.GetVar(v.val.custom_type.val, &var);
   switch (v.val.custom_type.type) {
     case Variable::CustomType::BYTEARRAY:
       for (uint8_t i = 0; i < len; i++) print(var[i]);

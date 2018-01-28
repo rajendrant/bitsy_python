@@ -29,71 +29,93 @@ void BitsyPythonVM::binary_arithmetic(uint8_t ins) {
   auto v1 = exec_stack.pop();
   auto v2 = exec_stack.pop();
   Variable ret;
+  bool is_float = v1.type == Variable::FLOAT || v2.type == Variable::FLOAT;
+  float f1=v1.as_float(), f2=v2.as_float(), fret;
+  int i1=v1.as_int32(), i2=v2.as_int32(), iret;
+  bool done=true;
   switch (ins) {
     case BINARY_MULTIPLY:
     case INPLACE_MULTIPLY:
-      if (v1.type == Variable::FLOAT || v2.type == Variable::FLOAT)
-        ret.set_float(v1.as_float() * v2.as_float());
+      if (is_float)
+        fret = f2 * f1;
       else
-        ret.set_int32(v1.as_int32() * v2.as_int32());
+        iret = i2 * i1;
       break;
     case BINARY_ADD:
     case INPLACE_ADD:
-      if (v1.type == Variable::FLOAT || v2.type == Variable::FLOAT)
-        ret.set_float(v1.as_float() + v2.as_float());
+      if (is_float)
+        fret = f2 + f1;
       else
-        ret.set_int32(v1.as_int32() + v2.as_int32());
+        iret = i2 + i1;
       break;
     case BINARY_SUBTRACT:
     case INPLACE_SUBTRACT:
-      if (v1.type == Variable::FLOAT || v2.type == Variable::FLOAT)
-        ret.set_float(v2.as_float() - v1.as_float());
+      if (is_float)
+        fret = f2 - f1;
       else
-        ret.set_int32(v2.as_int32() - v1.as_int32());
-      break;
-    case BINARY_MODULO:
-    case INPLACE_MODULO:
-      // Modulo operation only applicable for ints.
-      ret.set_int32(v2.as_int32() % v1.as_int32());
+        iret = i2 - i1;
       break;
     case BINARY_TRUE_DIVIDE:
     case INPLACE_TRUE_DIVIDE:
-      if (v1.type == Variable::FLOAT || v2.type == Variable::FLOAT)
-        ret.set_float(v2.as_float() / v1.as_float());
+      if (is_float)
+        fret = f2 / f1;
       else
-        ret.set_int32(v2.as_int32() / v1.as_int32());
+        iret = i2 / i1;
+      break;
+    default:
+      done = false;
+  }
+  if (done) {
+    if (is_float) ret.set_float(fret);
+    else ret.set_int32(iret);
+    goto end;
+  }
+  done = true;
+  switch (ins) {
+    case BINARY_MODULO:
+    case INPLACE_MODULO:
+      // Modulo operation only applicable for ints.
+      iret = i2 % i1;
       break;
     case BINARY_FLOOR_DIVIDE:
     case INPLACE_FLOOR_DIVIDE:
-      ret.set_int32((int32_t)(v2.as_float() / v1.as_float()));
+      iret = (int32_t)(f2 / f1);
       break;
-
     case BINARY_LSHIFT:
     case INPLACE_LSHIFT:
-      ret.set_int32(v2.as_int32() << v1.as_int32());
+      iret = i2 >> i1;
       break;
     case BINARY_RSHIFT:
     case INPLACE_RSHIFT:
-      ret.set_int32(v2.as_int32() >> v1.as_int32());
+      iret = i2 << i1;
       break;
     case BINARY_AND:
     case INPLACE_AND:
-      ret.set_int32(v2.as_int32() & v1.as_int32());
+      iret = i2 & i1;
       break;
     case BINARY_XOR:
     case INPLACE_XOR:
-      ret.set_int32(v2.as_int32() ^ v1.as_int32());
+      iret = i2 ^ i1;
       break;
     case BINARY_OR:
     case INPLACE_OR:
-      ret.set_int32(v2.as_int32() | v1.as_int32());
+      iret = i2 | i1;
       break;
+    default:
+      done = false;
+  }
+  if (done) {
+    ret.set_int32(iret);
+    goto end;
+  }
+  switch (ins) {
     case BINARY_SUBSCR:
-      ret = DataType::GetIndex(bitsy_heap, v2, v1.as_uint8());
+      ret = DataType::GetIndex(v2, v1.as_uint8());
       break;
     default:
       BITSY_ASSERT(false);
   }
+end:
   exec_stack.push(ret);
 }
 
@@ -216,7 +238,7 @@ bool BitsyPythonVM::executeOneStep() {
               module_id, v.val.custom_type.val & 0x3F, argcount, argvars));
       } else if (v.val.custom_type.type ==
                  Variable::CustomType::BUILTIN_FUNCTION) {
-        exec_stack.push(handle_builtin_call(bitsy_heap, (BitsyBuiltin)v.val.custom_type.val,
+        exec_stack.push(handle_builtin_call((BitsyBuiltin)v.val.custom_type.val,
                                             argcount, argvars));
       } else {
         BITSY_ASSERT(false);
@@ -232,7 +254,7 @@ bool BitsyPythonVM::executeOneStep() {
 
     case PRINT_ITEM: {
       auto v = exec_stack.pop();
-      BITSY_PYTHON_PRINT_VAR(bitsy_heap, v);
+      BITSY_PYTHON_PRINT_VAR(v);
       BITSY_PYTHON_PRINT(" ");
       break;
     }
@@ -298,8 +320,7 @@ bool BitsyPythonVM::executeOneStep() {
     case GET_ITER: {
       Variable argvars[] = {exec_stack.pop()};
       exec_stack.push(argvars[0]);
-      auto v=DataType::CreateForType(bitsy_heap,
-              Variable::CustomType::ITER, 1, argvars);
+      auto v=DataType::CreateForType(Variable::CustomType::ITER, 1, argvars);
       exec_stack.pop();
       exec_stack.push(v);
       break;
@@ -332,14 +353,14 @@ bool BitsyPythonVM::executeOneStep() {
     case STORE_SUBSCR: {
       auto v1 = exec_stack.pop();
       auto v2 = exec_stack.pop();
-      DataType::SetIndex(bitsy_heap, v2, v1.as_uint8(), exec_stack.pop());
+      DataType::SetIndex(v2, v1.as_uint8(), exec_stack.pop());
       break;
     }
     default: {
       Variable tmp_ins;
       BITSY_PYTHON_PRINT("UNSUPPORTED INS ");
       tmp_ins.set_int16(ins);
-      BITSY_PYTHON_PRINT_VAR(bitsy_heap, tmp_ins);
+      BITSY_PYTHON_PRINT_VAR(tmp_ins);
       // BITSY_PYTHON_PRINT(get_ins_name(ins));
       BITSY_ASSERT(false);
     }

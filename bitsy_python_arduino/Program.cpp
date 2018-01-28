@@ -127,7 +127,7 @@ Variable Program::get_number() {
         char str[len];
         for (uint8_t i = 0; i < len; i++)
           str[i] = bits.get_bit8(ins_ptr + 4 + 8 + i * 8, 8);
-        v = DataType::CreateStr(bitsy_heap, str, len);
+        v = DataType::CreateStr(str, len);
         ins_ptr += 4 + 8 + len * 8;
         break;
       }
