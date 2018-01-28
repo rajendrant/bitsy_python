@@ -34,10 +34,10 @@ Variable endTransaction(uint8_t argcount, Variable arg[]) {
 Variable transfer(uint8_t argcount, Variable arg[]) {
   Variable ret;
   if (argcount == 1) {
-    ret.set_int16(SPI.transfer(arg[0].as_uint8()));
+    ret.set_uint12(SPI.transfer(arg[0].as_uint8()));
   } else if (argcount == 2) {
     // TODO(rajendrant): Transfer an array of bytes.
-    // ret.set_int16(SPI.transfer(arg[0].as_uint8()));
+    // ret.set_uint12(SPI.transfer(arg[0].as_uint8()));
   }
   return ret;
 }

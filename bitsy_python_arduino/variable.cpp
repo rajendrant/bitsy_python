@@ -7,23 +7,18 @@
 
 Variable::Variable() : type(UINT8) { val.uint8 = 0; }
 
-void Variable::set_int16(int16_t v) {
-  if (v >= 0 && v <= 0xFF) {
+void Variable::set_uint12(uint16_t v) {
+  if (v <= 0xFF) {
     type = UINT8;
     val.uint8 = (uint8_t)v;
-  } else if (abs(v) <= 0x7FFF) {
-    type = INT16;
-    val.int16 = (uint16_t)v;
+  } else if (v <= 0xFFF) {
+    set_CustomType(CustomType::UINT12, v);
   }
 }
 
 void Variable::set_int32(int32_t v) {
-  if (v >= 0 && v <= 0xFF) {
-    type = UINT8;
-    val.uint8 = (uint8_t)v;
-  } else if (abs(v) <= 0x7FFF) {
-    type = INT16;
-    val.int16 = (uint16_t)v;
+  if (v >= 0 && v <= 0xFFF) {
+    set_uint12(v);
   } else {
     type = INT32;
     val.int32 = v;
@@ -36,14 +31,12 @@ void Variable::set_float(float v) {
 }
 
 uint8_t Variable::as_uint8() const {
-  if (type == INT16) return val.int16;
   if (type == UINT8) return val.uint8;
   if (type == CUSTOM) return val.custom_type.val;
   return 0;
 }
 
-int16_t Variable::as_int16() const {
-  if (type == INT16) return val.int16;
+uint16_t Variable::as_uint12() const {
   if (type == UINT8) return val.uint8;
   if (type == CUSTOM) return val.custom_type.val;
   return 0;
@@ -51,7 +44,6 @@ int16_t Variable::as_int16() const {
 
 int32_t Variable::as_int32() const {
   if (type == INT32) return val.int32;
-  if (type == INT16) return val.int16;
   if (type == UINT8) return val.uint8;
   if (type == CUSTOM) return val.custom_type.val;
   return 0;
@@ -59,7 +51,6 @@ int32_t Variable::as_int32() const {
 
 float Variable::as_float() const {
   if (type == INT32) return val.int32;
-  if (type == INT16) return val.int16;
   if (type == UINT8) return val.uint8;
   if (type == FLOAT) return val.float32;
   return 0;
@@ -67,7 +58,6 @@ float Variable::as_float() const {
 
 bool Variable::as_bool() const {
   if (type == INT32) return val.int32;
-  if (type == INT16) return val.int16;
   if (type == UINT8) return val.uint8;
   if (type == FLOAT) return val.float32;
   return 0;
@@ -76,7 +66,7 @@ bool Variable::as_bool() const {
 // static
 Variable Variable::Zero() {
   Variable v;
-  v.set_int16(0);
+  v.set_uint12(0);
   return v;
 }
 
@@ -126,7 +116,6 @@ uint8_t Variable::size() const {
   switch (type) {
     case UINT8:
       return 1;
-    case INT16:
     case CUSTOM:
       return 2;
     case INT32:
@@ -141,7 +130,6 @@ uint8_t Variable::size() const {
 uint8_t Variable::get_extra_bits() const {
   switch (type) {
     case UINT8:
-    case INT16:
     case INT32:
       return 0;
     case FLOAT:
@@ -161,10 +149,7 @@ uint8_t Variable::get_type_from_size_and_extra_bits(uint8_t size,
     case 1:
       return UINT8;
     case 2:
-      if (extra == 0)
-        return INT16;
-      else
-        return CUSTOM;
+      return CUSTOM;
     case 4:
       if (extra == 0)
         return INT32;
@@ -174,6 +159,18 @@ uint8_t Variable::get_type_from_size_and_extra_bits(uint8_t size,
       BITSY_ASSERT(false);
   }
   return 0;
+}
+
+uint8_t Variable::get_size_from_type(uint8_t type) {
+  switch (type) {
+    case UINT8:
+      return 1;
+    case INT32:
+    case FLOAT:
+      return 4;
+  }
+  // case CUSTOM:
+  return 2;
 }
 
 bool Variable::is_custom_heap_type() const {

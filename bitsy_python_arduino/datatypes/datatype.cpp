@@ -26,7 +26,7 @@ Variable DataType::CreateForType(uint8_t t, uint8_t argcount, Variable args[]) {
     case Variable::CustomType::BYTEARRAY: {
       BITSY_ASSERT(argcount == 1);
       uint8_t *var;
-      uint8_t id = bitsy_heap.CreateVar(args[0].as_int16(), &var);
+      uint8_t id = bitsy_heap.CreateVar(args[0].as_uint12(), &var);
       v.set_CustomType(t, id);
       break;
     }
@@ -130,7 +130,7 @@ void DataType::Print(const Variable &v, void (*print)(char)) {
     case Variable::CustomType::CHARACTER:
       print((char)v.val.custom_type.val);
       return;
-    case Variable::CustomType::INT12: {
+    case Variable::CustomType::UINT12: {
 #ifdef DESKTOP
       char buf[5];
       uint8_t no=snprintf(buf, 5, "%d", v.val.custom_type.val);

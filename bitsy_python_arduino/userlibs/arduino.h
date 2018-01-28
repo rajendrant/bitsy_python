@@ -7,7 +7,7 @@ namespace arduino {
 Variable digitalRead(uint8_t argcount, Variable arg[]) {
   if (argcount == 1) {
     Variable ret;
-    ret.set_int16(::digitalRead(arg[0].as_uint8()));
+    ret.set_uint12(::digitalRead(arg[0].as_uint8()));
     return ret;
   }
   return Variable::Zero();
@@ -30,7 +30,7 @@ Variable pinMode(uint8_t argcount, Variable arg[]) {
 Variable analogRead(uint8_t argcount, Variable arg[]) {
   if (argcount == 1) {
     Variable ret;
-    ret.set_int16(::analogRead(arg[0].as_uint8()));
+    ret.set_uint12(::analogRead(arg[0].as_uint8()));
     return ret;
   }
   return Variable::Zero();

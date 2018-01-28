@@ -14,7 +14,8 @@ typedef struct {
 }__attribute__((packed)) FunctionStackHeader;
 
 #define HDR_START sizeof(FunctionStackHeader)
-#define HDR_SIZE_FOR_VARS(v) ((((v)-1) * 2) / 4 + 1)
+#define HDR_SIZE_FOR_VARS(v) (((v)-1) / 4 + 1)
+#define MAX_VAR_SIZE 4
 
 #define stack ((uint8_t *)blocks)
 
@@ -24,9 +25,7 @@ bool FunctionStack::is_empty() { return top == 0; }
 
 void FunctionStack::setup_function_call(uint8_t args, uint8_t vars,
                                         uint16_t old_ins_ptr) {
-  // TODO(rajendrant): top_block_alloc may need to happen in
-  // setNthVariable too.
-  while (top_block_size() < top + HDR_START + vars * 5) {
+  while (top_block_size() < top + HDR_START + HDR_SIZE_FOR_VARS(vars) + vars * MAX_VAR_SIZE) {
     top_block_alloc();
   }
   FunctionStackHeader *hdr = (FunctionStackHeader*)(stack+top);
@@ -65,12 +64,10 @@ Variable FunctionStack::getNthVariable(uint8_t n) const {
   Variable v;
   uint16_t pre = start + HDR_START + HDR_SIZE_FOR_VARS(hdr->var_count);
   for (uint8_t i = 0; i < n; i++) {
-    pre += get_var_hdr(i) + 1;
+    pre += Variable::get_size_from_type(get_var_hdr(i));
   }
-  auto size = get_var_hdr(n) + 1;
-  v.type = Variable::get_type_from_size_and_extra_bits(
-      size, get_var_hdr(n + hdr->var_count));
-  memcpy(&v.val, stack + pre, size);
+  v.type = get_var_hdr(n);
+  memcpy(&v.val, stack + pre, v.size());
   return v;
 }
 
@@ -79,13 +76,12 @@ void FunctionStack::setNthVariable(uint8_t n, const Variable& v) {
   BITSY_ASSERT(n < hdr->var_count);
   uint16_t pre = start + HDR_START + HDR_SIZE_FOR_VARS(stack[start]);
   for (uint8_t i = 0; i < n; i++) {
-    pre += get_var_hdr(i) + 1;
+    pre += Variable::get_size_from_type(get_var_hdr(i));
   }
-  auto old_size = get_var_hdr(n) + 1;
+  auto old_size = Variable::get_size_from_type(get_var_hdr(n));
   auto size = v.size();
-  set_var_hdr(n + hdr->var_count, v.get_extra_bits());
   if (size != old_size) {
-    set_var_hdr(n, size - 1);
+    set_var_hdr(n, v.type);
     memmove(stack + pre + size, stack + pre + old_size, top - pre - old_size);
     if (size > old_size)
       top += size - old_size;
@@ -97,16 +93,14 @@ void FunctionStack::setNthVariable(uint8_t n, const Variable& v) {
 
 uint32_t FunctionStack::getCustomHeapVariableMap(uint8_t start_id) const {
   uint32_t map = 0;
-  for(uint16_t f=start; f<top;) {
+  for(auto f=start; f<top;) {
     FunctionStackHeader *hdr = (FunctionStackHeader*)(stack+f);
     uint16_t pre = f + HDR_START + HDR_SIZE_FOR_VARS(hdr->var_count);
     for(uint8_t v=0; v<hdr->var_count; v++) {
-      uint8_t size, extra;
-      size = ((stack[f + HDR_START + v / 4] >> (2 * (v % 4))) & 0x3) + 1;
-      extra = ((stack[f + HDR_START + (v + hdr->var_count) / 4] >>
-              (2 * ((v + hdr->var_count) % 4))) & 0x3);
-      if (Variable::get_type_from_size_and_extra_bits(size, extra) ==
-          Variable::CUSTOM) {
+      uint8_t size, type;
+      type = ((stack[f + HDR_START + v / 4] >> (2 * (v % 4))) & 0x3);
+      size = Variable::get_size_from_type(type);
+      if (type == Variable::CUSTOM) {
         Variable var;
         var.type = Variable::CUSTOM;
         memcpy(&var.val, stack + pre, size);

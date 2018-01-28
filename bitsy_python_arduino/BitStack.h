@@ -8,12 +8,12 @@ namespace bitsy_python {
 class BitStack {
  public:
   BitStack();
-  void pushThreeBits(uint8_t bits);
-  uint8_t popThreeBits();
-  bool getNextThreeBits(uint8_t *ret, uint32_t *p) const;
+  void pushTwoBits(uint8_t bits);
+  uint8_t popTwoBits();
+  bool getNextTwoBits(uint8_t *ret, uint32_t *p) const;
 
  private:
-  uint16_t *bytes;
+  uint8_t *bytes;
   uint16_t pos;
   uint8_t len;
 };

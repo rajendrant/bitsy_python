@@ -30,7 +30,7 @@ bool IterForLoop(const Variable& iter, Variable *elem) {
   switch(iter_val.type) {
   case Variable::CustomType::BYTEARRAY:
     if(*ind < iter_len) {
-      elem->set_CustomType(Variable::CustomType::INT12, iter_var[*ind]);
+      elem->set_CustomType(Variable::CustomType::UINT12, iter_var[*ind]);
       ret = true;
     }
     break;

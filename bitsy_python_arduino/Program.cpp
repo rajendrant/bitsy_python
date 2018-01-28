@@ -41,10 +41,10 @@ uint8_t Program::get_next_instruction(Variable *arg) {
         break;
       case 2:
         arg->set_CustomType(Variable::CustomType::BUILTIN_FUNCTION,
-                            arg->as_int16());
+                            arg->as_uint12());
         break;
       case 3:
-        *arg = Variable::ModuleVariable(arg->as_int16());
+        *arg = Variable::ModuleVariable(arg->as_uint12());
         break;
       case 4:
         // None or True or False
@@ -63,7 +63,7 @@ uint8_t Program::get_next_instruction(Variable *arg) {
     // case SETUP_LOOP:
     case FOR_ITER:
     // case BREAK_LOOP:
-      arg->set_int16(bits.get_bit16(ins_ptr, 10));
+      arg->set_uint12(bits.get_bit16(ins_ptr, 10));
       ins_ptr += 10;
       break;
   }

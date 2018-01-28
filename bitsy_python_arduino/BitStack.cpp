@@ -6,10 +6,6 @@
 #define SET_2BIT_AT_POS(buf, n, val) \
   ((buf) = ((buf) & ~(0x3 << (n))) | (((val)&0x3) << (n)))
 
-#define GET_3BIT_AT_POS(buf, n) (((buf) >> (n)) & 0x7)
-#define SET_3BIT_AT_POS(buf, n, val) \
-  ((buf) = ((buf) & ~(0x7 << (n))) | (((val)&0x7) << (n)))
-
 namespace bitsy_python {
 
 BitStack::BitStack() {
@@ -18,28 +14,28 @@ BitStack::BitStack() {
   len = 0;
 }
 
-void BitStack::pushThreeBits(uint8_t bits) {
-  if(pos/5==len) {
+void BitStack::pushTwoBits(uint8_t bits) {
+  if(pos/4==len) {
     len += 16;
-    bytes = (uint16_t*) realloc(bytes, len*sizeof(uint16_t));
+    bytes = (uint8_t*) realloc(bytes, len);
     BITSY_ASSERT(bytes);
   }
-  SET_3BIT_AT_POS(bytes[pos/5], ((pos%5)*3), bits);
-  pos += 3;
+  SET_2BIT_AT_POS(bytes[pos/4], pos%4, bits);
+  pos += 2;
 }
 
-uint8_t BitStack::popThreeBits() {
-  pos -= 3;
-  return GET_3BIT_AT_POS(bytes[pos/5], ((pos%5)*3));
+uint8_t BitStack::popTwoBits() {
+  pos -= 2;
+  return GET_2BIT_AT_POS(bytes[pos/4], pos%4);
 }
 
-bool BitStack::getNextThreeBits(uint8_t *ret, uint32_t *p) const {
+bool BitStack::getNextTwoBits(uint8_t *ret, uint32_t *p) const {
   if (*p==INVALID_ITERATOR)
     *p=0;
   if (*p >= pos)
     return false;
-  *ret = GET_3BIT_AT_POS(bytes[*p/5], ((*p%5)*3));
-  *p += 3;
+  *ret = GET_2BIT_AT_POS(bytes[*p/4], *p%4);
+  *p += 2;
   return true;
 }
 

@@ -5,7 +5,7 @@ namespace eeprom {
 Variable read(uint8_t argcount, Variable arg[]) {
   Variable ret;
   if (argcount == 1) {
-    ret.set_int16(EEPROM.read(arg[0].as_uint8()));
+    ret.set_uint12(EEPROM.read(arg[0].as_uint8()));
   }
   return ret;
 }

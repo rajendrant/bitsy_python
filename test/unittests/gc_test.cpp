@@ -14,15 +14,15 @@ class GCTest {
 static std::set<BitsyHeap::var_id_t> getAllHeapVars() {
   std::set<BitsyHeap::var_id_t> ret;
   std::set<BitsyHeap::var_id_t> free_ids;
-  for(BitsyHeap::var_id_t id=bitsy_heap.hdr.free_id; id != INVALID_VARID;) {
+  for(BitsyHeap::var_id_t id=bitsy_heap.free_id; id != INVALID_VARID;) {
     free_ids.insert(id);
     uint8_t *ptr;
-    if (id < bitsy_heap.hdr.last) {
+    if (id < bitsy_heap.lastID()) {
       bitsy_heap.GetVar(id, &ptr);
       id = ptr[0];
     }
   }
-  for(BitsyHeap::var_id_t v=0; v<bitsy_heap.hdr.last; v++) {
+  for(BitsyHeap::var_id_t v=0; v<bitsy_heap.lastID(); v++) {
     if(free_ids.find(v)==free_ids.end())
       ret.insert(v);
   }

@@ -272,7 +272,7 @@ bool BitsyPythonVM::executeOneStep() {
     case JUMP_IF_TRUE_OR_POP:
     case JUMP_IF_FALSE_OR_POP:
     case JUMP_ABSOLUTE:
-      jump_arithmetic(ins, arg.as_int16());
+      jump_arithmetic(ins, arg.as_uint12());
       break;
 
     case LOAD_FAST:
@@ -349,7 +349,7 @@ bool BitsyPythonVM::executeOneStep() {
         exec_stack.push(iter);
         exec_stack.push(elem);
       } else {
-        prog.jump_to_target(arg.as_int16());
+        prog.jump_to_target(arg.as_uint12());
       }
       break;
     }
@@ -357,18 +357,18 @@ bool BitsyPythonVM::executeOneStep() {
     case POP_BLOCK:
         break;
     case BREAK_LOOP:
-        prog.jump_to_target(arg.as_int16());
+        prog.jump_to_target(arg.as_uint12());
         break;
     case CONTINUE_LOOP:
-        prog.jump_to_target(arg.as_int16());
+        prog.jump_to_target(arg.as_uint12());
         break;*/
     case LOAD_ATTR:
       exec_stack.push(Variable::ModuleFunctionVariable(
-          exec_stack.pop(), (uint16_t)arg.as_int16()));
+          exec_stack.pop(), arg.as_uint12()));
       break;
     default:
       BITSY_PYTHON_PRINT("UNSUPPORTED INS ");
-      arg.set_int16(ins);
+      arg.set_uint12(ins);
       BITSY_PYTHON_PRINT_VAR(arg);
       // BITSY_PYTHON_PRINT(get_ins_name(ins));
       BITSY_ASSERT(false);
