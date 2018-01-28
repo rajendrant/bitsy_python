@@ -27,7 +27,9 @@ class BitsyPythonVM {
   bool executeOneStep();
 
  private:
-  void binary_arithmetic(uint8_t ins);
+  void binary_arithmetic(uint8_t ins, uint8_t arg);
+  void unary_arithmetic(uint8_t ins);
+  void jump_arithmetic(uint8_t ins, uint16_t jump);
 
   Program prog;
 };

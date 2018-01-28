@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "bitsylimit.h"
+#include "../bitsylimit.h"
 #include "../bitsy_python_vm.h"
 #include "iter.h"
 
