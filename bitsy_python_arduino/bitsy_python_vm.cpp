@@ -1,6 +1,5 @@
 #include "bitsy_python_vm.h"
 
-#include <assert.h>
 #include <stdio.h>
 
 #include "bitsy_alloc.h"
@@ -93,7 +92,7 @@ void BitsyPythonVM::binary_arithmetic(uint8_t ins) {
       ret = DataType::GetIndex(bitsy_heap, v2, v1.as_uint8());
       break;
     default:
-      assert(false);
+      BITSY_ASSERT(false);
   }
   exec_stack.push(ret);
 }
@@ -195,16 +194,16 @@ bool BitsyPythonVM::executeOneStep() {
 
     case CALL_FUNCTION: {
       uint8_t argcount = arg.as_int32();
-      assert(!(argcount & 0xF0));  // Keyword arguments not supported.
+      BITSY_ASSERT(!(argcount & 0xF0));  // Keyword arguments not supported.
       Variable argvars[argcount];
       for (uint8_t i = 0; i < argcount; i++) {
         argvars[argcount - i - 1] = exec_stack.pop();
       }
       auto v = exec_stack.pop();
-      assert(v.type == Variable::CUSTOM);
+      BITSY_ASSERT(v.type == Variable::CUSTOM);
       if (v.val.custom_type.type == Variable::CustomType::USER_FUNCTION) {
         auto fn = prog.setup_function_call(v.val.custom_type.val);
-        assert(fn.args == argcount);
+        BITSY_ASSERT(fn.args == argcount);
         function_stack.setup_function_call(fn.args, fn.vars, fn.old_ins_ptr);
         for (uint8_t i = 0; i < argcount; i++) {
           function_stack.setNthVariable(i, argvars[i]);
@@ -220,7 +219,7 @@ bool BitsyPythonVM::executeOneStep() {
         exec_stack.push(handle_builtin_call(bitsy_heap, (BitsyBuiltin)v.val.custom_type.val,
                                             argcount, argvars));
       } else {
-        assert(false);
+        BITSY_ASSERT(false);
       }
       break;
     }
@@ -266,7 +265,7 @@ bool BitsyPythonVM::executeOneStep() {
         default:
           // in, not-in, is, is-not, exception-match, BAD
           BITSY_PYTHON_PRINT("COMPARE_OP not supported operator\n");
-          assert(false);
+          BITSY_ASSERT(false);
       }
       exec_stack.push(ret);
       break;
@@ -342,7 +341,7 @@ bool BitsyPythonVM::executeOneStep() {
       tmp_ins.set_int16(ins);
       BITSY_PYTHON_PRINT_VAR(bitsy_heap, tmp_ins);
       // BITSY_PYTHON_PRINT(get_ins_name(ins));
-      assert(false);
+      BITSY_ASSERT(false);
     }
   }
   return true;

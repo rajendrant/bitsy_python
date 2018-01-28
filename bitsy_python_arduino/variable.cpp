@@ -1,6 +1,7 @@
 #include "variable.h"
-#include <assert.h>
 #include <stdlib.h>
+
+#include "bitsylimit.h"
 
 // namespace bitsy_python {
 
@@ -82,7 +83,7 @@ Variable Variable::Zero() {
 // static
 Variable Variable::FunctionVariable(uint8_t id) {
   Variable v;
-  assert(sizeof(v.val.custom_type) == 2);
+  BITSY_ASSERT(sizeof(v.val.custom_type) == 2);
   v.type = Variable::CUSTOM;
   v.val.custom_type.type = Variable::CustomType::USER_FUNCTION;
   v.val.custom_type.val = id;
@@ -91,9 +92,9 @@ Variable Variable::FunctionVariable(uint8_t id) {
 
 // static
 Variable Variable::ModuleVariable(uint8_t id) {
-  assert(id <= 0x3F);
+  BITSY_ASSERT(id <= 0x3F);
   Variable v;
-  assert(sizeof(v.val.custom_type) == 2);
+  BITSY_ASSERT(sizeof(v.val.custom_type) == 2);
   v.type = Variable::CUSTOM;
   v.val.custom_type.type = Variable::CustomType::USER_MODULE;
   v.val.custom_type.val = id;
@@ -102,12 +103,12 @@ Variable Variable::ModuleVariable(uint8_t id) {
 
 // static
 Variable Variable::ModuleFunctionVariable(const Variable& module, uint8_t id) {
-  assert(id <= 0x3f);
-  assert(module.type == Variable::CUSTOM &&
+  BITSY_ASSERT(id <= 0x3f);
+  BITSY_ASSERT(module.type == Variable::CUSTOM &&
          module.val.custom_type.type == Variable::CustomType::USER_MODULE);
-  assert(module.val.custom_type.val <= 0x3F);
+  BITSY_ASSERT(module.val.custom_type.val <= 0x3F);
   Variable v;
-  assert(sizeof(v.val.custom_type) == 2);
+  BITSY_ASSERT(sizeof(v.val.custom_type) == 2);
   v.type = Variable::CUSTOM;
   v.val.custom_type.type = Variable::CustomType::USER_MODULE_FUNCTION;
   v.val.custom_type.val =
@@ -132,8 +133,9 @@ uint8_t Variable::size() const {
     case FLOAT:
       return 4;
     default:
-      assert(false);
+      BITSY_ASSERT(false);
   }
+  return 0;
 }
 
 uint8_t Variable::get_extra_bits() const {
@@ -147,8 +149,9 @@ uint8_t Variable::get_extra_bits() const {
     case CUSTOM:
       return 1;
     default:
-      assert(false);
+      BITSY_ASSERT(false);
   }
+  return 0;
 }
 
 // static
@@ -168,8 +171,9 @@ uint8_t Variable::get_type_from_size_and_extra_bits(uint8_t size,
       else
         return FLOAT;
     default:
-      assert(false);
+      BITSY_ASSERT(false);
   }
+  return 0;
 }
 
 bool Variable::is_custom_heap_type() const {

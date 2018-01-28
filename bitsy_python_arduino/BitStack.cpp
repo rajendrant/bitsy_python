@@ -1,6 +1,5 @@
 #include "BitStack.h"
 
-#include <assert.h>
 #include <stdlib.h>
 
 #define GET_2BIT_AT_POS(buf, n) (((buf) >> (n)) & 0x3)
@@ -23,7 +22,7 @@ void BitStack::pushThreeBits(uint8_t bits) {
   if(pos/5==len) {
     len += 16;
     bytes = (uint16_t*) realloc(bytes, len*sizeof(uint16_t));
-    assert(bytes);
+    BITSY_ASSERT(bytes);
   }
   SET_3BIT_AT_POS(bytes[pos/5], ((pos%5)*3), bits);
   pos += 3;

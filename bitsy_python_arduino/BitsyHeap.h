@@ -36,7 +36,7 @@ class BitsyHeap {
   uint8_t* ExtendVar(var_id_t id, uint8_t *val, uint8_t new_size);
   void FreeVar(var_id_t id);
   uint32_t getFreeIDMap(uint8_t start_id) const;
-  uint8_t max() const { return hdr.last; }
+  uint8_t lastID() const { return hdr.last; }
 
  private:
   friend class GCTest;

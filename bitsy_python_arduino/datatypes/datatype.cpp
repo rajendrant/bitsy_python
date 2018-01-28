@@ -1,6 +1,5 @@
 #include "datatype.h"
 
-#include <assert.h>
 #include <string.h>
 #include <stdio.h>
 
@@ -24,14 +23,14 @@ Variable DataType::CreateForType(BitsyHeap &heap, uint8_t t, uint8_t argcount, V
   Variable v;
   switch (t) {
     case Variable::CustomType::BYTEARRAY: {
-      assert(argcount == 1);
+      BITSY_ASSERT(argcount == 1);
       uint8_t *var;
       uint8_t id = heap.CreateVar(args[0].as_int16(), &var);
       v.set_CustomType(t, id);
       break;
     }
     case Variable::CustomType::ITER:
-      assert(argcount == 1);
+      BITSY_ASSERT(argcount == 1);
       return IterCreate(args[0]);
     case Variable::CustomType::RANGE: {
       int32_t start=0, end, inc=1;
@@ -45,7 +44,8 @@ Variable DataType::CreateForType(BitsyHeap &heap, uint8_t t, uint8_t argcount, V
         end = args[1].as_int32();
         inc = args[2].as_int32();
       } else {
-        assert(false);
+        BITSY_ASSERT(false);
+        break;
       }
       uint32_t *var;
       auto id=heap.CreateVar(12, (uint8_t**)&var);
@@ -56,7 +56,7 @@ Variable DataType::CreateForType(BitsyHeap &heap, uint8_t t, uint8_t argcount, V
       break;
     }
     default:
-      assert(false);
+      BITSY_ASSERT(false);
   }
   return v;
 }
@@ -64,30 +64,30 @@ Variable DataType::CreateForType(BitsyHeap &heap, uint8_t t, uint8_t argcount, V
 // static
 Variable DataType::GetIndex(BitsyHeap &heap, const Variable &v, uint8_t ind) {
   Variable ret;
-  assert(v.type == Variable::CUSTOM);
+  BITSY_ASSERT(v.type == Variable::CUSTOM);
   uint8_t *var;
   uint8_t len = heap.GetVar(v.val.custom_type.val, &var);
-  assert(ind < len);
+  BITSY_ASSERT(ind < len);
   switch (v.val.custom_type.type) {
     case Variable::CustomType::BYTEARRAY:
       ret.set_CustomType(Variable::CustomType::CHARACTER, var[ind]);
       break;
     case Variable::CustomType::STRING:
-      assert(len > ind);
+      BITSY_ASSERT(len > ind);
       ret.set_CustomType(Variable::CustomType::CHARACTER, var[ind]);
       break;
     default:
-      assert(false);
+      BITSY_ASSERT(false);
   }
   return ret;
 }
 
 // static
 void DataType::SetIndex(BitsyHeap &heap, Variable &v, uint8_t ind, const Variable& val) {
-  assert(v.type == Variable::CUSTOM);
+  BITSY_ASSERT(v.type == Variable::CUSTOM);
   uint8_t *var;
   uint8_t len = heap.GetVar(v.val.custom_type.val, &var);
-  assert(ind < len);
+  BITSY_ASSERT(ind < len);
   switch (v.val.custom_type.type) {
     case Variable::CustomType::BYTEARRAY:
       if (val.type == Variable::CUSTOM &&
@@ -100,13 +100,13 @@ void DataType::SetIndex(BitsyHeap &heap, Variable &v, uint8_t ind, const Variabl
     case Variable::CustomType::STRING:
       // TypeError: 'str' object does not support item assignment
     default:
-      assert(false);
+      BITSY_ASSERT(false);
   }
 }
 
 // static
 uint16_t DataType::Len(BitsyHeap &heap, const Variable &v) {
-  assert(v.type == Variable::CUSTOM);
+  BITSY_ASSERT(v.type == Variable::CUSTOM);
   uint8_t *var;
   uint8_t len = heap.GetVar(v.val.custom_type.val, &var);
   switch (v.val.custom_type.type) {
@@ -117,13 +117,14 @@ uint16_t DataType::Len(BitsyHeap &heap, const Variable &v) {
     case Variable::CustomType::STRING:
       return len - 1;
     default:
-      assert(false);
+      BITSY_ASSERT(false);
   }
+  return 0;
 }
 
 // static
 void DataType::Print(BitsyHeap &heap, const Variable &v, void (*print)(char)) {
-  assert(v.type == Variable::CUSTOM);
+  BITSY_ASSERT(v.type == Variable::CUSTOM);
   switch (v.val.custom_type.type) {
     case Variable::CustomType::CHARACTER:
       print((char)v.val.custom_type.val);
@@ -146,13 +147,13 @@ void DataType::Print(BitsyHeap &heap, const Variable &v, void (*print)(char)) {
       for (uint8_t i = 0; i < len - 1; i++) print(var[i]);
       break;
     default:
-      assert(false);
+      BITSY_ASSERT(false);
   }
 }
 
 // static
 void DataType::updateUsedContainers(uint8_t start_id, const Variable &v, uint32_t *map) {
-  assert(v.type == Variable::CUSTOM);
+  BITSY_ASSERT(v.type == Variable::CUSTOM);
   switch (v.val.custom_type.type) {
     case Variable::CustomType::ITER: {
       uint16_t *val;

@@ -6,3 +6,10 @@
 #else
 #define DESKTOP
 #endif
+
+#ifdef DESKTOP
+#include <assert.h>
+#define BITSY_ASSERT(c) assert(c)
+#else
+#define BITSY_ASSERT(c) if(c);
+#endif

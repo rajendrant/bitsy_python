@@ -1,6 +1,5 @@
 #include "FunctionStack.h"
 
-#include <assert.h>
 #include <string.h>
 
 #include "bitsy_alloc.h"
@@ -62,7 +61,7 @@ void FunctionStack::set_var_hdr(uint8_t n, uint8_t val) {
 
 Variable FunctionStack::getNthVariable(uint8_t n) const {
   FunctionStackHeader *hdr = (FunctionStackHeader*)(stack+start);
-  assert(n < hdr->var_count);
+  BITSY_ASSERT(n < hdr->var_count);
   Variable v;
   uint16_t pre = start + HDR_START + HDR_SIZE_FOR_VARS(hdr->var_count);
   for (uint8_t i = 0; i < n; i++) {
@@ -77,7 +76,7 @@ Variable FunctionStack::getNthVariable(uint8_t n) const {
 
 void FunctionStack::setNthVariable(uint8_t n, const Variable& v) {
   FunctionStackHeader *hdr = (FunctionStackHeader*)(stack+start);
-  assert(n < hdr->var_count);
+  BITSY_ASSERT(n < hdr->var_count);
   uint16_t pre = start + HDR_START + HDR_SIZE_FOR_VARS(stack[start]);
   for (uint8_t i = 0; i < n; i++) {
     pre += get_var_hdr(i) + 1;

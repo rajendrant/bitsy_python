@@ -4,7 +4,6 @@
 #include "datatypes/datatype.h"
 #include "instructions.h"
 
-#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -36,7 +35,7 @@ uint8_t Program::get_next_instruction(Variable *arg) {
     switch (global_type) {
       case 0:
         // TODO: global variable.
-        assert(false);
+        BITSY_ASSERT(false);
       case 1:
         *arg = Variable::FunctionVariable(arg->as_int32());
         break;
@@ -51,7 +50,7 @@ uint8_t Program::get_next_instruction(Variable *arg) {
         // True or False
         break;
       default:
-        assert(false);
+        BITSY_ASSERT(false);
     }
   }
   switch (ins) {
@@ -133,7 +132,7 @@ Variable Program::get_number() {
         break;
       }
       default:
-        assert(false);
+        BITSY_ASSERT(false);
     }
   }
   return v;

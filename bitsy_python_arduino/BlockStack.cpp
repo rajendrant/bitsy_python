@@ -1,6 +1,5 @@
 #include "BlockStack.h"
 
-#include <assert.h>
 #include <stdio.h>
 
 namespace bitsy_python {
@@ -24,7 +23,7 @@ void BlockStack::FreeTopBlock() {
 }
 
 uint8_t* BlockStack::top() const {
-  assert(_top != INVALID_BLOCK);
+  BITSY_ASSERT(_top != INVALID_BLOCK);
   return blocks[_top].bytes;
 }
 

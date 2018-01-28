@@ -1,7 +1,5 @@
 #include "BitString.h"
 
-#include <assert.h>
-
 #define BITMASK8(nbits) (uint8_t(~0) >> (8 - (nbits)))
 
 #define FIRSTN(p, n, T) (((T)(p) >> (8 - (n)-1)))
@@ -19,7 +17,7 @@
 namespace bitsy_python {
 
 uint8_t BitString::get_bit8(uint16_t pos, uint8_t len) const {
-  assert(len > 0 && len <= 8);
+  BITSY_ASSERT(len > 0 && len <= 8);
   if (INDEX(pos) == INDEX(pos + len - 1)) {
     return FIRSTN(BUF(INDEX(pos)), ((pos + len - 1) % 8), uint8_t) &
            BITMASK8(len);
@@ -29,7 +27,7 @@ uint8_t BitString::get_bit8(uint16_t pos, uint8_t len) const {
 }
 
 uint16_t BitString::get_bit16(uint16_t pos, uint8_t len) const {
-  assert(len > 0 && len <= 16);
+  BITSY_ASSERT(len > 0 && len <= 16);
   uint8_t diff = INDEX(pos + len - 1) - INDEX(pos);
   if (diff == 0) {
     return get_bit8(pos, len);
@@ -45,7 +43,7 @@ uint16_t BitString::get_bit16(uint16_t pos, uint8_t len) const {
 }
 
 uint32_t BitString::get_bit32(uint16_t pos, uint8_t len) const {
-  assert(len > 0 && len <= 32);
+  BITSY_ASSERT(len > 0 && len <= 32);
   uint8_t diff = INDEX(pos + len - 1) - INDEX(pos);
   if (diff <= 1) {
     return get_bit16(pos, len);

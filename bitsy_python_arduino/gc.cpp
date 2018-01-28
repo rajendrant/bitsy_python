@@ -5,7 +5,7 @@
 
 namespace bitsy_python {
 void gc() {
-  for(uint8_t start_id=0; start_id < bitsy_heap.max(); start_id+=32) {
+  for(uint8_t start_id=0; start_id < bitsy_heap.lastID(); start_id+=32) {
     uint32_t heap_free = bitsy_heap.getFreeIDMap(start_id);
     if (heap_free==0xFFFFFFFF) continue;
     heap_free |= exec_stack.getCustomHeapVariableMap(start_id) |

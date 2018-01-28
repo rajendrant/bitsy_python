@@ -1,7 +1,5 @@
 #include "Builtins.h"
 
-#include <assert.h>
-
 #include "datatypes/datatype.h"
 
 namespace bitsy_python {
@@ -15,16 +13,16 @@ Variable handle_builtin_call(BitsyHeap &heap, BitsyBuiltin type, uint8_t argcoun
                                   arg);
       break;
     case BitsyBuiltin::LEN:
-      assert(argcount == 1);
+      BITSY_ASSERT(argcount == 1);
       v.set_int16(DataType::Len(heap, arg[0]));
       break;
     case BitsyBuiltin::BYTEARRAY:
-      assert(argcount == 1);
+      BITSY_ASSERT(argcount == 1);
       v = DataType::CreateForType(heap, Variable::CustomType::BYTEARRAY, argcount,
                                   arg);
       break;
     default:
-      assert(false);
+      BITSY_ASSERT(false);
   }
   return v;
 }

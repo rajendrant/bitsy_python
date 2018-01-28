@@ -1,6 +1,5 @@
 #include "BitsyHeap.h"
 
-#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -10,7 +9,7 @@
 namespace bitsy_python {
 
 BitsyHeapHeader::BitsyHeapHeader() {
-  assert(sizeof(BitsyHeapHeader::Header)==3);
+  BITSY_ASSERT(sizeof(BitsyHeapHeader::Header)==3);
   hdr = NULL;
   len = 0;
   last = 0;
@@ -23,7 +22,7 @@ BitsyHeapHeader::BitsyHeapHeader() {
 uint8_t BitsyHeapHeader::create(uint8_t size, uint16_t *start) {
   if (last >= len) {
     hdr = (Header *)realloc(hdr, (len+16)*sizeof(BitsyHeapHeader::Header)/2);
-    assert(hdr);
+    BITSY_ASSERT(hdr);
     memset(hdr+len/2, 0, 16/2*sizeof(BitsyHeapHeader::Header));
     len += 16;
   }
@@ -33,7 +32,7 @@ uint8_t BitsyHeapHeader::create(uint8_t size, uint16_t *start) {
 }
 
 uint8_t BitsyHeapHeader::get(uint8_t id, uint16_t *start, uint16_t *rem) const {
-  assert(id < last);
+  BITSY_ASSERT(id < last);
   *start = id ? GET_HDR(id-1) : 0;
   if (rem)
     *rem = GET_HDR(last-1)-GET_HDR(id);
@@ -41,7 +40,7 @@ uint8_t BitsyHeapHeader::get(uint8_t id, uint16_t *start, uint16_t *rem) const {
 }
 
 void BitsyHeapHeader::extend(uint8_t id, int16_t increase) {
-  assert(id < last);
+  BITSY_ASSERT(id < last);
   for(uint8_t i=id; i<last; i++)
     INC_HDR(i, increase);
 }
@@ -59,7 +58,7 @@ BitsyHeap::var_id_t BitsyHeap::CreateVar(uint8_t size, uint8_t **val) {
   uint16_t start;
   uint8_t id;
 
-  assert(size>0);
+  BITSY_ASSERT(size>0);
 
   // Attempt to garbage collect before creating a new heap variable.
   gc();
@@ -84,7 +83,7 @@ BitsyHeap::var_id_t BitsyHeap::CreateVar(uint8_t size, uint8_t **val) {
     id = hdr.create(size, &start);
     if(bottom_block_size() <= start + size)
       bottom_block_alloc();
-    assert(bottom_block_size() > start + size);
+    BITSY_ASSERT(bottom_block_size() > start + size);
     *val = BLOCKS_END - start - size;
   }
   return id;
@@ -99,20 +98,20 @@ uint8_t BitsyHeap::GetVar(BitsyHeap::var_id_t id, uint8_t **val) const {
 
 uint8_t* BitsyHeap::ExtendVar(BitsyHeap::var_id_t id, uint8_t *val,
                           uint8_t new_size) {
-  assert(new_size>0);
+  BITSY_ASSERT(new_size>0);
 
   uint16_t start, rem;
   uint8_t old_size = hdr.get(id, &start, &rem);
   hdr.extend(id, new_size-old_size);
   if(bottom_block_size() <= start + rem + new_size)
     bottom_block_alloc();
-  assert(bottom_block_size() > start + rem + new_size);
+  BITSY_ASSERT(bottom_block_size() > start + rem + new_size);
   memmove(val-rem + old_size - new_size, val-rem, rem+old_size);
   return val+old_size-new_size;
 }
 
 void BitsyHeap::FreeVar(var_id_t id) {
-  assert(id < hdr.last);
+  BITSY_ASSERT(id < hdr.last);
   // Create a link list of free variable ids.
   uint8_t *ptr;
   GetVar(id, &ptr);

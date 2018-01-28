@@ -1,6 +1,7 @@
 #ifndef BITSY_PYTHON_VM_H_
 #define BITSY_PYTHON_VM_H_
 
+#include "bitsylimit.h"
 #include "BitsyHeap.h"
 #include "ExecStack.h"
 #include "FunctionStack.h"

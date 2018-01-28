@@ -1,7 +1,5 @@
 #include "bitsy_alloc.h"
 
-#include <assert.h>
-
 Block blocks[TOTAL_BLOCKS];
 
 // Freelist is a circular singly linked list.
@@ -16,10 +14,10 @@ struct {
 void freelist_sanity_check() {
 #ifdef DESKTOP
   uint8_t prev = blocks[freelist].prev;
-  assert(blocks[prev].next == freelist);
+  BITSY_ASSERT(blocks[prev].next == freelist);
   for (uint8_t i = freelist; blocks[i].next != freelist; i = blocks[i].next) {
-    assert(i < TOTAL_BLOCKS);
-    assert(prev == blocks[i].prev);
+    BITSY_ASSERT(i < TOTAL_BLOCKS);
+    BITSY_ASSERT(prev == blocks[i].prev);
     prev = i;
   }
 #endif
@@ -46,7 +44,7 @@ void bitsy_alloc_init() {
 uint8_t alloc_block() {
   uint8_t next = freelist;
   freelist = blocks[next].next;
-  assert(blocks[freelist].prev == next);
+  BITSY_ASSERT(blocks[freelist].prev == next);
   blocks[freelist].prev = blocks[next].prev;
   blocks[blocks[freelist].prev].next = freelist;
   blocks[next].prev = INVALID_BLOCK;

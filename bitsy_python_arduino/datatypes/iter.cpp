@@ -1,6 +1,5 @@
 #include "iter.h"
 
-#include <assert.h>
 #include <string.h>
 
 #include "../bitsy_python_vm.h"
@@ -10,7 +9,7 @@ Variable IterCreate(const Variable& v) {
   Variable iter;
   uint8_t *var;
   uint8_t id = bitsy_heap.CreateVar(2+2, &var);
-  assert(v.type==Variable::CUSTOM);
+  BITSY_ASSERT(v.type==Variable::CUSTOM);
   iter.set_CustomType(Variable::CustomType::ITER, id);
   memcpy(var, &v.val.custom_type, 2);
   var[2] = var[3] = 0;
@@ -19,11 +18,11 @@ Variable IterCreate(const Variable& v) {
 
 bool IterForLoop(const Variable& iter, Variable *elem) {
   bool ret = false;
-  assert(iter.type == Variable::CUSTOM &&
+  BITSY_ASSERT(iter.type == Variable::CUSTOM &&
          iter.val.custom_type.type == Variable::CustomType::ITER);
   uint8_t *var, *iter_var;
   uint8_t len = bitsy_heap.GetVar(iter.val.custom_type.val, &var);
-  assert(len == 2+2);
+  BITSY_ASSERT(len == 2+2);
   uint16_t *ind = ((uint16_t*)var)+1;
   Variable::CustomType iter_val;
   memcpy(&iter_val, var, 2);
@@ -50,7 +49,7 @@ bool IterForLoop(const Variable& iter, Variable *elem) {
     break;
   }
   default:
-    assert(false);
+    BITSY_ASSERT(false);
   }
   *ind += 1;
   return ret;
