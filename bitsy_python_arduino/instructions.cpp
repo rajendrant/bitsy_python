@@ -56,6 +56,7 @@ bool is_instr_arg(uint8_t ins) {
     case CALL_FUNCTION:
     case COMPARE_OP:
     case LOAD_ATTR:
+    case UNPACK_SEQUENCE:
       return true;
   }
   return false;

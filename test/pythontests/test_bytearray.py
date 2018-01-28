@@ -5,6 +5,9 @@ def main():
     iterate()
     indexing()
     length()
+    a,b = unpack()
+    print a,b
+    search()
 
 def iterate():
     s=bytearray(4)
@@ -31,3 +34,22 @@ def indexing():
 def length():
     s=bytearray(4)
     print len(s)
+
+def unpack():
+    s=bytearray(2)
+    s[0] = 'A'
+    s[1] = 'B'
+    return s
+
+def search():
+    s=bytearray(2)
+    s[0] = 'A'
+    s[1] = 'B'
+    if 'A' in s:
+        print 'found A'
+    if 'B' in s:
+        print 'found B'
+    if 'A' not in s:
+        print 'not found A'
+    if 'b' not in s:
+        print 'not found b'

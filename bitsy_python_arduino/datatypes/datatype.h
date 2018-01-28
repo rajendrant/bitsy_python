@@ -23,6 +23,8 @@ class DataType {
 
   static void updateUsedContainers(uint8_t start_id, const Variable &v, uint32_t *map);
 
+  static bool InOperator(const Variable& cont, const Variable& e);
+
   BitsyHeap::var_id_t id;
 
  private:

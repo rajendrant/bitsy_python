@@ -13,8 +13,8 @@ namespace bitsy_python {
 Variable DataType::CreateStr(const char *str, uint8_t len) {
   Variable v;
   uint8_t *var;
-  uint8_t id = bitsy_heap.CreateVar(len, &var);
-  strncpy((char *)var, str, len);
+  uint8_t id = bitsy_heap.CreateVar(len-1, &var);
+  strncpy((char *)var, str, len-1);
   v.set_CustomType(Variable::CustomType::STRING, id);
   return v;
 }
@@ -71,8 +71,6 @@ Variable DataType::GetIndex(const Variable &v, uint8_t ind) {
   BITSY_ASSERT(ind < len);
   switch (v.val.custom_type.type) {
     case Variable::CustomType::BYTEARRAY:
-      ret.set_CustomType(Variable::CustomType::CHARACTER, var[ind]);
-      break;
     case Variable::CustomType::STRING:
       BITSY_ASSERT(len > ind);
       ret.set_CustomType(Variable::CustomType::CHARACTER, var[ind]);
@@ -114,9 +112,8 @@ uint16_t DataType::Len(const Variable &v) {
     case Variable::CustomType::CHARACTER:
       return 1;
     case Variable::CustomType::BYTEARRAY:
-      return len;
     case Variable::CustomType::STRING:
-      return len - 1;
+      return len;
     default:
       BITSY_ASSERT(false);
   }
@@ -144,14 +141,45 @@ void DataType::Print(const Variable &v, void (*print)(char)) {
   uint8_t len = bitsy_heap.GetVar(v.val.custom_type.val, &var);
   switch (v.val.custom_type.type) {
     case Variable::CustomType::BYTEARRAY:
-      for (uint8_t i = 0; i < len; i++) print(var[i]);
-      break;
     case Variable::CustomType::STRING:
-      for (uint8_t i = 0; i < len - 1; i++) print(var[i]);
+      for (uint8_t i = 0; i < len; i++) print(var[i]);
       break;
     default:
       BITSY_ASSERT(false);
   }
+}
+
+// static
+bool DataType::InOperator(const Variable& cont, const Variable& e) {
+  BITSY_ASSERT(cont.type == Variable::CUSTOM);
+  uint8_t *var;
+  uint8_t len = bitsy_heap.GetVar(cont.val.custom_type.val, &var);
+  switch (cont.val.custom_type.type) {
+    case Variable::CustomType::BYTEARRAY:
+    case Variable::CustomType::STRING:
+    {
+      // TODO(rajendrant): This only finds if the character is single letter.
+      uint8_t v;
+      if (e.type==Variable::UINT8 || (e.type==Variable::CUSTOM &&
+          (e.val.custom_type.type==Variable::CustomType::CHARACTER ||
+           e.val.custom_type.type==Variable::CustomType::UINT12))) {
+        v = e.as_uint12();
+      } else if (e.type==Variable::CUSTOM &&
+                 e.val.custom_type.type==Variable::CustomType::STRING) {
+        uint8_t *strvar;
+        if(bitsy_heap.GetVar(e.val.custom_type.val, &strvar)==1)
+          v = strvar[0];
+        else return false;
+      } else
+        return false;
+      for (uint8_t i = 0; i < len; i++)
+        if (var[i]==v) return true;
+      break;
+    }
+    case Variable::CustomType::LIST:
+      BITSY_ASSERT(false);
+  }
+  return false;
 }
 
 // static
@@ -171,7 +199,7 @@ void DataType::updateUsedContainers(uint8_t start_id, const Variable &v, uint32_
       break;
     }
     case Variable::CustomType::LIST:
-      break;
+      BITSY_ASSERT(false);
   }
 }
 

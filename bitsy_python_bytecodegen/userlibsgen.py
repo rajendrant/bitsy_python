@@ -24,8 +24,9 @@ userlibs_list = [
     },
     {
         'name': 'nrf24',
-        'functions': ['begin', 'setChannel', 'setAddressWidth', 'setPALevel',
-                      'openReadingPipe', 'openWritingPipe', 'startListening', 'stopListening',
+        'functions': ['begin', 'setChannel', 'setPALevel', 'setDataRate'
+                      'openReadingPipe', 'openWritingPipe',
+                      'startListening', 'stopListening',
                       'write', 'available', 'read', ],
     },
     {

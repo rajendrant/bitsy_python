@@ -76,6 +76,7 @@ enum instruction {
 
   BINARY_SUBSCR,
   STORE_SUBSCR,
+  UNPACK_SEQUENCE,
 };
 
 bool is_instr_arg(uint8_t ins);

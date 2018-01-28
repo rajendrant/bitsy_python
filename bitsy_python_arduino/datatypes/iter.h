@@ -5,7 +5,8 @@
 
 namespace bitsy_python {
 extern Variable IterCreate(const Variable& var);
-extern bool IterForLoop(const Variable& iter, Variable *elem);
+extern bool IterForLoopIter(const Variable& iter, Variable *elem);
+extern bool IterForLoop(Variable::CustomType iter, uint16_t ind, Variable *elem);
 }
 
 #endif /* ITER_H__ */

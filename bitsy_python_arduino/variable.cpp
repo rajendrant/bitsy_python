@@ -5,7 +5,12 @@
 
 // namespace bitsy_python {
 
-Variable::Variable() : type(UINT8) { val.uint8 = 0; }
+Variable::Variable(uint8_t v) : type(UINT8) { val.uint8 = v; }
+
+void Variable::set_uint8(uint8_t v) {
+    type = UINT8;
+    val.uint8 = v;
+}
 
 void Variable::set_uint12(uint16_t v) {
   if (v <= 0xFF) {
@@ -113,54 +118,10 @@ void Variable::set_CustomType(uint8_t t, uint16_t v) {
 }
 
 uint8_t Variable::size() const {
-  switch (type) {
-    case UINT8:
-      return 1;
-    case CUSTOM:
-      return 2;
-    case INT32:
-    case FLOAT:
-      return 4;
-    default:
-      BITSY_ASSERT(false);
-  }
-  return 0;
-}
-
-uint8_t Variable::get_extra_bits() const {
-  switch (type) {
-    case UINT8:
-    case INT32:
-      return 0;
-    case FLOAT:
-      return 1;
-    case CUSTOM:
-      return 1;
-    default:
-      BITSY_ASSERT(false);
-  }
-  return 0;
+  return get_size_from_type(type);
 }
 
 // static
-uint8_t Variable::get_type_from_size_and_extra_bits(uint8_t size,
-                                                    uint8_t extra) {
-  switch (size) {
-    case 1:
-      return UINT8;
-    case 2:
-      return CUSTOM;
-    case 4:
-      if (extra == 0)
-        return INT32;
-      else
-        return FLOAT;
-    default:
-      BITSY_ASSERT(false);
-  }
-  return 0;
-}
-
 uint8_t Variable::get_size_from_type(uint8_t type) {
   switch (type) {
     case UINT8:
@@ -186,6 +147,5 @@ bool Variable::is_custom_heap_type() const {
   }
   return false;
 }
-
 
 //}

@@ -52,6 +52,7 @@ ins_supported = set((
   'JUMP_ABSOLUTE',
   'LOAD_ATTR',
   'NOP', 'STOP_CODE',
+  'UNPACK_SEQUENCE',
 ))
 
 ins_order = (
@@ -103,6 +104,7 @@ ins_order = (
   'NOP', 'STOP_CODE',
 
   'BINARY_SUBSCR', 'STORE_SUBSCR',
+  'UNPACK_SEQUENCE',
 )
 
 ins_arg2 = {
@@ -115,6 +117,7 @@ ins_arg2 = {
   'JUMP_FORWARD', 'JUMP_ABSOLUTE',
   'FOR_ITER', 'CONTINUE_LOOP', 'SETUP_LOOP',
   'LOAD_ATTR',
+  'UNPACK_SEQUENCE',
 }
 
 # instructions that have a target bytecode address or target bytecode delta in
@@ -264,8 +267,7 @@ def dump_code(f, globalls, functions, modules, newcode):
     elif ins_transform[insname]:
       ins_encode(ins_transform[insname], newcode)
 
-    argcount = 2 if insname in ins_arg2 else 0
-    if argcount==2:
+    if insname in ins_arg2:
       var = bytecode[bytecode_counter] | (bytecode[bytecode_counter+1]<<8)
       bytecode_counter += 2
 
@@ -312,6 +314,8 @@ def dump_code(f, globalls, functions, modules, newcode):
       m = next((userlibsgen.userlibs[i.__name__] for i in modules_stack if getattr(i, var)), None)
       assert m
       const_encode(m['functions'][var], newcode)
+    elif insname=='UNPACK_SEQUENCE':
+      const_encode(var, newcode)
 
     if insname=='SETUP_LOOP':
       nested_loops.append(var+bytecode_counter)

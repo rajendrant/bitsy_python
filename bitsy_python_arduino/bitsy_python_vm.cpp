@@ -74,22 +74,28 @@ void BitsyPythonVM::binary_arithmetic(uint8_t ins, uint8_t arg) {
     case COMPARE_OP:
       switch (arg) {
         case 0:
-          iret = v2.as_int32() < v1.as_int32();
+          iret = i2 < i1;
           break;
         case 1:
-          iret = v2.as_int32() <= v1.as_int32();
+          iret = i2 <= i1;
           break;
         case 2:
-          iret = v2.as_int32() == v1.as_int32();
+          iret = i2 == i1;
           break;
         case 3:
-          iret = v2.as_int32() != v1.as_int32();
+          iret = i2 != i1;
           break;
         case 4:
-          iret = v2.as_int32() > v1.as_int32();
+          iret = i2 > i1;
           break;
         case 5:
-          iret = v2.as_int32() >= v1.as_int32();
+          iret = i2 >= i1;
+          break;
+        case 6:
+          iret = DataType::InOperator(v1, v2);
+          break;
+        case 7:
+          iret = !DataType::InOperator(v1, v2);
           break;
         default:
           // in, not-in, is, is-not, exception-match, BAD
@@ -345,11 +351,22 @@ bool BitsyPythonVM::executeOneStep() {
     case FOR_ITER: {
       Variable iter, elem;
       iter = exec_stack.pop();
-      if(IterForLoop(iter, &elem)) {
+      if(IterForLoopIter(iter, &elem)) {
         exec_stack.push(iter);
         exec_stack.push(elem);
       } else {
         prog.jump_to_target(arg.as_uint12());
+      }
+      break;
+    }
+    case UNPACK_SEQUENCE: {
+      // This implementation does not raise exceptions on non matching length.
+      // ValueError: too many values to unpack
+      Variable elem, iter = exec_stack.pop();
+      BITSY_ASSERT(iter.type == Variable::CUSTOM);
+      for(uint8_t i=arg.as_uint8(); i>0; i--) {
+        if(IterForLoop(iter.val.custom_type, i-1, &elem))
+          exec_stack.push(elem);
       }
       break;
     }

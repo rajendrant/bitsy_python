@@ -49,7 +49,7 @@ class Variable {
   static Variable ModuleVariable(uint8_t id);
   static Variable ModuleFunctionVariable(const Variable& module, uint8_t id);
 
-  Variable();
+  Variable(uint8_t v=0);
 
   bool as_bool() const;
   uint8_t as_uint8() const;
@@ -58,17 +58,15 @@ class Variable {
   float as_float() const;
 
   void set_CustomType(uint8_t type, uint16_t val);
+  void set_uint8(uint8_t v);
   void set_uint12(uint16_t v);
   void set_int32(int32_t v);
   void set_float(float v);
 
   uint8_t size() const;
-  uint8_t get_extra_bits() const;
-
   bool is_custom_heap_type() const;
 
   static uint8_t get_size_from_type(uint8_t type);
-  static uint8_t get_type_from_size_and_extra_bits(uint8_t size, uint8_t extra);
 };
 
 //}

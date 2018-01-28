@@ -16,34 +16,43 @@ Variable IterCreate(const Variable& v) {
   return iter;
 }
 
-bool IterForLoop(const Variable& iter, Variable *elem) {
-  bool ret = false;
+bool IterForLoopIter(const Variable& iter, Variable *elem) {
   BITSY_ASSERT(iter.type == Variable::CUSTOM &&
          iter.val.custom_type.type == Variable::CustomType::ITER);
-  uint8_t *var, *iter_var;
+  uint8_t *var;
   uint8_t len = bitsy_heap.GetVar(iter.val.custom_type.val, &var);
   BITSY_ASSERT(len == 2+2);
   uint16_t *ind = ((uint16_t*)var)+1;
   Variable::CustomType iter_val;
   memcpy(&iter_val, var, 2);
-  uint8_t iter_len = bitsy_heap.GetVar(iter_val.val, &iter_var);
-  switch(iter_val.type) {
+  if(IterForLoop(iter_val, *ind, elem)) {
+    *ind += 1;
+    return true;
+  }
+  return false;
+}
+
+bool IterForLoop(Variable::CustomType iter, uint16_t ind, Variable *elem) {
+  bool ret = false;
+  uint8_t *iter_var;
+  uint8_t iter_len = bitsy_heap.GetVar(iter.val, &iter_var);
+  switch(iter.type) {
   case Variable::CustomType::BYTEARRAY:
-    if(*ind < iter_len) {
-      elem->set_CustomType(Variable::CustomType::UINT12, iter_var[*ind]);
+    if(ind < iter_len) {
+      elem->set_CustomType(Variable::CustomType::UINT12, iter_var[ind]);
       ret = true;
     }
     break;
   case Variable::CustomType::STRING:
-    if(*ind < iter_len-1) {
-      elem->set_CustomType(Variable::CustomType::CHARACTER, iter_var[*ind]);
+    if(ind < iter_len) {
+      elem->set_CustomType(Variable::CustomType::CHARACTER, iter_var[ind]);
       ret = true;
     }
     break;
   case Variable::CustomType::RANGE: {
     uint32_t *range = (uint32_t*)iter_var;
-    if (range[0]+ *ind*range[2] < range[1]) {
-      elem->set_int32(range[0]+ *ind*range[2]);
+    if (range[0]+ ind*range[2] < range[1]) {
+      elem->set_int32(range[0]+ ind*range[2]);
       ret = true;
     }
     break;
@@ -51,7 +60,6 @@ bool IterForLoop(const Variable& iter, Variable *elem) {
   default:
     BITSY_ASSERT(false);
   }
-  *ind += 1;
   return ret;
 }
 }
