@@ -25,6 +25,7 @@ class BitsyPythonVM {
   void initExecution();
   void execute();
   bool executeOneStep();
+  void callUserFunction(uint16_t f, Variable arg);
 
  private:
   void binary_arithmetic(uint8_t ins, uint8_t arg);

@@ -392,6 +392,13 @@ bool BitsyPythonVM::executeOneStep() {
   }
   return true;
 }
+
+void BitsyPythonVM::callUserFunction(uint16_t f, Variable arg) {
+  auto fn = prog.setup_function_call(f);
+  function_stack.setup_function_call(1, fn.vars, fn.old_ins_ptr);
+  function_stack.setNthVariable(0, arg);
+}
+
 }
 
 void bitsy_print(char ch) {

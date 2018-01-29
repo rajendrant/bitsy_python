@@ -4,9 +4,6 @@
 def init(*arg):
     pass
 
-def read(*arg):
-    pass
-
 def send(*arg):
     pass
 

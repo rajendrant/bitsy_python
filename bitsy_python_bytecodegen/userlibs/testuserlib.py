@@ -13,3 +13,14 @@ def math_add(*arg):
 def math_power(*arg):
     import math
     return math.pow(arg[0], arg[1])
+
+callback=None
+def init_callback(f):
+    global callback
+    callback=f
+    callback(123)
+
+def trigger_callback():
+    global callback
+    if callback:
+        callback(123)

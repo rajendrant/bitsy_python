@@ -24,7 +24,7 @@ userlibs_list = [
     },
     {
         'name': 'nrf24',
-        'functions': ['init', 'read', 'send'],
+        'functions': ['init', 'send'],
     },
     {
         'name': 'eeprom',
@@ -32,7 +32,8 @@ userlibs_list = [
     },
     {
         'name': 'testuserlib',
-        'functions': ['printstr', 'println', 'math_add', 'math_power'],
+        'functions': ['printstr', 'println', 'math_add', 'math_power',
+            'init_callback', 'trigger_callback'],
     },
 ]
 

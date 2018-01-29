@@ -127,8 +127,6 @@ Variable userlib_module_nrf24(uint8_t function, uint8_t argcount, Variable arg[]
     case 0:
       return nrf24::init(argcount, arg);
     case 1:
-      return nrf24::read(argcount, arg);
-    case 2:
       return nrf24::send(argcount, arg);
     default:
       BITSY_ASSERT(false);
@@ -168,6 +166,10 @@ Variable userlib_module_testuserlib(uint8_t function, uint8_t argcount, Variable
       return testuserlib::math_add(argcount, arg);
     case 3:
       return testuserlib::math_power(argcount, arg);
+    case 4:
+      return testuserlib::init_callback(argcount, arg);
+    case 5:
+      return testuserlib::trigger_callback(argcount, arg);
     default:
       BITSY_ASSERT(false);
   }
