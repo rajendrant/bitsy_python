@@ -22,9 +22,9 @@ typedef struct {
 
 #define stack ((uint8_t *)blocks)
 
-bool FunctionStack_is_empty() { return top == 0; }
+bool FunctionStack::is_empty() { return top == 0; }
 
-void FunctionStack_setup_function_call(uint8_t args, uint8_t vars,
+void FunctionStack::setup_function_call(uint8_t args, uint8_t vars,
                                         uint16_t old_ins_ptr) {
   while (top_block_size() < top + HDR_START + HDR_SIZE_FOR_VARS(vars) + vars * MAX_VAR_SIZE) {
     top_block_alloc();
@@ -38,7 +38,7 @@ void FunctionStack_setup_function_call(uint8_t args, uint8_t vars,
   memset(stack + start + HDR_START, 0, top - start);
 }
 
-bool FunctionStack_return_function(uint16_t *old_ins_ptr) {
+bool FunctionStack::return_function(uint16_t *old_ins_ptr) {
   top = start;
   FunctionStackHeader *hdr = (FunctionStackHeader*)(stack+start);
   *old_ins_ptr = hdr->ins_ptr;
@@ -46,7 +46,7 @@ bool FunctionStack_return_function(uint16_t *old_ins_ptr) {
   while (top_block_size() > top + 100) {
     top_block_free();
   }
-  return FunctionStack_is_empty();
+  return FunctionStack::is_empty();
 }
 
 uint8_t get_var_hdr(uint8_t n) {
@@ -59,7 +59,7 @@ void set_var_hdr(uint8_t n, uint8_t val) {
       (val & 0x3) << ((2 * (n % 4)));
 }
 
-Variable FunctionStack_getNthVariable(uint8_t n) {
+Variable FunctionStack::getNthVariable(uint8_t n) {
   FunctionStackHeader *hdr = (FunctionStackHeader*)(stack+start);
   BITSY_ASSERT(n < hdr->var_count);
   Variable v;
@@ -72,7 +72,7 @@ Variable FunctionStack_getNthVariable(uint8_t n) {
   return v;
 }
 
-void FunctionStack_setNthVariable(uint8_t n, const Variable& v) {
+void FunctionStack::setNthVariable(uint8_t n, const Variable& v) {
   FunctionStackHeader *hdr = (FunctionStackHeader*)(stack+start);
   BITSY_ASSERT(n < hdr->var_count);
   uint16_t pre = start + HDR_START + HDR_SIZE_FOR_VARS(stack[start]);
@@ -92,7 +92,7 @@ void FunctionStack_setNthVariable(uint8_t n, const Variable& v) {
   memcpy(stack + pre, &v.val, size);
 }
 
-uint32_t FunctionStack_getCustomHeapVariableMap(uint8_t start_id) {
+uint32_t FunctionStack::getCustomHeapVariableMap(uint8_t start_id) {
   uint32_t map = 0;
   for(auto f=start; f<top;) {
     FunctionStackHeader *hdr = (FunctionStackHeader*)(stack+f);

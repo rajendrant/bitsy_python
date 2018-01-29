@@ -11,7 +11,6 @@
 
 namespace bitsy_python {
 
-ExecStack stack;
 std::stack<Variable> stack_expected;
 
 Variable zero, one, hundred, kilo, mega, float_pi;
@@ -32,19 +31,19 @@ void compare(const Variable &a, const Variable &b) {
 }
 
 void test1() {
-  stack.push(zero);
-  stack.push(one);
-  stack.push(hundred);
-  stack.push(kilo);
-  stack.push(mega);
-  stack.push(float_pi);
+  ExecStack::push(zero);
+  ExecStack::push(one);
+  ExecStack::push(hundred);
+  ExecStack::push(kilo);
+  ExecStack::push(mega);
+  ExecStack::push(float_pi);
 
-  compare(stack.pop(), float_pi);
-  compare(stack.pop(), mega);
-  compare(stack.pop(), kilo);
-  compare(stack.pop(), hundred);
-  compare(stack.pop(), one);
-  compare(stack.pop(), zero);
+  compare(ExecStack::pop(), float_pi);
+  compare(ExecStack::pop(), mega);
+  compare(ExecStack::pop(), kilo);
+  compare(ExecStack::pop(), hundred);
+  compare(ExecStack::pop(), one);
+  compare(ExecStack::pop(), zero);
 }
 
 void test2() {
@@ -70,17 +69,16 @@ void test2() {
         v.set_float((float)rand()/(float)(RAND_MAX / 10000));
         break;
       }
-      stack.push(v);
+      ExecStack::push(v);
       stack_expected.push(v);
     } else {
-      compare(stack.pop(), stack_expected.top());
+      compare(ExecStack::pop(), stack_expected.top());
       stack_expected.pop();
     }
   }
 }
 
 void testCustomHeapVaiable() {
-  ExecStack s;
   Variable heap_0, heap_1, heap_2;
   heap_0.type = Variable::CUSTOM;
   heap_0.val.custom_type.type = Variable::CustomType::STRING;
@@ -89,31 +87,31 @@ void testCustomHeapVaiable() {
   heap_1.val.custom_type.val = 1;
   heap_2.val.custom_type.val = 2;
 
-  assert(s.getCustomHeapVariableMap(0) == 0x0);
-  s.push(heap_2);
-  assert(s.getCustomHeapVariableMap(0) == 0x4);
-  s.pop();
-  assert(s.getCustomHeapVariableMap(0) == 0x0);
-  assert(s.getCustomHeapVariableMap(32) == 0x0);
+  assert(ExecStack::getCustomHeapVariableMap(0) == 0x0);
+  ExecStack::push(heap_2);
+  assert(ExecStack::getCustomHeapVariableMap(0) == 0x4);
+  ExecStack::pop();
+  assert(ExecStack::getCustomHeapVariableMap(0) == 0x0);
+  assert(ExecStack::getCustomHeapVariableMap(32) == 0x0);
 
-  s.push(heap_1);
-  assert(s.getCustomHeapVariableMap(0) == 0x2);
-  s.push(heap_2);
-  assert(s.getCustomHeapVariableMap(0) == 0x6);
-  s.pop();
-  assert(s.getCustomHeapVariableMap(0) == 0x2);
-  s.push(heap_0);
-  assert(s.getCustomHeapVariableMap(0) == 0x3);
-  s.push(heap_2);
-  assert(s.getCustomHeapVariableMap(0) == 0x7);
-  assert(s.getCustomHeapVariableMap(32) == 0x0);
+  ExecStack::push(heap_1);
+  assert(ExecStack::getCustomHeapVariableMap(0) == 0x2);
+  ExecStack::push(heap_2);
+  assert(ExecStack::getCustomHeapVariableMap(0) == 0x6);
+  ExecStack::pop();
+  assert(ExecStack::getCustomHeapVariableMap(0) == 0x2);
+  ExecStack::push(heap_0);
+  assert(ExecStack::getCustomHeapVariableMap(0) == 0x3);
+  ExecStack::push(heap_2);
+  assert(ExecStack::getCustomHeapVariableMap(0) == 0x7);
+  assert(ExecStack::getCustomHeapVariableMap(32) == 0x0);
 
-  s.pop();
-  assert(s.getCustomHeapVariableMap(0) == 0x3);
-  s.pop();
-  assert(s.getCustomHeapVariableMap(0) == 0x2);
-  s.pop();
-  assert(s.getCustomHeapVariableMap(0) == 0x0);
+  ExecStack::pop();
+  assert(ExecStack::getCustomHeapVariableMap(0) == 0x3);
+  ExecStack::pop();
+  assert(ExecStack::getCustomHeapVariableMap(0) == 0x2);
+  ExecStack::pop();
+  assert(ExecStack::getCustomHeapVariableMap(0) == 0x0);
 }
 }
 

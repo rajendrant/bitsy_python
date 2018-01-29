@@ -10,8 +10,6 @@
 
 namespace bitsy_python {
 
-extern BitsyHeap bitsy_heap;
-
 class BitsyPythonVM {
  public:
 #ifdef DESKTOP

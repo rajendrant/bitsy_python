@@ -14,15 +14,15 @@ class GCTest {
 static std::set<BitsyHeap::var_id_t> getAllHeapVars() {
   std::set<BitsyHeap::var_id_t> ret;
   std::set<BitsyHeap::var_id_t> free_ids;
-  for(BitsyHeap::var_id_t id=bitsy_heap.free_id; id != INVALID_VARID;) {
+  for(BitsyHeap::var_id_t id=BitsyHeap::freeID(); id != INVALID_VARID;) {
     free_ids.insert(id);
     uint8_t *ptr;
-    if (id < bitsy_heap.lastID()) {
-      bitsy_heap.GetVar(id, &ptr);
+    if (id < BitsyHeap::lastID()) {
+      BitsyHeap::GetVar(id, &ptr);
       id = ptr[0];
     }
   }
-  for(BitsyHeap::var_id_t v=0; v<bitsy_heap.lastID(); v++) {
+  for(BitsyHeap::var_id_t v=0; v<BitsyHeap::lastID(); v++) {
     if(free_ids.find(v)==free_ids.end())
       ret.insert(v);
   }
@@ -40,49 +40,51 @@ static void test1() {
   var.type = Variable::CUSTOM;
   var.val.custom_type.type = Variable::CustomType::STRING;
 
+  BitsyHeap::init();
+
   assert(getAllHeapVars().empty());
   gc();
   assert(getAllHeapVars().empty());
 
-  auto id1 = bitsy_heap.CreateVar(5, &val);
+  auto id1 = BitsyHeap::CreateVar(5, &val);
   assert(compareHeapVars({id1}));
   gc();
   assert(compareHeapVars({}));
 
-  id1 = bitsy_heap.CreateVar(5, &val);
+  id1 = BitsyHeap::CreateVar(5, &val);
   var.val.custom_type.val = id1;
-  exec_stack.push(var);
+  ExecStack::push(var);
   gc();
   assert(compareHeapVars({id1}));
 
-  exec_stack.pop();
+  ExecStack::pop();
   assert(compareHeapVars({id1}));
   gc();
   assert(compareHeapVars({}));
 
-  id1 = bitsy_heap.CreateVar(10, &val);
+  id1 = BitsyHeap::CreateVar(10, &val);
   var.val.custom_type.val = id1;
-  function_stack.setup_function_call(0, 2, 0x1234);
-  function_stack.setNthVariable(0, var);
+  FunctionStack::setup_function_call(0, 2, 0x1234);
+  FunctionStack::setNthVariable(0, var);
 
-  auto id2 = bitsy_heap.CreateVar(20, &val);
+  auto id2 = BitsyHeap::CreateVar(20, &val);
   var.val.custom_type.val = id2;
-  exec_stack.push(var);
+  ExecStack::push(var);
 
-  auto id3 = bitsy_heap.CreateVar(15, &val);
+  auto id3 = BitsyHeap::CreateVar(15, &val);
   var.val.custom_type.val = id3;
-  function_stack.setNthVariable(1, var);
+  FunctionStack::setNthVariable(1, var);
   assert(compareHeapVars({id1, id2, id3}));
 
   assert(compareHeapVars({id1, id2, id3}));
   gc();
   assert(compareHeapVars({id1, id2, id3}));
 
-  function_stack.return_function(&ins_ptr);
+  FunctionStack::return_function(&ins_ptr);
   gc();
   assert(compareHeapVars({id2}));
 
-  exec_stack.pop();
+  ExecStack::pop();
   gc();
   assert(compareHeapVars({}));
 }
@@ -93,35 +95,37 @@ static void test2() {
   var.type = Variable::CUSTOM;
   var.val.custom_type.type = Variable::CustomType::STRING;
 
-  auto id1 = bitsy_heap.CreateVar(10, &val);
+  BitsyHeap::init();
+
+  auto id1 = BitsyHeap::CreateVar(10, &val);
   var.val.custom_type.val = id1;
-  exec_stack.push(var);
-  auto id2 = bitsy_heap.CreateVar(20, &val);
+  ExecStack::push(var);
+  auto id2 = BitsyHeap::CreateVar(20, &val);
   var.val.custom_type.val = id2;
-  exec_stack.push(var);
-  auto id3 = bitsy_heap.CreateVar(15, &val);
+  ExecStack::push(var);
+  auto id3 = BitsyHeap::CreateVar(15, &val);
   var.val.custom_type.val = id3;
-  exec_stack.push(var);
+  ExecStack::push(var);
   assert(compareHeapVars({id1, id2, id3}));
 
   assert(compareHeapVars({id1, id2, id3}));
   gc();
   assert(compareHeapVars({id1, id2, id3}));
 
-  exec_stack.pop();
+  ExecStack::pop();
   gc();
   assert(compareHeapVars({id1, id2}));
-  exec_stack.pop();
+  ExecStack::pop();
   gc();
   assert(compareHeapVars({id1}));
-  exec_stack.pop();
+  ExecStack::pop();
   gc();
   assert(compareHeapVars({}));
 }
 
 static void test_all() {
   test1();
-  //test2();
+  test2();
 }
 };
 

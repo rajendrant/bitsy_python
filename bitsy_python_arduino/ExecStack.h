@@ -1,5 +1,5 @@
-#ifndef EXECSTACK_H_
-#define EXECSTACK_H_
+#ifndef ExecStack_H_
+#define ExecStack_H_
 
 #include "bitsylimit.h"
 #include "variable.h"
@@ -8,10 +8,13 @@
 
 namespace bitsy_python {
 
-void ExecStack_push(const Variable &v);
-Variable ExecStack_pop();
-uint32_t ExecStack_getCustomHeapVariableMap(uint8_t start_id);
+namespace ExecStack {
+
+void push(const Variable &v);
+Variable pop();
+uint32_t getCustomHeapVariableMap(uint8_t start_id);
 
 }
+}
 
-#endif /* EXECSTACK_H_ */
+#endif /* ExecStack_H_ */

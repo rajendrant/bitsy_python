@@ -44,7 +44,7 @@ void send_to_callback(uint8_t *buf, uint8_t len) {
     Variable v;
     uint8_t *vbuf;
     v.set_CustomType(Variable::CustomType::BYTEARRAY,
-                     bitsy_python::bitsy_heap.CreateVar(len, &vbuf));
+                     bitsy_python::BitsyHeap::CreateVar(len, &vbuf));
     memcpy(vbuf, buf, len);
     vm.callUserFunction(on_recv_callback, v);
   }
@@ -56,7 +56,7 @@ Variable send(uint8_t argcount, Variable arg[]) {
     return Variable::Zero();
   uint8_t *buf;
   uint8_t len = arg[2].as_uint8();
-  if (bitsy_python::bitsy_heap.GetVar(arg[1].val.custom_type.val, &buf) < len)
+  if (bitsy_python::BitsyHeap::GetVar(arg[1].val.custom_type.val, &buf) < len)
     return Variable::Zero();
   radio.send(arg[0].as_uint8(), buf, arg[2].as_uint8());
   return Variable(1);

@@ -8,7 +8,7 @@ namespace bitsy_python {
 Variable IterCreate(const Variable& v) {
   Variable iter;
   uint8_t *var;
-  uint8_t id = bitsy_heap.CreateVar(2+2, &var);
+  uint8_t id = BitsyHeap::CreateVar(2+2, &var);
   BITSY_ASSERT(v.type==Variable::CUSTOM);
   iter.set_CustomType(Variable::CustomType::ITER, id);
   memcpy(var, &v.val.custom_type, 2);
@@ -20,7 +20,7 @@ bool IterForLoopIter(const Variable& iter, Variable *elem) {
   BITSY_ASSERT(iter.type == Variable::CUSTOM &&
          iter.val.custom_type.type == Variable::CustomType::ITER);
   uint8_t *var;
-  uint8_t len = bitsy_heap.GetVar(iter.val.custom_type.val, &var);
+  uint8_t len = BitsyHeap::GetVar(iter.val.custom_type.val, &var);
   BITSY_ASSERT(len == 2+2);
   uint16_t *ind = ((uint16_t*)var)+1;
   Variable::CustomType iter_val;
@@ -35,7 +35,7 @@ bool IterForLoopIter(const Variable& iter, Variable *elem) {
 bool IterForLoop(Variable::CustomType iter, uint16_t ind, Variable *elem) {
   bool ret = false;
   uint8_t *iter_var;
-  uint8_t iter_len = bitsy_heap.GetVar(iter.val, &iter_var);
+  uint8_t iter_len = BitsyHeap::GetVar(iter.val, &iter_var);
   switch(iter.type) {
   case Variable::CustomType::BYTEARRAY:
     if(ind < iter_len) {

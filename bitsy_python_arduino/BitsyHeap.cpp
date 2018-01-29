@@ -8,10 +8,18 @@
 
 namespace bitsy_python {
 
+namespace BitsyHeap {
+
 #define GET_HDR(id) (((id)%2) ? hdr[(id)/2].v1 : hdr[(id)/2].v0)
 #define INC_HDR(id, val) (((id)%2) ? hdr[(id)/2].v1 += (val) : hdr[(id)/2].v0 += (val))
 
-uint8_t BitsyHeap::HdrCreate(uint8_t size, uint16_t *start) {
+uint8_t len, last, free_id;
+struct Header {
+  uint16_t v0 : 12;
+  uint16_t v1 : 12;
+}__attribute__((packed)) *hdr;
+
+var_id_t HdrCreate(uint8_t size, uint16_t *start) {
   if (last >= len) {
     hdr = (Header *)realloc(hdr, (len+16)*sizeof(Header)/2);
     BITSY_ASSERT(hdr);
@@ -23,7 +31,7 @@ uint8_t BitsyHeap::HdrCreate(uint8_t size, uint16_t *start) {
   return last++;
 }
 
-uint8_t BitsyHeap::HdrGet(uint8_t id, uint16_t *start, uint16_t *rem) const {
+uint8_t HdrGet(var_id_t id, uint16_t *start, uint16_t *rem=NULL) {
   BITSY_ASSERT(id < last);
   *start = id ? GET_HDR(id-1) : 0;
   if (rem)
@@ -31,13 +39,13 @@ uint8_t BitsyHeap::HdrGet(uint8_t id, uint16_t *start, uint16_t *rem) const {
   return GET_HDR(id) - *start;
 }
 
-void BitsyHeap::HdrExtend(uint8_t id, int16_t increase) {
+void HdrExtend(var_id_t id, int16_t increase) {
   BITSY_ASSERT(id < last);
   for(uint8_t i=id; i<last; i++)
     INC_HDR(i, increase);
 }
 
-BitsyHeap::BitsyHeap() {
+void init() {
   hdr = NULL;
   len = 0;
   last = 0;
@@ -45,12 +53,15 @@ BitsyHeap::BitsyHeap() {
   bitsy_alloc_init();
 }
 
-BitsyHeap::~BitsyHeap() {
+void destroy() {
   while(bottom_block_size())
     bottom_block_free();
 }
 
-BitsyHeap::var_id_t BitsyHeap::CreateVar(uint8_t size, uint8_t **val) {
+uint8_t freeID() { return free_id; }
+uint8_t lastID() { return last; }
+
+var_id_t CreateVar(uint8_t size, uint8_t **val) {
   uint16_t start;
   uint8_t id;
 
@@ -85,14 +96,14 @@ BitsyHeap::var_id_t BitsyHeap::CreateVar(uint8_t size, uint8_t **val) {
   return id;
 }
 
-uint8_t BitsyHeap::GetVar(BitsyHeap::var_id_t id, uint8_t **val) const {
+uint8_t GetVar(var_id_t id, uint8_t **val) {
   uint16_t start;
   uint8_t len = HdrGet(id, &start);
   *val = BLOCKS_END - start - len;
   return len;
 }
 
-uint8_t* BitsyHeap::ExtendVar(BitsyHeap::var_id_t id, uint8_t *val,
+uint8_t* ExtendVar(var_id_t id, uint8_t *val,
                           uint8_t new_size) {
   BITSY_ASSERT(new_size>0);
 
@@ -106,7 +117,7 @@ uint8_t* BitsyHeap::ExtendVar(BitsyHeap::var_id_t id, uint8_t *val,
   return val+old_size-new_size;
 }
 
-void BitsyHeap::FreeVar(var_id_t id) {
+void FreeVar(var_id_t id) {
   BITSY_ASSERT(id < last);
   // Create a link list of free variable ids.
   uint8_t *ptr;
@@ -115,7 +126,7 @@ void BitsyHeap::FreeVar(var_id_t id) {
   free_id = id;
 }
 
-uint32_t BitsyHeap::getFreeIDMap(uint8_t start_id) const {
+uint32_t getFreeIDMap(uint8_t start_id) {
   uint32_t map = 0;
   for(var_id_t id=free_id; id != INVALID_VARID;) {
     if (id >= start_id && id < start_id+32)
@@ -129,4 +140,5 @@ uint32_t BitsyHeap::getFreeIDMap(uint8_t start_id) const {
   return map;
 }
 
-};
+}
+}

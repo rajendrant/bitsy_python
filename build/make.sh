@@ -17,7 +17,7 @@ LIBS=
 # Build the executable
 for var in "${SRC[@]}"
 do
-g++ -c $OPT $LIBS $SRCDIR/${var}
+#g++ -c $OPT $SRCDIR/${var}
 LIBS="$LIBS $SRCDIR/${var}"
 done
 

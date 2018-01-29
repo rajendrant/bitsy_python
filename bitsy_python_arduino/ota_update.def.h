@@ -10,7 +10,7 @@ bool ota_update(uint8_t *buf, uint8_t len,
       return false;
   // Start OTA update.
   int start=millis();
-  uint16_t pos=0, end=*((uint16_t)buf);
+  uint16_t pos=0, end=*((uint16_t*)buf);
   uint8_t prog[32];
   do {
     if (!sender((uint8_t*)&pos, 2)) return false;

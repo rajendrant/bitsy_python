@@ -42,6 +42,7 @@ void bitsy_alloc_init() {
 }
 
 uint8_t alloc_block() {
+  bitsy_alloc_init();
   uint8_t next = freelist;
   freelist = blocks[next].next;
   BITSY_ASSERT(blocks[freelist].prev == next);

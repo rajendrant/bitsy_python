@@ -13,7 +13,7 @@ namespace bitsy_python {
 Variable DataType::CreateStr(const char *str, uint8_t len) {
   Variable v;
   uint8_t *var;
-  uint8_t id = bitsy_heap.CreateVar(len-1, &var);
+  uint8_t id = BitsyHeap::CreateVar(len-1, &var);
   strncpy((char *)var, str, len-1);
   v.set_CustomType(Variable::CustomType::STRING, id);
   return v;
@@ -26,7 +26,7 @@ Variable DataType::CreateForType(uint8_t t, uint8_t argcount, Variable args[]) {
     case Variable::CustomType::BYTEARRAY: {
       BITSY_ASSERT(argcount == 1);
       uint8_t *var;
-      uint8_t id = bitsy_heap.CreateVar(args[0].as_uint12(), &var);
+      uint8_t id = BitsyHeap::CreateVar(args[0].as_uint12(), &var);
       v.set_CustomType(t, id);
       break;
     }
@@ -49,7 +49,7 @@ Variable DataType::CreateForType(uint8_t t, uint8_t argcount, Variable args[]) {
         break;
       }
       uint32_t *var;
-      auto id=bitsy_heap.CreateVar(12, (uint8_t**)&var);
+      auto id=BitsyHeap::CreateVar(12, (uint8_t**)&var);
       v.set_CustomType(t, id);
       var[0]=start;
       var[1]=end;
@@ -67,7 +67,7 @@ Variable DataType::GetIndex(const Variable &v, uint8_t ind) {
   Variable ret;
   BITSY_ASSERT(v.type == Variable::CUSTOM);
   uint8_t *var;
-  uint8_t len = bitsy_heap.GetVar(v.val.custom_type.val, &var);
+  uint8_t len = BitsyHeap::GetVar(v.val.custom_type.val, &var);
   BITSY_ASSERT(ind < len);
   switch (v.val.custom_type.type) {
     case Variable::CustomType::BYTEARRAY:
@@ -85,7 +85,7 @@ Variable DataType::GetIndex(const Variable &v, uint8_t ind) {
 void DataType::SetIndex(Variable &v, uint8_t ind, const Variable& val) {
   BITSY_ASSERT(v.type == Variable::CUSTOM);
   uint8_t *var;
-  uint8_t len = bitsy_heap.GetVar(v.val.custom_type.val, &var);
+  uint8_t len = BitsyHeap::GetVar(v.val.custom_type.val, &var);
   BITSY_ASSERT(ind < len);
   switch (v.val.custom_type.type) {
     case Variable::CustomType::BYTEARRAY:
@@ -107,7 +107,7 @@ void DataType::SetIndex(Variable &v, uint8_t ind, const Variable& val) {
 uint16_t DataType::Len(const Variable &v) {
   BITSY_ASSERT(v.type == Variable::CUSTOM);
   uint8_t *var;
-  uint8_t len = bitsy_heap.GetVar(v.val.custom_type.val, &var);
+  uint8_t len = BitsyHeap::GetVar(v.val.custom_type.val, &var);
   switch (v.val.custom_type.type) {
     case Variable::CustomType::CHARACTER:
       return 1;
@@ -138,7 +138,7 @@ void DataType::Print(const Variable &v, void (*print)(char)) {
   }
 
   uint8_t *var;
-  uint8_t len = bitsy_heap.GetVar(v.val.custom_type.val, &var);
+  uint8_t len = BitsyHeap::GetVar(v.val.custom_type.val, &var);
   switch (v.val.custom_type.type) {
     case Variable::CustomType::BYTEARRAY:
     case Variable::CustomType::STRING:
@@ -153,7 +153,7 @@ void DataType::Print(const Variable &v, void (*print)(char)) {
 bool DataType::InOperator(const Variable& cont, const Variable& e) {
   BITSY_ASSERT(cont.type == Variable::CUSTOM);
   uint8_t *var;
-  uint8_t len = bitsy_heap.GetVar(cont.val.custom_type.val, &var);
+  uint8_t len = BitsyHeap::GetVar(cont.val.custom_type.val, &var);
   switch (cont.val.custom_type.type) {
     case Variable::CustomType::BYTEARRAY:
     case Variable::CustomType::STRING:
@@ -167,7 +167,7 @@ bool DataType::InOperator(const Variable& cont, const Variable& e) {
       } else if (e.type==Variable::CUSTOM &&
                  e.val.custom_type.type==Variable::CustomType::STRING) {
         uint8_t *strvar;
-        if(bitsy_heap.GetVar(e.val.custom_type.val, &strvar)==1)
+        if(BitsyHeap::GetVar(e.val.custom_type.val, &strvar)==1)
           v = strvar[0];
         else return false;
       } else
@@ -188,7 +188,7 @@ void DataType::updateUsedContainers(uint8_t start_id, const Variable &v, uint32_
   switch (v.val.custom_type.type) {
     case Variable::CustomType::ITER: {
       uint16_t *val;
-      bitsy_heap.GetVar(v.val.custom_type.val, (uint8_t**)&val);
+      BitsyHeap::GetVar(v.val.custom_type.val, (uint8_t**)&val);
       Variable iter;
       iter.type = Variable::CUSTOM;
       memcpy(&iter.val.custom_type, val, 2);
