@@ -125,27 +125,11 @@ Variable userlib_module_servo(uint8_t function, uint8_t argcount, Variable arg[]
 Variable userlib_module_nrf24(uint8_t function, uint8_t argcount, Variable arg[]) {
   switch (function) {
     case 0:
-      return nrf24::begin(argcount, arg);
+      return nrf24::init(argcount, arg);
     case 1:
-      return nrf24::setChannel(argcount, arg);
-    case 2:
-      return nrf24::setAddressWidth(argcount, arg);
-    case 3:
-      return nrf24::setPALevel(argcount, arg);
-    case 4:
-      return nrf24::openReadingPipe(argcount, arg);
-    case 5:
-      return nrf24::openWritingPipe(argcount, arg);
-    case 6:
-      return nrf24::startListening(argcount, arg);
-    case 7:
-      return nrf24::stopListening(argcount, arg);
-    case 8:
-      return nrf24::write(argcount, arg);
-    case 9:
-      return nrf24::available(argcount, arg);
-    case 10:
       return nrf24::read(argcount, arg);
+    case 2:
+      return nrf24::send(argcount, arg);
     default:
       BITSY_ASSERT(false);
   }
