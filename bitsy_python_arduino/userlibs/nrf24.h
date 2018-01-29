@@ -1,6 +1,9 @@
 #include <NRFLite.h>
 
 #include "../BitsyHeap.h"
+#include "../bitsy_python_vm.h"
+
+extern bitsy_python::BitsyPythonVM vm;
 
 namespace nrf24 {
 
