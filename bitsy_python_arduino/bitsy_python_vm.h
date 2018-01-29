@@ -11,8 +11,6 @@
 namespace bitsy_python {
 
 extern BitsyHeap bitsy_heap;
-extern ExecStack exec_stack;
-extern FunctionStack function_stack;
 
 class BitsyPythonVM {
  public:

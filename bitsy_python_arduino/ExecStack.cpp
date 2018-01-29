@@ -1,22 +1,27 @@
 #include "ExecStack.h"
 
+#include "BitStack.h"
+#include "ByteStack.h"
 #include "gc.h"
 
 namespace bitsy_python {
 
-void ExecStack::push(const Variable &v) {
+BitStack hdr;
+ByteStack data;
+
+void ExecStack_push(const Variable &v) {
   hdr.pushTwoBits(v.type);
   data.pushBytes((uint8_t *)&v.val, v.size());
 }
 
-Variable ExecStack::pop() {
+Variable ExecStack_pop() {
   Variable v;
   v.type = hdr.popTwoBits();
   data.popBytes((uint8_t *)&v.val, v.size());
   return v;
 }
 
-uint32_t ExecStack::getCustomHeapVariableMap(uint8_t start_id) const {
+uint32_t ExecStack_getCustomHeapVariableMap(uint8_t start_id) {
   uint32_t map = 0;
   uint8_t bits, *bytes, bytelen=0, byteind=0;
   uint32_t p1=INVALID_ITERATOR, p2=INVALID_ITERATOR;

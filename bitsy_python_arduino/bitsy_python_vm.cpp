@@ -13,8 +13,6 @@
 namespace bitsy_python {
 
 BitsyHeap bitsy_heap;
-ExecStack exec_stack;
-FunctionStack function_stack;
 
 #ifdef DESKTOP
 BitsyPythonVM::BitsyPythonVM(const char *fname)
@@ -26,8 +24,8 @@ BitsyPythonVM::BitsyPythonVM() : prog(Program::FromEEPROM()) {
 }
 
 void BitsyPythonVM::binary_arithmetic(uint8_t ins, uint8_t arg) {
-  auto v1 = exec_stack.pop();
-  auto v2 = exec_stack.pop();
+  auto v1 = ExecStack_pop();
+  auto v2 = ExecStack_pop();
   Variable ret;
   bool is_float;
   int32_t i1, i2, iret;
@@ -38,7 +36,7 @@ void BitsyPythonVM::binary_arithmetic(uint8_t ins, uint8_t arg) {
     ret = DataType::GetIndex(v2, v1.as_uint8());
     goto end;
   } else if (ins==STORE_SUBSCR) {
-    DataType::SetIndex(v2, v1.as_uint8(), exec_stack.pop());
+    DataType::SetIndex(v2, v1.as_uint8(), ExecStack_pop());
     return;
   }
 
@@ -156,12 +154,12 @@ void BitsyPythonVM::binary_arithmetic(uint8_t ins, uint8_t arg) {
     else ret.set_int32(iret);
   }
 end:
-  exec_stack.push(ret);
+  ExecStack_push(ret);
 }
 
 void BitsyPythonVM::unary_arithmetic(uint8_t ins) {
   if (ins==UNARY_POSITIVE) return;
-  auto v = exec_stack.pop();
+  auto v = ExecStack_pop();
   switch (ins) {
     case UNARY_NEGATIVE:
       if (v.type == Variable::FLOAT)
@@ -176,7 +174,7 @@ void BitsyPythonVM::unary_arithmetic(uint8_t ins) {
       v.set_int32(~v.as_int32());
       break;
   }
-  exec_stack.push(v);
+  ExecStack_push(v);
   return;
 }
 
@@ -185,18 +183,18 @@ void BitsyPythonVM::jump_arithmetic(uint8_t ins, uint16_t jump) {
   if (ins==JUMP_ABSOLUTE)
     goto end;
   {
-  auto condvar = exec_stack.pop();
+  auto condvar = ExecStack_pop();
   cond = condvar.as_bool();
   switch (ins) {
     case JUMP_IF_TRUE_OR_POP:
       if (cond) {
-        exec_stack.push(condvar);
+        ExecStack_push(condvar);
       }
     case POP_JUMP_IF_TRUE:
       break;
     case JUMP_IF_FALSE_OR_POP:
       if (!cond) {
-        exec_stack.push(condvar);
+        ExecStack_push(condvar);
       }
     case POP_JUMP_IF_FALSE:
       cond = !cond;
@@ -212,7 +210,7 @@ end:
 void BitsyPythonVM::initExecution() {
   if (prog.sanity_check()) {
     auto fn = prog.setup_function_call(0);
-    function_stack.setup_function_call(fn.args, fn.vars, fn.old_ins_ptr);
+    FunctionStack_setup_function_call(fn.args, fn.vars, fn.old_ins_ptr);
     // printf("main %d %d %d\n", fn.args, fn.vars, fn.len);
   }
 }
@@ -235,7 +233,7 @@ bool BitsyPythonVM::executeOneStep() {
     case NOP:
       break;
     case POP_TOP:
-      exec_stack.pop();
+      ExecStack_pop();
       break;
 
     case UNARY_POSITIVE:
@@ -282,13 +280,13 @@ bool BitsyPythonVM::executeOneStep() {
       break;
 
     case LOAD_FAST:
-      arg = function_stack.getNthVariable(arg.as_uint8());
+      arg = FunctionStack_getNthVariable(arg.as_uint8());
     case LOAD_CONST:
     case LOAD_GLOBAL:
-      exec_stack.push(arg);
+      ExecStack_push(arg);
       break;
     case STORE_FAST:
-      function_stack.setNthVariable(arg.as_uint8(), exec_stack.pop());
+      FunctionStack_setNthVariable(arg.as_uint8(), ExecStack_pop());
       break;
     case DELETE_FAST:
       // TODO - support needed ?
@@ -299,26 +297,26 @@ bool BitsyPythonVM::executeOneStep() {
       BITSY_ASSERT(!(argcount & 0xF0));  // Keyword arguments not supported.
       Variable argvars[argcount];
       for (uint8_t i = 0; i < argcount; i++) {
-        argvars[argcount - i - 1] = exec_stack.pop();
+        argvars[argcount - i - 1] = ExecStack_pop();
       }
-      auto v = exec_stack.pop();
+      auto v = ExecStack_pop();
       BITSY_ASSERT(v.type == Variable::CUSTOM);
       if (v.val.custom_type.type == Variable::CustomType::USER_FUNCTION) {
         auto fn = prog.setup_function_call(v.val.custom_type.val);
         BITSY_ASSERT(fn.args == argcount);
-        function_stack.setup_function_call(fn.args, fn.vars, fn.old_ins_ptr);
+        FunctionStack_setup_function_call(fn.args, fn.vars, fn.old_ins_ptr);
         for (uint8_t i = 0; i < argcount; i++) {
-          function_stack.setNthVariable(i, argvars[i]);
+          FunctionStack_setNthVariable(i, argvars[i]);
         }
       } else if (v.val.custom_type.type ==
                  Variable::CustomType::USER_MODULE_FUNCTION) {
         uint8_t module_id = (v.val.custom_type.val >> 6) & 0x3F;
         if (is_userlib_module_enabled((v.val.custom_type.val >> 6) & 0x3F))
-          exec_stack.push(call_userlib_function(
+          ExecStack_push(call_userlib_function(
               module_id, v.val.custom_type.val & 0x3F, argcount, argvars));
       } else if (v.val.custom_type.type ==
                  Variable::CustomType::BUILTIN_FUNCTION) {
-        exec_stack.push(handle_builtin_call((BitsyBuiltin)v.val.custom_type.val,
+        ExecStack_push(handle_builtin_call((BitsyBuiltin)v.val.custom_type.val,
                                             argcount, argvars));
       } else {
         BITSY_ASSERT(false);
@@ -327,13 +325,13 @@ bool BitsyPythonVM::executeOneStep() {
     }
     case RETURN_VALUE: {
       uint16_t ins_ptr;
-      bool ret = !function_stack.return_function(&ins_ptr);
+      bool ret = !FunctionStack_return_function(&ins_ptr);
       prog.return_function(ins_ptr);
       return ret;
     }
 
     case PRINT_ITEM: {
-      auto v = exec_stack.pop();
+      auto v = ExecStack_pop();
       BITSY_PYTHON_PRINT_VAR(v);
       BITSY_PYTHON_PRINT(" ");
       break;
@@ -342,18 +340,18 @@ bool BitsyPythonVM::executeOneStep() {
       BITSY_PYTHON_PRINT("\n");
       break;
     case GET_ITER:
-      arg = exec_stack.pop();
-      exec_stack.push(arg);
+      arg = ExecStack_pop();
+      ExecStack_push(arg);
       arg = DataType::CreateForType(Variable::CustomType::ITER, 1, &arg);
-      exec_stack.pop();
-      exec_stack.push(arg);
+      ExecStack_pop();
+      ExecStack_push(arg);
       break;
     case FOR_ITER: {
       Variable iter, elem;
-      iter = exec_stack.pop();
+      iter = ExecStack_pop();
       if(IterForLoopIter(iter, &elem)) {
-        exec_stack.push(iter);
-        exec_stack.push(elem);
+        ExecStack_push(iter);
+        ExecStack_push(elem);
       } else {
         prog.jump_to_target(arg.as_uint12());
       }
@@ -362,11 +360,11 @@ bool BitsyPythonVM::executeOneStep() {
     case UNPACK_SEQUENCE: {
       // This implementation does not raise exceptions on non matching length.
       // ValueError: too many values to unpack
-      Variable elem, iter = exec_stack.pop();
+      Variable elem, iter = ExecStack_pop();
       BITSY_ASSERT(iter.type == Variable::CUSTOM);
       for(uint8_t i=arg.as_uint8(); i>0; i--) {
         if(IterForLoop(iter.val.custom_type, i-1, &elem))
-          exec_stack.push(elem);
+          ExecStack_push(elem);
       }
       break;
     }
@@ -380,8 +378,8 @@ bool BitsyPythonVM::executeOneStep() {
         prog.jump_to_target(arg.as_uint12());
         break;*/
     case LOAD_ATTR:
-      exec_stack.push(Variable::ModuleFunctionVariable(
-          exec_stack.pop(), arg.as_uint12()));
+      ExecStack_push(Variable::ModuleFunctionVariable(
+          ExecStack_pop(), arg.as_uint12()));
       break;
     default:
       BITSY_PYTHON_PRINT("UNSUPPORTED INS ");
@@ -395,8 +393,8 @@ bool BitsyPythonVM::executeOneStep() {
 
 void BitsyPythonVM::callUserFunction(uint16_t f, Variable arg) {
   auto fn = prog.setup_function_call(f);
-  function_stack.setup_function_call(1, fn.vars, fn.old_ins_ptr);
-  function_stack.setNthVariable(0, arg);
+  FunctionStack_setup_function_call(1, fn.vars, fn.old_ins_ptr);
+  FunctionStack_setNthVariable(0, arg);
 }
 
 }
