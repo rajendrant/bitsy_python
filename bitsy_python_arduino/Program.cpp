@@ -87,9 +87,7 @@ bool sanity_check() {
   return true;
 }
 
-bool is_sane() {
-  return ins_ptr;
-}
+bool is_sane() { return ins_ptr; }
 
 FunctionParams setup_function_call(uint8_t fn) {
   Program::FunctionParams ret;

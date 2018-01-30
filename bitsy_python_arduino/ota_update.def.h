@@ -49,7 +49,6 @@ void ota_update_serial() {
     delay(1000);
     arduino_util::soft_reset();
   }
-
 }
 #endif
 
@@ -64,16 +63,15 @@ void ota_update_nrf24() {
 #endif
 
 void ota_update_loop() {
-  static int last_ota_check=0;
-
+  static long last_ota_check=0;
   if (millis() > last_ota_check+20) {
-    last_ota_check = millis();
 #ifdef ENABLE_BITSY_USERLIB_SERIAL
     ota_update_serial();
 #endif
 #ifdef ENABLE_BITSY_USERLIB_NRF24
     ota_update_nrf24();
 #endif
+    last_ota_check = millis();
   }
 }
 

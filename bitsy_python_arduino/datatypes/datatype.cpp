@@ -194,7 +194,7 @@ void DataType::updateUsedContainers(uint8_t start_id, const Variable &v, uint32_
       memcpy(&iter.val.custom_type, val, 2);
       if (iter.is_custom_heap_type() && iter.val.custom_type.val>=start_id &&
           iter.val.custom_type.val<start_id+32) {
-        *map |= 0x1<<(iter.val.custom_type.val-start_id);
+        *map |= 0x1L<<(iter.val.custom_type.val-start_id);
       }
       break;
     }

@@ -13,7 +13,7 @@ void gc() {
     heap_free |= ExecStack::getCustomHeapVariableMap(start_id) |
                  FunctionStack::getCustomHeapVariableMap(start_id);
     for(uint8_t i=0; i<32; i++) {
-      if (!(heap_free & 0x1<<i))
+      if (!(heap_free & 0x1L<<i))
         BitsyHeap::FreeVar(start_id+i);
     }
   }
@@ -23,7 +23,7 @@ void updateCustomHeapVariableMap(uint8_t start_id, const Variable &v, uint32_t *
   if (v.is_custom_heap_type() &&
         v.val.custom_type.val>=start_id &&
         v.val.custom_type.val<start_id+32) {
-      *map |= 0x1<<(v.val.custom_type.val-start_id);
+      *map |= 0x1L<<(v.val.custom_type.val-start_id);
   DataType::updateUsedContainers(start_id, v, map);
 }
 }

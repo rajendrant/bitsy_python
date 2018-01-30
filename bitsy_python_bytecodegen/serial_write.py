@@ -23,6 +23,7 @@ def send_bitsy_program(ser, prog):
     ser.write(prog)
     ser.write('END\r\n')
     read_until(ser, 'RESET\r\n')
+    print 'Successfully wrote'
 
 time.sleep(2) # wait for arduino to initialize
 send_bitsy_program(ser, open(sys.argv[1]).read())

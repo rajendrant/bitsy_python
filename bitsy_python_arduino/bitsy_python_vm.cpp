@@ -230,6 +230,10 @@ bool executeOneStep() {
   Variable arg;
   auto ins = Program::get_next_instruction(&arg);
   // printf("ins %d %s %d\n", ins, get_ins_name(ins), arg.as_int32());
+  if(ins==LOAD_CONST) {
+    ExecStack::push(arg);
+    return true;
+  }
   switch (ins) {
     case STOP_CODE:
       return false;
@@ -284,6 +288,8 @@ bool executeOneStep() {
 
     case LOAD_FAST:
       arg = FunctionStack::getNthVariable(arg.as_uint8());
+      ExecStack::push(arg);
+      break;
     case LOAD_CONST:
     case LOAD_GLOBAL:
       ExecStack::push(arg);
@@ -387,8 +393,7 @@ bool executeOneStep() {
       break;
     default:
       BITSY_PYTHON_PRINT("UNSUPPORTED INS ");
-      arg.set_uint12(ins);
-      BITSY_PYTHON_PRINT_VAR(arg);
+      BITSY_PYTHON_PRINT_VAR(Variable(ins));
       // BITSY_PYTHON_PRINT(get_ins_name(ins));
       BITSY_ASSERT(false);
   }
@@ -403,12 +408,4 @@ void callUserFunction(uint16_t f, Variable arg) {
 }
 
 }
-}
-
-void bitsy_print(char ch) {
-#if defined(DESKTOP)
-  printf("%c", ch);
-#elif defined(ENABLE_BITSY_USERLIB_SERIAL)
-  Serial.print(ch);
-#endif
 }

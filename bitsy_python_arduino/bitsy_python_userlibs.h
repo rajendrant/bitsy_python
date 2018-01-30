@@ -7,7 +7,13 @@
 // The userlib functions are auto-generated and defined in the following file.
 #include "userlibs/gen/userlibs_defines.h"
 
-extern void bitsy_print(char ch);
+void bitsy_print(char ch) {
+#if defined(DESKTOP)
+  printf("%c", ch);
+#elif defined(ENABLE_BITSY_USERLIB_SERIAL)
+  Serial.print(ch);
+#endif
+}
 
 void BITSY_PYTHON_PRINT(const char* str) {
 #if defined(DESKTOP) || defined(ENABLE_BITSY_USERLIB_SERIAL)
@@ -15,6 +21,9 @@ void BITSY_PYTHON_PRINT(const char* str) {
     bitsy_print(*str);
     ++str;
   }
+#ifdef ENABLE_BITSY_USERLIB_SERIAL
+  delay(50);
+#endif
 #endif
 }
 

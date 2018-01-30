@@ -129,13 +129,13 @@ uint32_t getFreeIDMap(uint8_t start_id) {
   uint32_t map = 0;
   for(var_id_t id=free_id; id != INVALID_VARID;) {
     if (id >= start_id && id < start_id+32)
-      map |= 0x1<<(id-start_id);
+      map |= 0x1L<<(id-start_id);
     uint8_t *ptr;
     GetVar(id, &ptr);
     id = ptr[0];
   }
   for(var_id_t id=last; id>=start_id && id<start_id+32; id++)
-    map |= 0x1<<(id-start_id);
+    map |= 0x1L<<(id-start_id);
   return map;
 }
 
