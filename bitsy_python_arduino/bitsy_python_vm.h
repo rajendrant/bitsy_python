@@ -2,34 +2,24 @@
 #define BITSY_PYTHON_VM_H_
 
 #include "bitsylimit.h"
-#include "BitsyHeap.h"
-#include "ExecStack.h"
-#include "FunctionStack.h"
-#include "Program.h"
-#include "bitsylimit.h"
+#include "variable.h"
 
 namespace bitsy_python {
 
-class BitsyPythonVM {
- public:
+namespace BitsyPythonVM {
+
 #ifdef DESKTOP
-  BitsyPythonVM(const char *fname);
+void init(const char *fname);
 #elif defined(ARDUINO)
-  BitsyPythonVM();
+void init();
 #endif
 
-  void initExecution();
-  void execute();
-  bool executeOneStep();
-  void callUserFunction(uint16_t f, Variable arg);
+void initExecution();
+void execute();
+bool executeOneStep();
+void callUserFunction(uint16_t f, Variable arg);
 
- private:
-  void binary_arithmetic(uint8_t ins, uint8_t arg);
-  void unary_arithmetic(uint8_t ins);
-  void jump_arithmetic(uint8_t ins, uint16_t jump);
-
-  Program prog;
-};
+}
 }
 
 #endif /* BITSY_PYTHON_VM_H_ */

@@ -1,8 +1,6 @@
 #include <math.h>
 #include <stdio.h>
 
-extern bitsy_python::BitsyPythonVM *vm_global;
-
 namespace testuserlib {
 
 Variable printstr(uint8_t argcount, Variable arg[]) {
@@ -40,14 +38,14 @@ Variable init_callback(uint8_t argcount, Variable arg[]) {
   if (argcount==1 && arg[0].type==Variable::CUSTOM &&
       arg[0].val.custom_type.type==Variable::CustomType::USER_FUNCTION) {
     callback = arg[0].val.custom_type.val;
-    vm_global->callUserFunction(callback, Variable(123));
+    bitsy_python::BitsyPythonVM::callUserFunction(callback, Variable(123));
   }
   return Variable::Zero();
 }
 
 Variable trigger_callback(uint8_t argcount, Variable arg[]) {
   if (callback != 0xFF)
-    vm_global->callUserFunction(callback, Variable(123));
+    bitsy_python::BitsyPythonVM::callUserFunction(callback, Variable(123));
   return Variable::Zero();
 }
 

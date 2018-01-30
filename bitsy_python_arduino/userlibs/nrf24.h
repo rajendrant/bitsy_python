@@ -3,8 +3,6 @@
 #include "../BitsyHeap.h"
 #include "../bitsy_python_vm.h"
 
-extern bitsy_python::BitsyPythonVM vm;
-
 namespace nrf24 {
 
 NRFLite radio;
@@ -46,7 +44,7 @@ void send_to_callback(uint8_t *buf, uint8_t len) {
     v.set_CustomType(Variable::CustomType::BYTEARRAY,
                      bitsy_python::BitsyHeap::CreateVar(len, &vbuf));
     memcpy(vbuf, buf, len);
-    vm.callUserFunction(on_recv_callback, v);
+    bitsy_python::BitsyPythonVM::callUserFunction(on_recv_callback, v);
   }
 }
 

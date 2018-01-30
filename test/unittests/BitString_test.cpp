@@ -7,7 +7,8 @@
 
 int main() {
   uint8_t BUF[10];
-  bitsy_python::BitString bits(BUF, sizeof(BUF));
+  bitsy_python::BitString bits;
+  bits.init(BUF, sizeof(BUF));
   BUF[0] = 0xF1;
   BUF[1] = 0b10100001;
 

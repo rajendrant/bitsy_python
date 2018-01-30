@@ -10,9 +10,7 @@ namespace bitsy_python {
 class BitString {
  public:
 #ifdef DESKTOP
-  BitString(uint8_t *buf, const uint16_t size) : _buf(buf), size(size) {}
-#else
-  BitString() {}
+  void init(uint8_t *buf, const uint16_t sz) {_buf=buf; size=sz;}
 #endif
 
   uint8_t get_bit8(uint16_t pos, uint8_t len) const;
@@ -21,8 +19,8 @@ class BitString {
 
  private:
 #ifdef DESKTOP
-  const uint8_t *_buf;
-  const uint16_t size;
+  uint8_t *_buf;
+  uint16_t size;
 #endif
 };
 }

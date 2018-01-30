@@ -3,26 +3,33 @@
 #include <stdio.h>
 
 #include "bitsy_alloc.h"
+#include "BitsyHeap.h"
 #include "Builtins.h"
 #include "datatypes/datatype.h"
 #include "datatypes/iter.h"
+#include "ExecStack.h"
+#include "FunctionStack.h"
+#include "Program.h"
 #include "instructions.h"
 #include "userlibs/userlibs.h"
 #include "variable.h"
 
 namespace bitsy_python {
 
+namespace BitsyPythonVM {
+
 #ifdef DESKTOP
-BitsyPythonVM::BitsyPythonVM(const char *fname)
-    : prog(Program::FromFile(fname)) {
+void init(const char *fname) {
+  Program::FromFile(fname);
 #elif defined(ARDUINO)
-BitsyPythonVM::BitsyPythonVM() : prog(Program::FromEEPROM()) {
+void init() {
+  Program::FromEEPROM();
 #endif
   bitsy_alloc_init();
   BitsyHeap::init();
 }
 
-void BitsyPythonVM::binary_arithmetic(uint8_t ins, uint8_t arg) {
+void binary_arithmetic(uint8_t ins, uint8_t arg) {
   auto v1 = ExecStack::pop();
   auto v2 = ExecStack::pop();
   Variable ret;
@@ -156,7 +163,7 @@ end:
   ExecStack::push(ret);
 }
 
-void BitsyPythonVM::unary_arithmetic(uint8_t ins) {
+void unary_arithmetic(uint8_t ins) {
   if (ins==UNARY_POSITIVE) return;
   auto v = ExecStack::pop();
   switch (ins) {
@@ -177,7 +184,7 @@ void BitsyPythonVM::unary_arithmetic(uint8_t ins) {
   return;
 }
 
-void BitsyPythonVM::jump_arithmetic(uint8_t ins, uint16_t jump) {
+void jump_arithmetic(uint8_t ins, uint16_t jump) {
   bool cond = true;
   if (ins==JUMP_ABSOLUTE)
     goto end;
@@ -202,29 +209,29 @@ void BitsyPythonVM::jump_arithmetic(uint8_t ins, uint16_t jump) {
   }
 end:
   if (cond) {
-    prog.jump_to_target(jump);
+    Program::jump_to_target(jump);
   }
 }
 
-void BitsyPythonVM::initExecution() {
-  if (prog.sanity_check()) {
-    auto fn = prog.setup_function_call(0);
+void initExecution() {
+  if (Program::sanity_check()) {
+    auto fn = Program::setup_function_call(0);
     FunctionStack::setup_function_call(fn.args, fn.vars, fn.old_ins_ptr);
     // printf("main %d %d %d\n", fn.args, fn.vars, fn.len);
   }
 }
 
-void BitsyPythonVM::execute() {
+void execute() {
   while (executeOneStep())
     ;
 }
 
-bool BitsyPythonVM::executeOneStep() {
-  if (!prog.is_sane())
+bool executeOneStep() {
+  if (!Program::is_sane())
     return false;
 
   Variable arg;
-  auto ins = prog.get_next_instruction(&arg);
+  auto ins = Program::get_next_instruction(&arg);
   // printf("ins %s %d\n", get_ins_name(ins), arg.as_int32());
   switch (ins) {
     case STOP_CODE:
@@ -301,7 +308,7 @@ bool BitsyPythonVM::executeOneStep() {
       auto v = ExecStack::pop();
       BITSY_ASSERT(v.type == Variable::CUSTOM);
       if (v.val.custom_type.type == Variable::CustomType::USER_FUNCTION) {
-        auto fn = prog.setup_function_call(v.val.custom_type.val);
+        auto fn = Program::setup_function_call(v.val.custom_type.val);
         BITSY_ASSERT(fn.args == argcount);
         FunctionStack::setup_function_call(fn.args, fn.vars, fn.old_ins_ptr);
         for (uint8_t i = 0; i < argcount; i++) {
@@ -325,7 +332,7 @@ bool BitsyPythonVM::executeOneStep() {
     case RETURN_VALUE: {
       uint16_t ins_ptr;
       bool ret = !FunctionStack::return_function(&ins_ptr);
-      prog.return_function(ins_ptr);
+      Program::return_function(ins_ptr);
       return ret;
     }
 
@@ -352,7 +359,7 @@ bool BitsyPythonVM::executeOneStep() {
         ExecStack::push(iter);
         ExecStack::push(elem);
       } else {
-        prog.jump_to_target(arg.as_uint12());
+        Program::jump_to_target(arg.as_uint12());
       }
       break;
     }
@@ -371,10 +378,10 @@ bool BitsyPythonVM::executeOneStep() {
     case POP_BLOCK:
         break;
     case BREAK_LOOP:
-        prog.jump_to_target(arg.as_uint12());
+        Program::jump_to_target(arg.as_uint12());
         break;
     case CONTINUE_LOOP:
-        prog.jump_to_target(arg.as_uint12());
+        Program::jump_to_target(arg.as_uint12());
         break;*/
     case LOAD_ATTR:
       ExecStack::push(Variable::ModuleFunctionVariable(
@@ -390,12 +397,13 @@ bool BitsyPythonVM::executeOneStep() {
   return true;
 }
 
-void BitsyPythonVM::callUserFunction(uint16_t f, Variable arg) {
-  auto fn = prog.setup_function_call(f);
+void callUserFunction(uint16_t f, Variable arg) {
+  auto fn = Program::setup_function_call(f);
   FunctionStack::setup_function_call(1, fn.vars, fn.old_ins_ptr);
   FunctionStack::setNthVariable(0, arg);
 }
 
+}
 }
 
 void bitsy_print(char ch) {

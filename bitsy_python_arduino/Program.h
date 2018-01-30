@@ -9,18 +9,18 @@
 
 namespace bitsy_python {
 
-class Program {
- public:
-  typedef struct {
-    uint16_t len;
-    uint8_t args, vars;
-    uint16_t old_ins_ptr;
-  } FunctionParams;
+namespace Program {
+
+typedef struct {
+  uint16_t len;
+  uint8_t args, vars;
+  uint16_t old_ins_ptr;
+} FunctionParams;
 
 #ifdef DESKTOP
-  static Program FromFile(const char *fname);
+  void FromFile(const char *fname);
 #elif defined(ARDUINO)
-  static Program FromEEPROM();
+  void FromEEPROM();
 #endif
 
   // Checks if the full module is available, by checking a byte at the end of
@@ -35,21 +35,10 @@ class Program {
   Variable get_number();
 
   FunctionParams setup_function_call(uint8_t fn);
-  void return_function(uint16_t ins_ptr);
+  void return_function(uint16_t insptr);
 
   void jump_to_target(uint16_t target);
 
- private:
-  friend class ProgramTest;
-  Program(BitString bits) : bits(bits) {}
-
-#ifdef DESKTOP
-  void dump();
-#endif
-
-  BitString bits;
-  uint16_t ins_ptr = 0;
-  uint16_t ins_ptr_function_start = 0;
-};
+}
 }
 #endif /* PROGRAM_H_ */

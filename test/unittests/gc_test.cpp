@@ -5,6 +5,8 @@
 #include <set>
 
 #include "test_common.h"
+#include "ExecStack.h"
+#include "FunctionStack.h"
 
 namespace bitsy_python {
 

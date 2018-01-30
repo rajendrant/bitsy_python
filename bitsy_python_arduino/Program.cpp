@@ -12,7 +12,13 @@
 
 namespace bitsy_python {
 
-uint8_t Program::get_next_instruction(Variable *arg) {
+namespace Program {
+
+BitString bits;
+uint16_t ins_ptr = 0;
+uint16_t ins_ptr_function_start = 0;
+
+uint8_t get_next_instruction(Variable *arg) {
   uint8_t ins = 0;
   if (bits.get_bit8(ins_ptr, 1) == 0) {
     ins = bits.get_bit8(ins_ptr + 1, 4);
@@ -70,7 +76,7 @@ uint8_t Program::get_next_instruction(Variable *arg) {
   return ins;
 }
 
-bool Program::sanity_check() {
+bool sanity_check() {
   uint8_t total_functions = bits.get_bit8(0, 8);
   uint16_t module_len = bits.get_bit16(MODULE_HEADER + total_functions * HEADER_PER_FUNCTION, HEADER_PER_FUNCTION) * 8;
   if(bits.get_bit8(8, 8) != bits.get_bit8(module_len, 8)) {
@@ -80,11 +86,11 @@ bool Program::sanity_check() {
   return true;
 }
 
-bool Program::is_sane() {
+bool is_sane() {
   return ins_ptr;
 }
 
-Program::FunctionParams Program::setup_function_call(uint8_t fn) {
+FunctionParams setup_function_call(uint8_t fn) {
   Program::FunctionParams ret;
   ret.old_ins_ptr = ins_ptr;
   ins_ptr = bits.get_bit16(MODULE_HEADER + fn * HEADER_PER_FUNCTION, HEADER_PER_FUNCTION) * 8;
@@ -96,9 +102,9 @@ Program::FunctionParams Program::setup_function_call(uint8_t fn) {
   return ret;
 }
 
-void Program::return_function(uint16_t ins_ptr) { this->ins_ptr = ins_ptr; }
+void return_function(uint16_t insptr) { ins_ptr = insptr; }
 
-Variable Program::get_number() {
+Variable get_number() {
   Variable v;
   if (bits.get_bit8(ins_ptr, 1) == 0) {
     v.set_int32(bits.get_bit8(ins_ptr + 1, 3));
@@ -138,22 +144,21 @@ Variable Program::get_number() {
   return v;
 }
 
-void Program::jump_to_target(uint16_t target) {
+void jump_to_target(uint16_t target) {
   ins_ptr = ins_ptr_function_start + target;
 }
 
 #ifdef DESKTOP
-// static
-Program Program::FromFile(const char *fname) {
+void FromFile(const char *fname) {
   FILE *fp;
   fp = fopen(fname, "r");
   char *buf = (char *)malloc(1024);
   int size = fread(buf, 1, 1024, fp);
   fclose(fp);
-  return Program(BitString((uint8_t *)buf, size));
+  bits.init((uint8_t *)buf, size);
 }
 
-void Program::dump() {
+void dump() {
   for (int f = 0; f < 4; f++) {
     auto fn = setup_function_call(f);
     printf("function %d\n", f);
@@ -170,7 +175,7 @@ void Program::dump() {
 }
 
 #elif defined(ARDUINO)
-// static
-Program Program::FromEEPROM() { return Program(BitString()); }
+void FromEEPROM() { }
 #endif
+}
 }

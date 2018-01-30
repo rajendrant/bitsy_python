@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "test_common.h"
+#include "ExecStack.h"
 #include "gc.h"
 
 namespace bitsy_python {

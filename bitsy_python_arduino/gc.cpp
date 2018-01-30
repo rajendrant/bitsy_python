@@ -2,6 +2,8 @@
 
 #include "bitsy_python_vm.h"
 #include "datatypes/datatype.h"
+#include "ExecStack.h"
+#include "FunctionStack.h"
 
 namespace bitsy_python {
 void gc() {
