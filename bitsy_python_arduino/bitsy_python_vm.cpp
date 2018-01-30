@@ -214,7 +214,7 @@ void init() {
   BitsyHeap::init();
   if (Program::sanity_check()) {
     auto fn = Program::setup_function_call(0);
-    FunctionStack::setup_function_call(fn.args, fn.vars, fn.old_ins_ptr);
+    FunctionStack::setup_function_call(fn.vars, fn.old_ins_ptr);
     // printf("main %d %d %d\n", fn.args, fn.vars, fn.len);
   }
 }
@@ -230,7 +230,7 @@ bool executeOneStep() {
 
   Variable arg;
   auto ins = Program::get_next_instruction(&arg);
-  // printf("ins %s %d\n", get_ins_name(ins), arg.as_int32());
+  // printf("ins %d %s %d\n", ins, get_ins_name(ins), arg.as_int32());
   switch (ins) {
     case STOP_CODE:
       return false;
@@ -308,7 +308,7 @@ bool executeOneStep() {
       if (v.val.custom_type.type == Variable::CustomType::USER_FUNCTION) {
         auto fn = Program::setup_function_call(v.val.custom_type.val);
         BITSY_ASSERT(fn.args == argcount);
-        FunctionStack::setup_function_call(fn.args, fn.vars, fn.old_ins_ptr);
+        FunctionStack::setup_function_call(fn.vars, fn.old_ins_ptr);
         for (uint8_t i = 0; i < argcount; i++) {
           FunctionStack::setNthVariable(i, argvars[i]);
         }
@@ -329,8 +329,11 @@ bool executeOneStep() {
     }
     case RETURN_VALUE: {
       uint16_t ins_ptr;
-      bool ret = !FunctionStack::return_function(&ins_ptr);
+      bool is_callback_mode;
+      bool ret = !FunctionStack::return_function(&ins_ptr, &is_callback_mode);
       Program::return_function(ins_ptr);
+      if (is_callback_mode)
+        ExecStack::pop();
       return ret;
     }
 
@@ -397,8 +400,9 @@ bool executeOneStep() {
 
 void callUserFunction(uint16_t f, Variable arg) {
   auto fn = Program::setup_function_call(f);
-  FunctionStack::setup_function_call(1, fn.vars, fn.old_ins_ptr);
+  FunctionStack::setup_function_call(fn.vars, fn.old_ins_ptr);
   FunctionStack::setNthVariable(0, arg);
+  FunctionStack::set_callback_mode();
 }
 
 }

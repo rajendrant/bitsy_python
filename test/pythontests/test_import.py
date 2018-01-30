@@ -19,6 +19,7 @@ def callback_test():
   testuserlib.init_callback(on_callback)
   testuserlib.trigger_callback()
   testuserlib.trigger_callback()
+  print 'success'
 
 def main():
     foo()

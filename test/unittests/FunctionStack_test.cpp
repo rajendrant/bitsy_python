@@ -11,6 +11,7 @@ namespace bitsy_python {
 
 Variable zero, one, hundred, kilo, mega, float_pi;
 uint16_t ins_ptr = 0;
+bool is_callback_mode;
 
 void initvars() {
   zero.set_int32(0);
@@ -30,34 +31,34 @@ void compare(Variable a, Variable b) {
 void test1() {
   bitsy_alloc_init();
   assert(FunctionStack::is_empty());
-  FunctionStack::setup_function_call(0, 0, ins_ptr);
+  FunctionStack::setup_function_call(0, ins_ptr);
   assert(!FunctionStack::is_empty());
-  FunctionStack::return_function(&ins_ptr);
+  FunctionStack::return_function(&ins_ptr, &is_callback_mode);
   assert(FunctionStack::is_empty());
 
   assert(FunctionStack::is_empty());
-  FunctionStack::setup_function_call(1, 1, ins_ptr);
+  FunctionStack::setup_function_call(1, ins_ptr);
   assert(!FunctionStack::is_empty());
-  FunctionStack::return_function(&ins_ptr);
+  FunctionStack::return_function(&ins_ptr, &is_callback_mode);
   assert(FunctionStack::is_empty());
 }
 
 void test2() {
   bitsy_alloc_init();
   assert(FunctionStack::is_empty());
-  FunctionStack::setup_function_call(1, 1, ins_ptr);
-  FunctionStack::setup_function_call(0, 0, ins_ptr);
+  FunctionStack::setup_function_call(1, ins_ptr);
+  FunctionStack::setup_function_call(0, ins_ptr);
   assert(!FunctionStack::is_empty());
-  FunctionStack::return_function(&ins_ptr);
+  FunctionStack::return_function(&ins_ptr, &is_callback_mode);
   assert(!FunctionStack::is_empty());
-  FunctionStack::return_function(&ins_ptr);
+  FunctionStack::return_function(&ins_ptr, &is_callback_mode);
   assert(FunctionStack::is_empty());
 }
 
 void testvar1() {
   bitsy_alloc_init();
   assert(FunctionStack::is_empty());
-  FunctionStack::setup_function_call(0, 4, ins_ptr);
+  FunctionStack::setup_function_call(4, ins_ptr);
   compare(FunctionStack::getNthVariable(0), zero);
   compare(FunctionStack::getNthVariable(1), zero);
   compare(FunctionStack::getNthVariable(2), zero);
@@ -111,14 +112,14 @@ void testvar1() {
   compare(FunctionStack::getNthVariable(1), float_pi);
   compare(FunctionStack::getNthVariable(2), float_pi);
   compare(FunctionStack::getNthVariable(3), float_pi);
-  FunctionStack::return_function(&ins_ptr);
+  FunctionStack::return_function(&ins_ptr, &is_callback_mode);
   assert(FunctionStack::is_empty());
 }
 
 void testvarmultiple() {
   bitsy_alloc_init();
   assert(FunctionStack::is_empty());
-  FunctionStack::setup_function_call(0, 5, ins_ptr);
+  FunctionStack::setup_function_call(5, ins_ptr);
   compare(FunctionStack::getNthVariable(0), zero);
   compare(FunctionStack::getNthVariable(1), zero);
   compare(FunctionStack::getNthVariable(2), zero);
@@ -134,7 +135,7 @@ void testvarmultiple() {
   compare(FunctionStack::getNthVariable(3), float_pi);
   compare(FunctionStack::getNthVariable(4), zero);
 
-  FunctionStack::setup_function_call(0, 3, ins_ptr);
+  FunctionStack::setup_function_call(3, ins_ptr);
   compare(FunctionStack::getNthVariable(0), zero);
   compare(FunctionStack::getNthVariable(1), zero);
   compare(FunctionStack::getNthVariable(2), zero);
@@ -144,14 +145,14 @@ void testvarmultiple() {
   compare(FunctionStack::getNthVariable(0), mega);
   compare(FunctionStack::getNthVariable(1), hundred);
   compare(FunctionStack::getNthVariable(2), float_pi);
-  FunctionStack::return_function(&ins_ptr);
+  FunctionStack::return_function(&ins_ptr, &is_callback_mode);
 
   compare(FunctionStack::getNthVariable(0), hundred);
   compare(FunctionStack::getNthVariable(1), kilo);
   compare(FunctionStack::getNthVariable(2), mega);
   compare(FunctionStack::getNthVariable(3), float_pi);
   compare(FunctionStack::getNthVariable(4), zero);
-  FunctionStack::return_function(&ins_ptr);
+  FunctionStack::return_function(&ins_ptr, &is_callback_mode);
   assert(FunctionStack::is_empty());
 }
 
@@ -166,20 +167,20 @@ void testCustomHeapVaiable() {
   heap_2.val.custom_type.val = 2;
 
   assert(FunctionStack::is_empty());
-  FunctionStack::setup_function_call(0, 5, ins_ptr);
+  FunctionStack::setup_function_call(5, ins_ptr);
   assert(FunctionStack::getCustomHeapVariableMap(0) == 0x0);
   FunctionStack::setNthVariable(0, heap_0);
   assert(FunctionStack::getCustomHeapVariableMap(0) == 0x1);
   FunctionStack::setNthVariable(1, heap_1);
   assert(FunctionStack::getCustomHeapVariableMap(0) == 0x3);
 
-  FunctionStack::setup_function_call(0, 3, ins_ptr);
+  FunctionStack::setup_function_call(3, ins_ptr);
   assert(FunctionStack::getCustomHeapVariableMap(0) == 0x3);
   FunctionStack::setNthVariable(0, heap_2);
   assert(FunctionStack::getCustomHeapVariableMap(0) == 0x7);
 
-  FunctionStack::return_function(&ins_ptr);
-  FunctionStack::return_function(&ins_ptr);
+  FunctionStack::return_function(&ins_ptr, &is_callback_mode);
+  FunctionStack::return_function(&ins_ptr, &is_callback_mode);
   assert(FunctionStack::getCustomHeapVariableMap(0) == 0x0);
 }
 
