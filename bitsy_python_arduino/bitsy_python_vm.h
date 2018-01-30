@@ -14,7 +14,6 @@ void init(const char *fname);
 void init();
 #endif
 
-void initExecution();
 void execute();
 bool executeOneStep();
 void callUserFunction(uint16_t f, Variable arg);

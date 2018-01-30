@@ -10,12 +10,15 @@
 
 #include "test_common.h"
 
-bitsy_python::ByteStack stack;
 std::stack<uint8_t> stack_size;
-std::stack<uint8_t> stack_expected;
 
 void test1() {
+  bitsy_alloc_init();
+
   int test_iter=1000;
+  bitsy_python::ByteStack stack;
+  std::stack<uint8_t> stack_expected;
+  stack.init();
   while(test_iter--) {
     uint8_t val[8] = {0,};
     if (stack_size.empty() || rand()%2==0) {
@@ -41,7 +44,12 @@ void test1() {
 }
 
 void test2() {
+  bitsy_alloc_init();
+
   int test_iter=1000;
+  bitsy_python::ByteStack stack;
+  std::stack<uint8_t> stack_expected;
+  stack.init();
   while(test_iter--) {
     if (stack_expected.empty() || rand()%2==0) {
       uint8_t d = rand()%255;
@@ -67,7 +75,10 @@ bool checkIterator(const bitsy_python::ByteStack &s,
 }
 
 void testIterator() {
+  bitsy_alloc_init();
+
   bitsy_python::ByteStack s;
+  s.init();
   assert(checkIterator(s, {}));
   s.pushByte(101);
   assert(checkIterator(s, {101}));
@@ -85,7 +96,10 @@ void testIterator() {
 }
 
 void testIterator2() {
+  bitsy_alloc_init();
+
   bitsy_python::ByteStack s;
+  s.init();
   std::vector<uint8_t> expected;
   for(int iter=0; iter<1000; iter++) {
     uint8_t v = rand()%200;

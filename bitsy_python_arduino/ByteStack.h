@@ -7,7 +7,7 @@ namespace bitsy_python {
 
 class ByteStack : BlockStack {
  public:
-  ByteStack();
+  void init();
   void pushBytes(const uint8_t *src, uint8_t len);
   void popBytes(uint8_t *dst, uint8_t len);
   void pushByte(uint8_t src);

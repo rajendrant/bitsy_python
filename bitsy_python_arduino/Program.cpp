@@ -1,6 +1,7 @@
 #include "Program.h"
 
 #include "bitsy_python_vm.h"
+#include "BitString.h"
 #include "datatypes/datatype.h"
 #include "instructions.h"
 

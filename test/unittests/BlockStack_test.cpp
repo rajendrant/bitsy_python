@@ -13,6 +13,9 @@ namespace bitsy_python {
 class BlockStackTest {
 public:
 void test1() {
+  bitsy_alloc_init();
+  s.init();
+
   assert(GetSizeForTesting() == 0);
   s.AllocTopBlock();
   assert(GetSizeForTesting() == 1);
@@ -52,6 +55,9 @@ bool checkIterator(uint8_t count, uint8_t *b0=NULL, uint8_t *b1=NULL, uint8_t *b
 }
 
 void testIterator() {
+  bitsy_alloc_init();
+  s.init();
+
   uint8_t *b0, *b1, *b2;
   assert(checkIterator(0));
   s.AllocTopBlock();

@@ -10,9 +10,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "bitsy_alloc.h"
+
 void test1() {
   bitsy_python::BitStack stack;
   std::stack<uint8_t> stack_expected;
+  stack.init();
   for(int i=0; i<20000; i++) {
     if (stack_expected.empty() || rand()%2==0) {
       uint8_t d = rand() % 4;
@@ -40,6 +43,7 @@ bool checkIterator(const bitsy_python::BitStack &s, uint8_t count,
 
 void testIterator() {
   bitsy_python::BitStack s;
+  s.init();
   assert(checkIterator(s, 0));
   s.pushTwoBits(3);
   assert(checkIterator(s, 1, 3));

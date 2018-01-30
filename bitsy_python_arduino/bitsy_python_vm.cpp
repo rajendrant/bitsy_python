@@ -18,17 +18,6 @@ namespace bitsy_python {
 
 namespace BitsyPythonVM {
 
-#ifdef DESKTOP
-void init(const char *fname) {
-  Program::FromFile(fname);
-#elif defined(ARDUINO)
-void init() {
-  Program::FromEEPROM();
-#endif
-  bitsy_alloc_init();
-  BitsyHeap::init();
-}
-
 void binary_arithmetic(uint8_t ins, uint8_t arg) {
   auto v1 = ExecStack::pop();
   auto v2 = ExecStack::pop();
@@ -102,7 +91,7 @@ void binary_arithmetic(uint8_t ins, uint8_t arg) {
           iret = !DataType::InOperator(v1, v2);
           break;
         default:
-          // in, not-in, is, is-not, exception-match, BAD
+          // is, is-not, exception-match, BAD
           BITSY_PYTHON_PRINT("COMPARE_OP not supported operator\n");
           BITSY_ASSERT(false);
           iret = 0;
@@ -213,7 +202,16 @@ end:
   }
 }
 
-void initExecution() {
+#ifdef DESKTOP
+void init(const char *fname) {
+  Program::FromFile(fname);
+#elif defined(ARDUINO)
+void init() {
+  Program::FromEEPROM();
+#endif
+  bitsy_alloc_init();
+  ExecStack::init();
+  BitsyHeap::init();
   if (Program::sanity_check()) {
     auto fn = Program::setup_function_call(0);
     FunctionStack::setup_function_call(fn.args, fn.vars, fn.old_ins_ptr);

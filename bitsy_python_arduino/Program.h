@@ -3,7 +3,6 @@
 
 #include <stdint.h>
 
-#include "BitString.h"
 #include "bitsylimit.h"
 #include "variable.h"
 

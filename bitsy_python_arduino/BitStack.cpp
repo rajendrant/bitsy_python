@@ -2,13 +2,17 @@
 
 #include <stdlib.h>
 
+#include "bitsylimit.h"
+#include "bitsy_alloc.h"
+
 #define GET_2BIT_AT_POS(buf, n) (((buf) >> (n)) & 0x3)
 #define SET_2BIT_AT_POS(buf, n, val) \
   ((buf) = ((buf) & ~(0x3 << (n))) | (((val)&0x3) << (n)))
 
 namespace bitsy_python {
 
-BitStack::BitStack() {
+void BitStack::init() {
+  if (bytes) free(bytes);
   bytes = NULL;
   pos = 0;
   len = 0;

@@ -50,7 +50,6 @@ void init() {
   len = 0;
   last = 0;
   free_id = INVALID_VARID;
-  bitsy_alloc_init();
 }
 
 void destroy() {

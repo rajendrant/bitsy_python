@@ -4,10 +4,17 @@
 #include "ByteStack.h"
 #include "gc.h"
 
+#include <stdio.h>
+
 namespace bitsy_python {
 
 BitStack hdr;
 ByteStack data;
+
+void ExecStack::init() {
+  hdr.init();
+  data.init();
+}
 
 void ExecStack::push(const Variable &v) {
   hdr.pushTwoBits(v.type);

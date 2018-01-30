@@ -4,9 +4,10 @@
 #include <map>
 #include <string.h>
 
-#include "test_common.h"
+#include "bitsy_alloc.h"
 #include "ExecStack.h"
 #include "gc.h"
+#include "test_common.h"
 
 namespace bitsy_python {
 
@@ -29,7 +30,10 @@ void AddToStack(BitsyHeap::var_id_t id) {
 void test1() {
   int tests=200;
   std::map<int, std::string> actual;
+  bitsy_alloc_init();
+  ExecStack::init();
   BitsyHeap::init();
+
   while(tests--) {
     if(actual.size() <= 50 && rand()%10 == 0) {
       auto s = rand_string();
@@ -78,7 +82,10 @@ bool check_free_id_map(uint8_t id1=INVALID_VARID, uint8_t id2=INVALID_VARID,
 }
 
 void test_free() {
-  gc();
+  bitsy_alloc_init();
+  ExecStack::init();
+  BitsyHeap::init();
+
   assert(BitsyHeap::getFreeIDMap(0)==0xFFFFFFFF);
 
   uint8_t *val;

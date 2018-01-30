@@ -1,10 +1,8 @@
 #include "BlockStack.h"
 
-#include <stdio.h>
-
 namespace bitsy_python {
 
-BlockStack::BlockStack() {
+void BlockStack::init() {
   _top = INVALID_BLOCK;
 }
 

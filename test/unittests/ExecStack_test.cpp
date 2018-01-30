@@ -7,11 +7,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "bitsy_alloc.h"
 #include "test_common.h"
 
 namespace bitsy_python {
-
-std::stack<Variable> stack_expected;
 
 Variable zero, one, hundred, kilo, mega, float_pi;
 
@@ -31,6 +30,9 @@ void compare(const Variable &a, const Variable &b) {
 }
 
 void test1() {
+  bitsy_alloc_init();
+  ExecStack::init();
+
   ExecStack::push(zero);
   ExecStack::push(one);
   ExecStack::push(hundred);
@@ -47,6 +49,10 @@ void test1() {
 }
 
 void test2() {
+  std::stack<Variable> stack_expected;
+  bitsy_alloc_init();
+  ExecStack::init();
+
   int test_iter=1000;
   while(test_iter--) {
     Variable v;
@@ -79,6 +85,9 @@ void test2() {
 }
 
 void testCustomHeapVaiable() {
+  bitsy_alloc_init();
+  ExecStack::init();
+
   Variable heap_0, heap_1, heap_2;
   heap_0.type = Variable::CUSTOM;
   heap_0.val.custom_type.type = Variable::CustomType::STRING;

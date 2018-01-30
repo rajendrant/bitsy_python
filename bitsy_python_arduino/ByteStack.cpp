@@ -1,11 +1,11 @@
 #include "ByteStack.h"
 
 #include <string.h>
-#include <stdio.h>
 
 namespace bitsy_python {
 
-ByteStack::ByteStack() {
+void ByteStack::init() {
+  BlockStack::init();
   AllocTopBlock();
   _top_byte = 0;
 }

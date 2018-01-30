@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "bitsy_alloc.h"
 #include "test_common.h"
 
 namespace bitsy_python {
@@ -27,6 +28,7 @@ void compare(Variable a, Variable b) {
 }
 
 void test1() {
+  bitsy_alloc_init();
   assert(FunctionStack::is_empty());
   FunctionStack::setup_function_call(0, 0, ins_ptr);
   assert(!FunctionStack::is_empty());
@@ -41,6 +43,7 @@ void test1() {
 }
 
 void test2() {
+  bitsy_alloc_init();
   assert(FunctionStack::is_empty());
   FunctionStack::setup_function_call(1, 1, ins_ptr);
   FunctionStack::setup_function_call(0, 0, ins_ptr);
@@ -52,6 +55,7 @@ void test2() {
 }
 
 void testvar1() {
+  bitsy_alloc_init();
   assert(FunctionStack::is_empty());
   FunctionStack::setup_function_call(0, 4, ins_ptr);
   compare(FunctionStack::getNthVariable(0), zero);
@@ -112,6 +116,7 @@ void testvar1() {
 }
 
 void testvarmultiple() {
+  bitsy_alloc_init();
   assert(FunctionStack::is_empty());
   FunctionStack::setup_function_call(0, 5, ins_ptr);
   compare(FunctionStack::getNthVariable(0), zero);
@@ -151,6 +156,7 @@ void testvarmultiple() {
 }
 
 void testCustomHeapVaiable() {
+  bitsy_alloc_init();
   Variable heap_0, heap_1, heap_2;
   heap_0.type = Variable::CUSTOM;
   heap_0.val.custom_type.type = Variable::CustomType::STRING;

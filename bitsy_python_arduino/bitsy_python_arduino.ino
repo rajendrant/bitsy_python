@@ -10,23 +10,20 @@
 #include "bitsy_python_userlibs.h"
 #include "ota_update.def.h"
 
-bitsy_python::BitsyPythonVM vm;
-
 void setup() {
   Serial.begin(115200);
   bitsy_python::BitsyPythonVM::init();
-  bitsy_python::BitsyPythonVM::initExecution();
   Serial.println("init");
 }
 
 int loopcount = 0;
 
 void loop() {
-  if (!vm.executeOneStep()) {
+  if (!bitsy_python::BitsyPythonVM::executeOneStep()) {
     Serial.println("reinit");
     Serial.println(loopcount);
     loopcount++;
-    bitsy_python::BitsyPythonVM::initExecution();
+    bitsy_python::BitsyPythonVM::init();
   }
   ota_update_loop();
 }

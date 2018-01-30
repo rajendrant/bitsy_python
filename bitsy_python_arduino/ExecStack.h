@@ -10,6 +10,7 @@ namespace bitsy_python {
 
 namespace ExecStack {
 
+void init();
 void push(const Variable &v);
 Variable pop();
 uint32_t getCustomHeapVariableMap(uint8_t start_id);

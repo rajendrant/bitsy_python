@@ -10,7 +10,7 @@ namespace bitsy_python {
 
 class BlockStack {
  public:
-  BlockStack();
+  void init();
   void AllocTopBlock();
   void FreeTopBlock();
   uint8_t *top() const;

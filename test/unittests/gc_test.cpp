@@ -2,11 +2,11 @@
 
 #include <assert.h>
 #include <set>
-#include <set>
 
-#include "test_common.h"
+#include "bitsy_alloc.h"
 #include "ExecStack.h"
 #include "FunctionStack.h"
+#include "test_common.h"
 
 namespace bitsy_python {
 
@@ -42,6 +42,8 @@ static void test1() {
   var.type = Variable::CUSTOM;
   var.val.custom_type.type = Variable::CustomType::STRING;
 
+  bitsy_alloc_init();
+  ExecStack::init();
   BitsyHeap::init();
 
   assert(getAllHeapVars().empty());
@@ -97,6 +99,8 @@ static void test2() {
   var.type = Variable::CUSTOM;
   var.val.custom_type.type = Variable::CustomType::STRING;
 
+  bitsy_alloc_init();
+  ExecStack::init();
   BitsyHeap::init();
 
   auto id1 = BitsyHeap::CreateVar(10, &val);
