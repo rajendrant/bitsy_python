@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include "bitsylimit.h"
+#include "Program.h"
 #include "variable.h"
 
 namespace bitsy_python {
@@ -10,9 +11,8 @@ namespace bitsy_python {
 namespace FunctionStack {
 
 bool is_empty();
-void setup_function_call(uint8_t vars, uint16_t old_ins_ptr);
-bool return_function(uint16_t *old_ins_ptr, bool *is_callback_mode);
-void set_callback_mode();
+void setup_function_call(const Program::FunctionParams& p);
+Program::FunctionParams return_function();
 
 Variable getNthVariable(uint8_t n);
 void setNthVariable(uint8_t n, const Variable& v);

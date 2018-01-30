@@ -49,7 +49,6 @@ ins_supported = set((
   'GET_ITER', 'FOR_ITER',
   'BREAK_LOOP', 'CONTINUE_LOOP',
   'SETUP_LOOP', 'POP_BLOCK',
-  'JUMP_ABSOLUTE',
   'LOAD_ATTR',
   'NOP', 'STOP_CODE',
   'UNPACK_SEQUENCE',

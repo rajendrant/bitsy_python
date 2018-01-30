@@ -94,16 +94,19 @@ bool is_sane() {
 FunctionParams setup_function_call(uint8_t fn) {
   Program::FunctionParams ret;
   ret.old_ins_ptr = ins_ptr;
+  ret.old_start_ins_ptr = ins_ptr_function_start;
   ins_ptr = bits.get_bit16(MODULE_HEADER + fn * HEADER_PER_FUNCTION, HEADER_PER_FUNCTION) * 8;
   ins_ptr_function_start = ins_ptr;
-  ret.len =
-      bits.get_bit16(MODULE_HEADER + (fn + 1) * HEADER_PER_FUNCTION, HEADER_PER_FUNCTION) * 8;
-  ret.args = get_number().as_int32();
+  get_number(); // args
   ret.vars = get_number().as_int32();
+  ret.is_callback_mode = 0;
   return ret;
 }
 
-void return_function(uint16_t insptr) { ins_ptr = insptr; }
+void return_function(const FunctionParams& ret) {
+  ins_ptr = ret.old_ins_ptr;
+  ins_ptr_function_start = ret.old_start_ins_ptr;
+}
 
 Variable get_number() {
   Variable v;
@@ -157,22 +160,6 @@ void FromFile(const char *fname) {
   int size = fread(buf, 1, 1024, fp);
   fclose(fp);
   bits.init((uint8_t *)buf, size);
-}
-
-void dump() {
-  for (int f = 0; f < 4; f++) {
-    auto fn = setup_function_call(f);
-    printf("function %d\n", f);
-    printf("codelen: %d\n", fn.len - ins_ptr);
-    printf("args: %d\n", fn.args);
-    printf("vars: %d\n", fn.vars);
-    do {
-      Variable arg;
-      uint8_t ins = get_next_instruction(&arg);
-      if (ins_ptr < fn.len)
-        printf("%d %s %d\n", ins, get_ins_name(ins), arg.as_int32());
-    } while (ins_ptr < fn.len);
-  }
 }
 
 #elif defined(ARDUINO)

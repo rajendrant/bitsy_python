@@ -11,32 +11,33 @@ namespace bitsy_python {
 namespace Program {
 
 typedef struct {
-  uint16_t len;
-  uint8_t args, vars;
   uint16_t old_ins_ptr;
+  uint16_t old_start_ins_ptr;
+  uint8_t vars;
+  uint8_t is_callback_mode : 1;
 } FunctionParams;
 
 #ifdef DESKTOP
-  void FromFile(const char *fname);
+void FromFile(const char *fname);
 #elif defined(ARDUINO)
-  void FromEEPROM();
+void FromEEPROM();
 #endif
 
-  // Checks if the full module is available, by checking a byte at the end of
-  // the module.
-  bool sanity_check();
+// Checks if the full module is available, by checking a byte at the end of the
+// module.
+bool sanity_check();
 
-  bool is_sane();
+bool is_sane();
 
-  uint8_t get_next_instruction(Variable *arg);
+uint8_t get_next_instruction(Variable *arg);
 
-  // Gets the number at the current ins pointer, and updates the ins_ptr.
-  Variable get_number();
+// Gets the number at the current ins pointer, and updates the ins_ptr.
+Variable get_number();
 
-  FunctionParams setup_function_call(uint8_t fn);
-  void return_function(uint16_t insptr);
+FunctionParams setup_function_call(uint8_t fn);
+void return_function(const FunctionParams& p);
 
-  void jump_to_target(uint16_t target);
+void jump_to_target(uint16_t target);
 
 }
 }

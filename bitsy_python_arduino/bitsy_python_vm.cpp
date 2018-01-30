@@ -213,8 +213,7 @@ void init() {
   ExecStack::init();
   BitsyHeap::init();
   if (Program::sanity_check()) {
-    auto fn = Program::setup_function_call(0);
-    FunctionStack::setup_function_call(fn.vars, fn.old_ins_ptr);
+    FunctionStack::setup_function_call(Program::setup_function_call(0));
     // printf("main %d %d %d\n", fn.args, fn.vars, fn.len);
   }
 }
@@ -306,9 +305,8 @@ bool executeOneStep() {
       auto v = ExecStack::pop();
       BITSY_ASSERT(v.type == Variable::CUSTOM);
       if (v.val.custom_type.type == Variable::CustomType::USER_FUNCTION) {
-        auto fn = Program::setup_function_call(v.val.custom_type.val);
-        BITSY_ASSERT(fn.args == argcount);
-        FunctionStack::setup_function_call(fn.vars, fn.old_ins_ptr);
+        FunctionStack::setup_function_call(
+          Program::setup_function_call(v.val.custom_type.val));
         for (uint8_t i = 0; i < argcount; i++) {
           FunctionStack::setNthVariable(i, argvars[i]);
         }
@@ -328,13 +326,12 @@ bool executeOneStep() {
       break;
     }
     case RETURN_VALUE: {
-      uint16_t ins_ptr;
-      bool is_callback_mode;
-      bool ret = !FunctionStack::return_function(&ins_ptr, &is_callback_mode);
-      Program::return_function(ins_ptr);
-      if (is_callback_mode)
+      auto p = FunctionStack::return_function();
+      Program::return_function(p);
+      if (p.is_callback_mode) {
         ExecStack::pop();
-      return ret;
+      }
+      return !FunctionStack::is_empty();
     }
 
     case PRINT_ITEM: {
@@ -399,10 +396,10 @@ bool executeOneStep() {
 }
 
 void callUserFunction(uint16_t f, Variable arg) {
-  auto fn = Program::setup_function_call(f);
-  FunctionStack::setup_function_call(fn.vars, fn.old_ins_ptr);
+  auto p = Program::setup_function_call(f);
+  p.is_callback_mode = 1;
+  FunctionStack::setup_function_call(p);
   FunctionStack::setNthVariable(0, arg);
-  FunctionStack::set_callback_mode();
 }
 
 }

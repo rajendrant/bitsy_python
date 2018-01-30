@@ -35,11 +35,15 @@ static bool compareHeapVars(const std::set<BitsyHeap::var_id_t> expected) {
   return expected == getAllHeapVars();
 }
 
+static void setup_function_call(uint8_t vars) {
+  Program::FunctionParams p;
+  p.vars = vars;
+  FunctionStack::setup_function_call(p);
+}
+
 static void test1() {
   Variable var;
   uint8_t *val;
-  uint16_t ins_ptr;
-  bool is_callback_mode;
   var.type = Variable::CUSTOM;
   var.val.custom_type.type = Variable::CustomType::STRING;
 
@@ -69,7 +73,7 @@ static void test1() {
 
   id1 = BitsyHeap::CreateVar(10, &val);
   var.val.custom_type.val = id1;
-  FunctionStack::setup_function_call(2, 0x1234);
+  setup_function_call(2);
   FunctionStack::setNthVariable(0, var);
 
   auto id2 = BitsyHeap::CreateVar(20, &val);
@@ -85,7 +89,7 @@ static void test1() {
   gc();
   assert(compareHeapVars({id1, id2, id3}));
 
-  FunctionStack::return_function(&ins_ptr, &is_callback_mode);
+  FunctionStack::return_function();
   gc();
   assert(compareHeapVars({id2}));
 

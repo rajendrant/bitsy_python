@@ -15,6 +15,7 @@ uint16_t start = 0, top = 0;
 typedef struct {
   uint8_t var_count;
   uint16_t ins_ptr;
+  uint16_t start_ins_ptr;
   uint16_t start;
   uint8_t is_callback_mode : 1;
 }__attribute__((packed)) FunctionStackHeader;
@@ -27,35 +28,33 @@ typedef struct {
 
 bool is_empty() { return top == 0; }
 
-void setup_function_call(uint8_t vars, uint16_t old_ins_ptr) {
-  while (top_block_size() < top + HDR_START + HDR_SIZE_FOR_VARS(vars) + vars * MAX_VAR_SIZE) {
+void setup_function_call(const Program::FunctionParams& p) {
+  while (top_block_size() < top + HDR_START + HDR_SIZE_FOR_VARS(p.vars) + p.vars * MAX_VAR_SIZE) {
     top_block_alloc();
   }
   FunctionStackHeader *hdr = (FunctionStackHeader*)(stack+top);
-  hdr->var_count = vars;
-  hdr->ins_ptr = old_ins_ptr;
+  hdr->var_count = p.vars;
+  hdr->ins_ptr = p.old_ins_ptr;
+  hdr->start_ins_ptr = p.old_start_ins_ptr;
+  hdr->is_callback_mode = p.is_callback_mode;
   hdr->start = start;
-  hdr->is_callback_mode = 0;
   start = top;
-  top += HDR_START + HDR_SIZE_FOR_VARS(vars) + vars;
+  top += HDR_START + HDR_SIZE_FOR_VARS(p.vars) + p.vars;
   memset(stack + start + HDR_START, 0, top - start);
 }
 
-bool return_function(uint16_t *old_ins_ptr, bool *is_callback_mode) {
+Program::FunctionParams return_function() {
+  Program::FunctionParams p;
   top = start;
   FunctionStackHeader *hdr = (FunctionStackHeader*)(stack+start);
-  *old_ins_ptr = hdr->ins_ptr;
-  *is_callback_mode = hdr->is_callback_mode;
+  p.old_ins_ptr = hdr->ins_ptr;
+  p.old_start_ins_ptr = hdr->start_ins_ptr;
+  p.is_callback_mode = hdr->is_callback_mode;
   start = hdr->start;
   while (top_block_size() > top + 100) {
     top_block_free();
   }
-  return FunctionStack::is_empty();
-}
-
-void set_callback_mode() {
-  FunctionStackHeader *hdr = (FunctionStackHeader*)(stack+start);
-  hdr->is_callback_mode = 1;
+  return p;
 }
 
 uint8_t get_var_hdr(uint8_t n) {
