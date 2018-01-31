@@ -7,18 +7,6 @@ WiFiUDP wifiUDP;
 uint16_t on_recv_callback = 0xFF;
 uint32_t last_check = 0;
 
-namespace {
-void checkConnectivity() {
-  if (WiFi.status() != WL_CONNECTED) {
-    // If disconnected, attempt to connect every minute.
-    if (millis() - last_check > 60000) {
-      connectToWiFi();
-      last_check = millis();
-    }
-  }
-}
-}
-
 void connect() {
   WiFi.begin(ESP8266WIFI_SSID, ESP8266WIFI_PASSWORD);
 
@@ -26,6 +14,16 @@ void connect() {
     delay(1000);
   }
   wifiUDP.begin(ESP8266WIFI_UDP_PORT);
+}
+
+void checkConnectivity() {
+  if (WiFi.status() != WL_CONNECTED) {
+    // If disconnected, attempt to connect every minute.
+    if (millis() - last_check > 60000) {
+      connect();
+      last_check = millis();
+    }
+  }
 }
 
 bool ota_send(uint8_t *buf, uint8_t len) {

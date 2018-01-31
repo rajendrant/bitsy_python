@@ -16,8 +16,13 @@ bool ota_update(uint8_t *buf, uint8_t len,
     if (!sender((uint8_t*)&pos, 2)) return false;
     for(int t=millis(); millis()<t+30;) {
       if(len=receiver(prog, sizeof(prog)) && ((uint16_t*)prog)[0]==pos) {
-        for(int i=0; i<len-2; i++)
+        for(int i=0; i<len-2; i++) {
+#ifdef AVR
           EEPROM.update(pos+i, prog[i+2]);
+#else
+          EEPROM.write(pos+i, prog[i+2]);
+#endif
+        }
         pos += len-2;
       }
     }
@@ -39,7 +44,11 @@ void ota_update_serial() {
     int addr = 0;
     while (len > 0) {
       if (Serial.readBytes(buf, 1) != 1) return;
+#ifdef AVR
       EEPROM.update(addr, buf[0]);
+#else
+      EEPROM.write(addr, buf[0]);
+#endif
       len--;
       addr++;
     }
@@ -66,7 +75,7 @@ void ota_update_nrf24() {
 void ota_update_esp8266wifi() {
   uint8_t buf[32], len;
   while(len=esp8266wifiudp::ota_recv(buf, sizeof(buf))) {
-    if (!ota_update(buf, len, nrf24::ota_send, esp8266wifiudp::ota_recv))
+    if (!ota_update(buf, len, esp8266wifiudp::ota_send, esp8266wifiudp::ota_recv))
       esp8266wifiudp::send_to_callback(buf, len);
   }
 }

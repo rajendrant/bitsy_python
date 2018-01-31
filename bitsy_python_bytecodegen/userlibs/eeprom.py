@@ -7,6 +7,3 @@ def read(*arg):
 def write(*arg):
     pass
 
-def update(*arg):
-    pass
-

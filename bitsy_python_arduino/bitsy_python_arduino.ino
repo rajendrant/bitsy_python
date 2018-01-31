@@ -8,6 +8,12 @@
 #define ENABLE_BITSY_USERLIB_SERIAL
 #define ENABLE_BITSY_USERLIB_ESP8266WIFIUDP
 
+#ifdef ENABLE_BITSY_USERLIB_ESP8266WIFIUDP
+#define ESP8266WIFI_SSID "Ajarirus"
+#define ESP8266WIFI_PASSWORD ""
+#define ESP8266WIFI_UDP_PORT 6666
+#endif
+
 #include "bitsy_python_userlibs.h"
 #include "ota_update.def.h"
 
@@ -16,9 +22,6 @@ void setup() {
   bitsy_python::BitsyPythonVM::init();
 
 #ifdef ENABLE_BITSY_USERLIB_ESP8266WIFIUDP
-#define ESP8266WIFI_SSID "Ajarirus"
-#define ESP8266WIFI_PASSWORD ""
-#define ESP8266WIFI_UDP_PORT 6666
   esp8266wifiudp::connect();
 #endif
 

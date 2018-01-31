@@ -28,7 +28,7 @@ userlibs_list = [
     },
     {
         'name': 'eeprom',
-        'functions': ['read', 'write', 'update'],
+        'functions': ['read', 'write'],
     },
     {
         'name': 'esp8266wifiudp',

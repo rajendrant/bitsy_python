@@ -144,8 +144,6 @@ Variable userlib_module_eeprom(uint8_t function, uint8_t argcount, Variable arg[
       return eeprom::read(argcount, arg);
     case 1:
       return eeprom::write(argcount, arg);
-    case 2:
-      return eeprom::update(argcount, arg);
     default:
       BITSY_ASSERT(false);
   }
