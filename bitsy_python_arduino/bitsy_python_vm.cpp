@@ -334,9 +334,8 @@ bool executeOneStep() {
     case RETURN_VALUE: {
       auto p = FunctionStack::return_function();
       Program::return_function(p);
-      if (p.is_callback_mode) {
+      if (p.is_callback_mode)
         ExecStack::pop();
-      }
       return !FunctionStack::is_empty();
     }
 

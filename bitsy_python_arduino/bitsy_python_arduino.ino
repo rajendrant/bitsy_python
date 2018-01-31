@@ -3,7 +3,7 @@
 
 #define ENABLE_BITSY_USERLIB_ARDUINO
 #define ENABLE_BITSY_USERLIB_EEPROM
-//#define ENABLE_BITSY_USERLIB_SPI
+#define ENABLE_BITSY_USERLIB_SPI
 #define ENABLE_BITSY_USERLIB_NRF24
 #define ENABLE_BITSY_USERLIB_SERIAL
 
@@ -29,5 +29,5 @@ void loop() {
     //bitsy_python::BitsyPythonVM::init();
   }
   ota_update_loop();
-  delay(100);
+  //delay(50);
 }

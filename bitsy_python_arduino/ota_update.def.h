@@ -55,7 +55,7 @@ void ota_update_serial() {
 #ifdef ENABLE_BITSY_USERLIB_NRF24
 void ota_update_nrf24() {
   uint8_t buf[32], len;
-  while(len=nrf24::ota_nrf24_recv(buf, sizeof(buf))) {
+  while((len=nrf24::ota_nrf24_recv(buf, sizeof(buf))) != 0) {
     if (!ota_update(buf, len, nrf24::ota_nrf24_send, nrf24::ota_nrf24_recv))
       nrf24::send_to_callback(buf, len);
   }
