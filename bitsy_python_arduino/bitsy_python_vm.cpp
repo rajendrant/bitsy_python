@@ -211,6 +211,7 @@ void init() {
 #endif
   bitsy_alloc_init();
   ExecStack::init();
+  FunctionStack::init();
   BitsyHeap::init();
   if (Program::sanity_check()) {
     FunctionStack::setup_function_call(Program::setup_function_call(0));

@@ -26,6 +26,8 @@ typedef struct {
 
 #define stack ((uint8_t *)blocks)
 
+void init() { start = top = 0; }
+
 bool is_empty() { return top == 0; }
 
 void setup_function_call(const Program::FunctionParams& p) {

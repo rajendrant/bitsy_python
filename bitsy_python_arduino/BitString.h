@@ -7,21 +7,20 @@
 
 namespace bitsy_python {
 
-class BitString {
- public:
+namespace BitString {
+
+extern uint16_t curr_pos;
+
 #ifdef DESKTOP
-  void init(uint8_t *buf, const uint16_t sz) {_buf=buf; size=sz;}
+void init(uint8_t *buf, uint16_t sz);
 #endif
 
-  uint8_t get_bit8(uint16_t pos, uint8_t len) const;
-  uint16_t get_bit16(uint16_t pos, uint8_t len) const;
-  uint32_t get_bit32(uint16_t pos, uint8_t len) const;
+uint8_t get_bit8(uint16_t pos, uint8_t len);
+uint16_t get_bit16(uint16_t pos, uint8_t len);
 
- private:
-#ifdef DESKTOP
-  uint8_t *_buf;
-  uint16_t size;
-#endif
-};
+uint8_t get_next_bit8(uint8_t len);
+uint32_t get_next_bit32();
+
+}
 }
 #endif /* BITSTRING_H_ */

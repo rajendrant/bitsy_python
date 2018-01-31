@@ -10,6 +10,8 @@ namespace bitsy_python {
 
 namespace FunctionStack {
 
+void init();
+
 bool is_empty();
 void setup_function_call(const Program::FunctionParams& p);
 Program::FunctionParams return_function();
