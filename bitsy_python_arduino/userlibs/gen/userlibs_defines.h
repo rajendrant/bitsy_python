@@ -153,6 +153,22 @@ Variable userlib_module_eeprom(uint8_t function, uint8_t argcount, Variable arg[
 }
 #endif
 
+#ifdef ENABLE_BITSY_USERLIB_ESP8266WIFIUDP
+#include "../esp8266wifiudp.h"
+
+Variable userlib_module_esp8266wifiudp(uint8_t function, uint8_t argcount, Variable arg[]) {
+  switch (function) {
+    case 0:
+      return esp8266wifiudp::set_on_recv_callback(argcount, arg);
+    case 1:
+      return esp8266wifiudp::send_response(argcount, arg);
+    default:
+      BITSY_ASSERT(false);
+  }
+  return Variable::Zero();
+}
+#endif
+
 #ifdef ENABLE_BITSY_USERLIB_TESTUSERLIB
 #include "../testuserlib.h"
 
@@ -200,8 +216,11 @@ bool is_userlib_module_enabled(uint8_t module) {
 #ifdef ENABLE_BITSY_USERLIB_EEPROM
     case 6: // eeprom
 #endif
+#ifdef ENABLE_BITSY_USERLIB_ESP8266WIFIUDP
+    case 7: // esp8266wifiudp
+#endif
 #ifdef ENABLE_BITSY_USERLIB_TESTUSERLIB
-    case 7: // testuserlib
+    case 8: // testuserlib
 #endif
       return true;
   }
@@ -238,8 +257,12 @@ Variable call_userlib_function(uint8_t module, uint8_t function, uint8_t argcoun
     case 6:
       return userlib_module_eeprom(function, argcount, arg);
 #endif
-#ifdef ENABLE_BITSY_USERLIB_TESTUSERLIB
+#ifdef ENABLE_BITSY_USERLIB_ESP8266WIFIUDP
     case 7:
+      return userlib_module_esp8266wifiudp(function, argcount, arg);
+#endif
+#ifdef ENABLE_BITSY_USERLIB_TESTUSERLIB
+    case 8:
       return userlib_module_testuserlib(function, argcount, arg);
 #endif
     default:

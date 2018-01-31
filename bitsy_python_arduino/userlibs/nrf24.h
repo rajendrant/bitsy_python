@@ -10,8 +10,8 @@ uint16_t on_recv_callback = 0xFF;
 
 #define NRF24_GATEWAY 0xA5
 
-bool ota_nrf24_send(uint8_t *buf, uint8_t len) {
-  return radio.send(NRF24_GATEWAY, buf, len);
+bool ota_nrf24_send(uint8_t *buf, uint8_t len, uint8_t to_radio=NRF24_GATEWAY) {
+  return radio.send(to_radio, buf, len);
 }
 
 uint8_t ota_nrf24_recv(uint8_t *buf, uint8_t len) {
@@ -56,7 +56,7 @@ Variable send(uint8_t argcount, Variable arg[]) {
   uint8_t len = arg[2].as_uint8();
   if (bitsy_python::BitsyHeap::GetVar(arg[1].val.custom_type.val, &buf) < len)
     return Variable::Zero();
-  radio.send(arg[0].as_uint8(), buf, arg[2].as_uint8());
+  ota_nrf24_send(buf, len, arg[0].as_uint8());
   return Variable(1);
 }
 

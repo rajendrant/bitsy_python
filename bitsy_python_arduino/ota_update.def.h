@@ -62,14 +62,28 @@ void ota_update_nrf24() {
 }
 #endif
 
+#ifdef ENABLE_BITSY_USERLIB_ESP8266WIFIUDP
+void ota_update_esp8266wifi() {
+  uint8_t buf[32], len;
+  while(len=esp8266wifiudp::ota_recv(buf, sizeof(buf))) {
+    if (!ota_update(buf, len, nrf24::ota_send, esp8266wifiudp::ota_recv))
+      esp8266wifiudp::send_to_callback(buf, len);
+  }
+}
+#endif
+
 void ota_update_loop() {
-  static long last_ota_check=0;
+  static unsigned long last_ota_check=0;
+
   if (millis() > last_ota_check+20) {
 #ifdef ENABLE_BITSY_USERLIB_SERIAL
     ota_update_serial();
 #endif
 #ifdef ENABLE_BITSY_USERLIB_NRF24
     ota_update_nrf24();
+#endif
+#ifdef ENABLE_BITSY_USERLIB_ESP8266WIFIUDP
+    ota_update_esp8266wifi();
 #endif
     last_ota_check = millis();
   }

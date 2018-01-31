@@ -31,6 +31,10 @@ userlibs_list = [
         'functions': ['read', 'write', 'update'],
     },
     {
+        'name': 'esp8266wifiudp',
+        'functions': ['set_on_recv_callback', 'send_response'],
+    },
+    {
         'name': 'testuserlib',
         'functions': ['printstr', 'println', 'math_add', 'math_power',
             'init_callback', 'trigger_callback'],
