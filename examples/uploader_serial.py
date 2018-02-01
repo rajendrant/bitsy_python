@@ -1,9 +1,15 @@
+import argparse
 import serial
 import struct
 import sys
 import time
 
-ser = serial.Serial('/dev/ttyUSB1', 115200, timeout=2)
+parser.add_argument("-d", "--dev", help="serial device id ", default='/dev/USB0')
+parser = argparse.ArgumentParser()
+parser.add_argument("bitsy_file", help="Bitsy python bytecode file to upload")
+args = parser.parse_args()
+
+ser = serial.Serial(args.dev, 115200, timeout=2)
 
 def read_until(ser, strr):
     t = time.time()
@@ -28,4 +34,4 @@ def send_bitsy_program(ser, prog):
         print 'Successfully wrote'
 
 time.sleep(2) # wait for arduino to initialize
-send_bitsy_program(ser, open(sys.argv[1]).read())
+send_bitsy_program(ser, open(args.bitsy_file).read())

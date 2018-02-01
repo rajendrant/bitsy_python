@@ -4,23 +4,33 @@
 namespace esp8266wifiudp {
 
 WiFiUDP wifiUDP;
+char ssid[32], password[32];
+uint16_t udp_port;
 uint16_t on_recv_callback = 0xFF;
 uint32_t last_check = 0;
 
-void connect() {
-  WiFi.begin(ESP8266WIFI_SSID, ESP8266WIFI_PASSWORD);
+void do_connect() {
+  WiFi.begin(ssid, password);
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(1000);
   }
-  wifiUDP.begin(ESP8266WIFI_UDP_PORT);
+  wifiUDP.begin(udp_port);
+}
+
+void connect(const char *_ssid, const char *_password, uint16_t _port) {
+  strncpy(ssid, _ssid, sizeof(ssid));
+  strncpy(password, _password, sizeof(password));
+  ssid[sizeof(ssid)-1] = password[sizeof(password)-1] = 0;
+  udp_port = _port;
+  do_connect();
 }
 
 void checkConnectivity() {
   if (WiFi.status() != WL_CONNECTED) {
     // If disconnected, attempt to connect every minute.
     if (millis() - last_check > 60000) {
-      connect();
+      do_connect();
       last_check = millis();
     }
   }

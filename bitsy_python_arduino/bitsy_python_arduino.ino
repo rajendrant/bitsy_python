@@ -6,12 +6,8 @@
 #define ENABLE_BITSY_USERLIB_SPI
 #define ENABLE_BITSY_USERLIB_NRF24
 #define ENABLE_BITSY_USERLIB_SERIAL
+#ifdef ESP8266
 #define ENABLE_BITSY_USERLIB_ESP8266WIFIUDP
-
-#ifdef ENABLE_BITSY_USERLIB_ESP8266WIFIUDP
-#define ESP8266WIFI_SSID "Ajarirus"
-#define ESP8266WIFI_PASSWORD "SeattleBallard"
-#define ESP8266WIFI_UDP_PORT 6666
 #endif
 
 #include "bitsy_python_userlibs.h"
@@ -30,7 +26,7 @@ void setup() {
 #endif
 
 #ifdef ENABLE_BITSY_USERLIB_ESP8266WIFIUDP
-  esp8266wifiudp::connect();
+  esp8266wifiudp::connect("Ajarirus", "", 6666);
 #endif
 
   Serial.println("INIT");
