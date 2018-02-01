@@ -4,6 +4,9 @@
 def init(*arg):
     pass
 
+def set_on_recv_callback(*arg):
+    pass
+
 def send(*arg):
     pass
 

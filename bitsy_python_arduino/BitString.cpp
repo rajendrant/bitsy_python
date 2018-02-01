@@ -9,9 +9,14 @@
 
 #ifdef DESKTOP
 #define BUF(n) _buf[(n)]
-#elif defined(ARDUINO)
+#elif defined(ARDUINO) && defined(AVR)
 #include <EEPROM.h>
 #define BUF(n) EEPROM.read(n)
+#elif defined(ARDUINO) && defined(ESP8266)
+#include <EEPROM.h>
+#define PROG_BYTE_SIZE 1024
+uint8_t prog_bytes[PROG_BYTE_SIZE];
+#define BUF(n) prog_bytes[n]
 #endif
 
 namespace bitsy_python {
@@ -25,6 +30,15 @@ uint8_t *_buf;
 uint16_t size;
 
 void init(uint8_t *buf, uint16_t sz) {_buf=buf; size=sz;}
+#else
+void init() {
+#ifdef ESP8266
+  EEPROM.begin(PROG_BYTE_SIZE);
+  for(uint16_t i=0; i<PROG_BYTE_SIZE; i++)
+    prog_bytes[i] = EEPROM.read(i);
+  EEPROM.end();
+#endif
+}
 #endif
 
 uint8_t get_bit8(uint16_t pos, uint8_t len) {

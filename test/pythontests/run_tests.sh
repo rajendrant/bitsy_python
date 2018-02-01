@@ -1,5 +1,5 @@
 #!/bin/bash
-TESTS=( test1 test2 test3 test4 test5 test6 \
+TESTS=( test1 test2 test3 test4 test5 test6 test_bitwise \
 test_function1 test_condition1 test_loop1 test_import \
 test_str test_list test_bytearray
 test_looprange )

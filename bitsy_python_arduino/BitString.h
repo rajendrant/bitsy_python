@@ -13,6 +13,8 @@ extern uint16_t curr_pos;
 
 #ifdef DESKTOP
 void init(uint8_t *buf, uint16_t sz);
+#else
+void init();
 #endif
 
 uint8_t get_bit8(uint16_t pos, uint8_t len);

@@ -7,3 +7,6 @@ def set_on_recv_callback(*arg):
 def send_response(*arg):
     pass
 
+def local_ip(*arg):
+    pass
+

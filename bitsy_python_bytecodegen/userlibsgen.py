@@ -24,7 +24,7 @@ userlibs_list = [
     },
     {
         'name': 'nrf24',
-        'functions': ['init', 'send'],
+        'functions': ['init', 'set_on_recv_callback', 'send'],
     },
     {
         'name': 'eeprom',
@@ -32,7 +32,7 @@ userlibs_list = [
     },
     {
         'name': 'esp8266wifiudp',
-        'functions': ['set_on_recv_callback', 'send_response'],
+        'functions': ['set_on_recv_callback', 'send_response', 'local_ip'],
     },
     {
         'name': 'testuserlib',

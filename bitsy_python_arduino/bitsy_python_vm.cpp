@@ -46,11 +46,11 @@ void binary_arithmetic(uint8_t ins, uint8_t arg) {
       break;
     case BINARY_LSHIFT:
     case INPLACE_LSHIFT:
-      iret = i2 >> i1;
+      iret = i2 << i1;
       break;
     case BINARY_RSHIFT:
     case INPLACE_RSHIFT:
-      iret = i2 << i1;
+      iret = i2 >> i1;
       break;
     case BINARY_AND:
     case INPLACE_AND:
@@ -230,6 +230,11 @@ bool executeOneStep() {
 
   Variable arg;
   auto ins = Program::get_next_instruction(&arg);
+  /*
+  Serial.print("ins ");
+  Serial.print(ins);
+  Serial.print(" ");
+  Serial.println(arg.as_int32());*/
   // printf("ins %d %s %d\n", ins, get_ins_name(ins), arg.as_int32());
   if(ins==LOAD_CONST) {
     ExecStack::push(arg);

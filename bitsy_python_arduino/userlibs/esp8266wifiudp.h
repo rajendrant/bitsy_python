@@ -26,7 +26,7 @@ void checkConnectivity() {
   }
 }
 
-bool ota_send(uint8_t *buf, uint8_t len) {
+bool ota_send(const uint8_t *buf, uint8_t len) {
   wifiUDP.beginPacket(wifiUDP.remoteIP(), wifiUDP.remotePort());
   wifiUDP.write(buf, len);
   wifiUDP.endPacket();
@@ -47,7 +47,7 @@ Variable set_on_recv_callback(uint8_t argcount, Variable arg[]) {
   return Variable::Zero();
 }
 
-void send_to_callback(uint8_t *buf, uint8_t len) {
+void send_to_callback(const uint8_t *buf, uint8_t len) {
   if (on_recv_callback != 0xFF) {
     Variable v;
     uint8_t *vbuf;
@@ -68,6 +68,12 @@ Variable send_response(uint8_t argcount, Variable arg[]) {
     return Variable::Zero();
   ota_send(buf, len);
   return Variable(1);
+}
+
+Variable local_ip(uint8_t argcount, Variable arg[]) {
+  Variable v;
+  v.set_int32((uint32_t)WiFi.localIP());
+  return v;
 }
 
 }

@@ -1,8 +1,9 @@
 import serial
+import struct
 import sys
 import time
 
-ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=2)
+ser = serial.Serial('/dev/ttyUSB1', 115200, timeout=2)
 
 def read_until(ser, strr):
     t = time.time()
@@ -19,11 +20,12 @@ def send_bitsy_program(ser, prog):
     if not read_until(ser, 'READY\r\n'):
         return
 
-    ser.write('LEN %d\r\n'%(len(prog)))
-    ser.write(prog)
-    ser.write('END\r\n')
-    read_until(ser, 'RESET\r\n')
-    print 'Successfully wrote'
+    total = (len(prog)-1)//30+1
+    for pos in range(0, total):
+        ser.write(struct.pack('!30sBB', prog[pos*30 : (pos+1)*30], pos, total))
+
+    if read_until(ser, 'RESET\r\n'):
+        print 'Successfully wrote'
 
 time.sleep(2) # wait for arduino to initialize
 send_bitsy_program(ser, open(sys.argv[1]).read())

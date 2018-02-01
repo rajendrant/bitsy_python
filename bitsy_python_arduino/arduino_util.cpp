@@ -2,11 +2,13 @@
 
 #ifdef ARDUINO
 
+#include "BitString.h"
+
 namespace arduino_util {
 
 void soft_reset() {
-  volatile void (*resetFunc)(void) = 0;
-  resetFunc();
+  // Reset bit string to trigger a reinit.
+  bitsy_python::BitString::curr_pos = 0;
 }
 };
 #endif

@@ -153,7 +153,10 @@ void FromFile(const char *fname) {
 }
 
 #elif defined(ARDUINO)
-void FromEEPROM() { }
+void FromEEPROM() {
+  ins_ptr_function_start = 0;
+  BitString::init();
+}
 #endif
 }
 }

@@ -127,6 +127,8 @@ Variable userlib_module_nrf24(uint8_t function, uint8_t argcount, Variable arg[]
     case 0:
       return nrf24::init(argcount, arg);
     case 1:
+      return nrf24::set_on_recv_callback(argcount, arg);
+    case 2:
       return nrf24::send(argcount, arg);
     default:
       BITSY_ASSERT(false);
@@ -160,6 +162,8 @@ Variable userlib_module_esp8266wifiudp(uint8_t function, uint8_t argcount, Varia
       return esp8266wifiudp::set_on_recv_callback(argcount, arg);
     case 1:
       return esp8266wifiudp::send_response(argcount, arg);
+    case 2:
+      return esp8266wifiudp::local_ip(argcount, arg);
     default:
       BITSY_ASSERT(false);
   }
