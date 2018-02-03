@@ -10,6 +10,8 @@
 #define ENABLE_BITSY_USERLIB_ESP8266WIFIUDP
 #endif
 
+#define NRF24_GATEWAY 0xA5
+
 #include "bitsy_python_userlibs.h"
 #include "ota_update.def.h"
 
@@ -19,7 +21,7 @@ void setup() {
 
 #ifdef ENABLE_BITSY_USERLIB_NRF24
 #ifdef ESP8266
-  nrf24::radio.init(0, 4, 5);
+  nrf24::radio.init(NRF24_GATEWAY, 4, 5);
 #else // Arduino nano/pro_mini with atmega328
   nrf24::radio.init(0, 8, 10);
 #endif

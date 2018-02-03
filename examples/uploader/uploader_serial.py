@@ -1,11 +1,12 @@
+#!/usr/bin/env python
 import argparse
 import serial
 import struct
 import sys
 import time
 
-parser.add_argument("-d", "--dev", help="serial device id ", default='/dev/USB0')
 parser = argparse.ArgumentParser()
+parser.add_argument("-d", "--dev", help="serial device id ", default='/dev/USB0')
 parser.add_argument("bitsy_file", help="Bitsy python bytecode file to upload")
 args = parser.parse_args()
 
@@ -25,8 +26,8 @@ def send_bitsy_program(ser, prog):
     ser.write('\r\nBEGIN\r\n')
     if not read_until(ser, 'READY\r\n'):
         return
-
     total = (len(prog)-1)//30+1
+    ser.write('LEN %d'%(total))
     for pos in range(0, total):
         ser.write(struct.pack('!30sBB', prog[pos*30 : (pos+1)*30], pos, total))
 

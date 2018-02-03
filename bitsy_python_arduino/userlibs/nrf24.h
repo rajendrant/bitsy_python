@@ -3,15 +3,17 @@
 #include "../BitsyHeap.h"
 #include "../bitsy_python_vm.h"
 
+extern void ota_update_nrf24();
+
 namespace nrf24 {
 
 NRFLite radio;
 uint16_t on_recv_callback = 0xFF;
 
-#define NRF24_GATEWAY 0xA5
-
 bool ota_send2(const uint8_t *buf, uint8_t len, uint8_t to_radio) {
-  return radio.send(to_radio, (void*)buf, len);
+  bool ret = radio.send(to_radio, (void*)buf, len);
+  ota_update_nrf24();
+  return ret;
 }
 
 bool ota_send(const uint8_t *buf, uint8_t len) {
@@ -66,6 +68,14 @@ Variable send(uint8_t argcount, Variable arg[]) {
     return Variable::Zero();
   ota_send2(buf, len, arg[0].as_uint8());
   return Variable(1);
+}
+
+Variable recv_until(uint8_t argcount, Variable arg[]) {
+  if (argcount == 1) {
+    for(auto end = millis() + arg[0].as_uint8(); millis() < end; )
+      ::ota_update_nrf24();
+  }
+  return Variable(0);
 }
 
 };

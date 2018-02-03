@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # Add custom user libraries and functions to the below list.
 userlibs_list = [
     {
@@ -24,7 +25,7 @@ userlibs_list = [
     },
     {
         'name': 'nrf24',
-        'functions': ['init', 'set_on_recv_callback', 'send'],
+        'functions': ['init', 'set_on_recv_callback', 'send', 'recv_until'],
     },
     {
         'name': 'eeprom',

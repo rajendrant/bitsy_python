@@ -1,50 +1,48 @@
 #ifndef DESKTOP
 
 bool is_ota_packet(const uint8_t *buf, uint8_t len) {
-  if (len!=11)
+  if (len!=12)
     return false;
-  for(uint8_t i=0; i<len; i++)
-    if (buf[i] != 11*(i+1))
+  for(uint8_t i=1; i<len; i++)
+    if (buf[i] != 11*i)
       return false;
   return true;
 }
 
-bool ota_update(bool (*sender)(const uint8_t *buf, uint8_t len),
+bool ota_update(uint8_t end, bool (*sender)(const uint8_t *buf, uint8_t len),
                 uint8_t (*receiver)(uint8_t *buf, uint8_t len)) {
-  bool ret = false;
-  unsigned long start=millis();
-  uint8_t pos=0, end=0;
   uint16_t ind=0;
+  uint8_t pos=0;
 #ifdef ESP8266
   EEPROM.begin(4096);
 #endif
-  do {
-    if (!sender(&pos, 1)) return ret;
+  delay(100);
+  for (auto start=millis();
+       pos < end && millis() < start+10000; ) {
+    if (!sender(&pos, 1)) return false;
     for(auto t=millis(); millis()<t+100;) {
       uint8_t prog[32], len;
-      if((len=receiver(prog, sizeof(prog))) && prog[len-2]==pos) {
-        for(int i=0; i<len-2; i++) {
+      if((len=receiver(prog, sizeof(prog))) && prog[len-1]==pos) {
+        for(int i=0; i<len-1; i++) {
 #ifdef AVR
           EEPROM.update(ind+i, prog[i]);
 #else
           EEPROM.write(ind+i, prog[i]);
 #endif
         }
-        ind += len-2;
+        ind += len-1;
         pos++;
-        end = prog[len-1];
-        if (pos==end) ret = true;
         break;
       }
     }
-  } while(pos < end && millis() < start+10000);
+  }
 #ifdef ESP8266
   EEPROM.commit();
   EEPROM.end();
 #endif
   delay(1000);
   arduino_util::soft_reset();
-  return ret;
+  return pos==end;
 }
 
 #ifdef ENABLE_BITSY_USERLIB_SERIAL
@@ -62,7 +60,9 @@ void ota_update_serial() {
     Serial.readBytesUntil('\n', buf, sizeof(buf));
     if (String(buf).indexOf("BEGIN\r") == -1) return;
     Serial.print("\r\nREADY\r\n");
-    if (ota_update(ota_serial_send, ota_serial_recv))
+    Serial.readBytesUntil('\n', buf, sizeof(buf));
+    if (strncmp("LEN ", buf, 3)) return;
+    if (ota_update(String(buf + 4).toInt(), ota_serial_send, ota_serial_recv))
       Serial.print("RESET\r\n");
   }
 }
@@ -76,7 +76,7 @@ void ota_update_or_send_to_callback(
   uint8_t buf[32], len;
   while((len=receiver(buf, sizeof(buf))) != 0) {
     if (is_ota_packet(buf, len))
-      ota_update(sender, receiver);
+      ota_update(buf[0], sender, receiver);
     else
       send_to_callback(buf, len);
   }
@@ -100,7 +100,7 @@ void ota_update_esp8266wifi() {
 void ota_update_loop() {
   static unsigned long last_ota_check=0;
 
-  if (millis() > last_ota_check+50) {
+  if (millis() > last_ota_check+10) {
 #ifdef ENABLE_BITSY_USERLIB_SERIAL
     ota_update_serial();
 #endif

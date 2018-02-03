@@ -1,8 +1,8 @@
+#!/usr/bin/env python
 import argparse
 import socket
 import struct
 import sys
-import time
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-s", "--server", help="UDP server IP", default='192.168.0.30')
@@ -17,12 +17,14 @@ prog = open(args.bitsy_file).read()
 def upload_program():
     try:
         total = (len(prog)-1)//30+1
-        sock.sendto(bytearray(range(11, 122, 11)), address)
-        for pos in range(0, total):
-            sock.sendto(struct.pack('!30sBB', prog[pos*30 : (pos+1)*30], pos, total), address)
-            resp, _ = sock.recvfrom(4096)
+        sock.sendto(bytearray([total]+range(11, 122, 11)), address)
+        while True:
+            resp, _ = sock.recvfrom(1024)
+            pos = ord(resp[0])
+            if pos>=0 and pos<total:
+                sock.sendto(struct.pack('!30sB', prog[pos*30 : (pos+1)*30], pos), address)
+            if pos == total-1: break
             if ord(resp[0]) != pos: return False
-        time.sleep(1)
     except IOError as e:
         print 'Error occurred', e
         return False

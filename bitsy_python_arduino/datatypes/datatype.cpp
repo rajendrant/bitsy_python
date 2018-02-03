@@ -22,12 +22,11 @@ Variable DataType::CreateStr(const char *str, uint8_t len) {
 // static
 Variable DataType::CreateForType(uint8_t t, uint8_t argcount, Variable args[]) {
   Variable v;
+  uint8_t *var;
   switch (t) {
     case Variable::CustomType::BYTEARRAY: {
       BITSY_ASSERT(argcount == 1);
-      uint8_t *var;
-      uint8_t id = BitsyHeap::CreateVar(args[0].as_uint12(), &var);
-      v.set_CustomType(t, id);
+      v.set_CustomType(t, BitsyHeap::CreateVar(args[0].as_uint12(), &var));
       break;
     }
     case Variable::CustomType::ITER:
@@ -48,12 +47,10 @@ Variable DataType::CreateForType(uint8_t t, uint8_t argcount, Variable args[]) {
         BITSY_ASSERT(false);
         break;
       }
-      uint32_t *var;
-      auto id=BitsyHeap::CreateVar(12, (uint8_t**)&var);
-      v.set_CustomType(t, id);
-      var[0]=start;
-      var[1]=end;
-      var[2]=inc;
+      v.set_CustomType(t, BitsyHeap::CreateVar(12, &var));
+      memcpy(var, &start, 4);
+      memcpy(var+4, &end, 4);
+      memcpy(var+8, &inc, 4);
       break;
     }
     default:
@@ -187,8 +184,8 @@ void DataType::updateUsedContainers(uint8_t start_id, const Variable &v, uint32_
   BITSY_ASSERT(v.type == Variable::CUSTOM);
   switch (v.val.custom_type.type) {
     case Variable::CustomType::ITER: {
-      uint16_t *val;
-      BitsyHeap::GetVar(v.val.custom_type.val, (uint8_t**)&val);
+      uint8_t *val;
+      BitsyHeap::GetVar(v.val.custom_type.val, &val);
       Variable iter;
       iter.type = Variable::CUSTOM;
       memcpy(&iter.val.custom_type, val, 2);

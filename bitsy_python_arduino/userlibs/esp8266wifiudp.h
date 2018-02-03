@@ -8,10 +8,11 @@ char ssid[32], password[32];
 uint16_t udp_port;
 uint16_t on_recv_callback = 0xFF;
 uint32_t last_check = 0;
+uint32_t remote_ip;
+uint16_t remote_port;
 
 void do_connect() {
   WiFi.begin(ssid, password);
-
   while (WiFi.status() != WL_CONNECTED) {
     delay(1000);
   }
@@ -37,7 +38,7 @@ void checkConnectivity() {
 }
 
 bool ota_send(const uint8_t *buf, uint8_t len) {
-  wifiUDP.beginPacket(wifiUDP.remoteIP(), wifiUDP.remotePort());
+  wifiUDP.beginPacket(remote_ip, remote_port);
   wifiUDP.write(buf, len);
   wifiUDP.endPacket();
 }
@@ -46,6 +47,8 @@ uint8_t ota_recv(uint8_t *buf, uint8_t len) {
   checkConnectivity();
   if (!wifiUDP.parsePacket())
     return 0;
+  remote_ip = wifiUDP.remoteIP();
+  remote_port = wifiUDP.remotePort();
   return wifiUDP.read(buf, len);
 }
 
