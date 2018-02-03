@@ -11,9 +11,7 @@ NRFLite radio;
 uint16_t on_recv_callback = 0xFF;
 
 bool ota_send2(const uint8_t *buf, uint8_t len, uint8_t to_radio) {
-  bool ret = radio.send(to_radio, (void*)buf, len);
-  ota_update_nrf24();
-  return ret;
+  return radio.send(to_radio, (void*)buf, len);
 }
 
 bool ota_send(const uint8_t *buf, uint8_t len) {

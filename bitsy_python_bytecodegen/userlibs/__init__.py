@@ -9,4 +9,6 @@ import servo
 import nrf24
 import eeprom
 import esp8266wifiudp
+import readvcc
+import lowpower
 import testuserlib

@@ -8,6 +8,9 @@
 #define ENABLE_BITSY_USERLIB_SERIAL
 #ifdef ESP8266
 #define ENABLE_BITSY_USERLIB_ESP8266WIFIUDP
+#else // Arduino nano/pro_mini with atmega328
+#define ENABLE_BITSY_USERLIB_READVCC
+#define ENABLE_BITSY_USERLIB_LOWPOWER
 #endif
 
 #define NRF24_GATEWAY 0xA5

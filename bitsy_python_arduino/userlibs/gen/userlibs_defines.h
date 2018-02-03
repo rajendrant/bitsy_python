@@ -173,6 +173,34 @@ Variable userlib_module_esp8266wifiudp(uint8_t function, uint8_t argcount, Varia
 }
 #endif
 
+#ifdef ENABLE_BITSY_USERLIB_READVCC
+#include "../readvcc.h"
+
+Variable userlib_module_readvcc(uint8_t function, uint8_t argcount, Variable arg[]) {
+  switch (function) {
+    case 0:
+      return readvcc::readvcc(argcount, arg);
+    default:
+      BITSY_ASSERT(false);
+  }
+  return Variable::Zero();
+}
+#endif
+
+#ifdef ENABLE_BITSY_USERLIB_LOWPOWER
+#include "../lowpower.h"
+
+Variable userlib_module_lowpower(uint8_t function, uint8_t argcount, Variable arg[]) {
+  switch (function) {
+    case 0:
+      return lowpower::powerdown(argcount, arg);
+    default:
+      BITSY_ASSERT(false);
+  }
+  return Variable::Zero();
+}
+#endif
+
 #ifdef ENABLE_BITSY_USERLIB_TESTUSERLIB
 #include "../testuserlib.h"
 
@@ -223,8 +251,14 @@ bool is_userlib_module_enabled(uint8_t module) {
 #ifdef ENABLE_BITSY_USERLIB_ESP8266WIFIUDP
     case 7: // esp8266wifiudp
 #endif
+#ifdef ENABLE_BITSY_USERLIB_READVCC
+    case 8: // readvcc
+#endif
+#ifdef ENABLE_BITSY_USERLIB_LOWPOWER
+    case 9: // lowpower
+#endif
 #ifdef ENABLE_BITSY_USERLIB_TESTUSERLIB
-    case 8: // testuserlib
+    case 10: // testuserlib
 #endif
       return true;
   }
@@ -265,8 +299,16 @@ Variable call_userlib_function(uint8_t module, uint8_t function, uint8_t argcoun
     case 7:
       return userlib_module_esp8266wifiudp(function, argcount, arg);
 #endif
-#ifdef ENABLE_BITSY_USERLIB_TESTUSERLIB
+#ifdef ENABLE_BITSY_USERLIB_READVCC
     case 8:
+      return userlib_module_readvcc(function, argcount, arg);
+#endif
+#ifdef ENABLE_BITSY_USERLIB_LOWPOWER
+    case 9:
+      return userlib_module_lowpower(function, argcount, arg);
+#endif
+#ifdef ENABLE_BITSY_USERLIB_TESTUSERLIB
+    case 10:
       return userlib_module_testuserlib(function, argcount, arg);
 #endif
     default:

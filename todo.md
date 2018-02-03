@@ -7,21 +7,21 @@ HIGH Priority
 
 Support for basic interrupt usage. At least one interrupt.
 
-Builtin constants support such as None, True, False
+Builtin constants support such as None, True, False - DONE
 
-Ability for userlibs(which use more SRAM such as serial, i2c) to be disabled and is_userlib_disabled() used to check for disabled libraries.
+Ability for userlibs(which use more SRAM such as serial, i2c) to be disabled and is_userlib_disabled() used to check for disabled libraries.  - DONE
 
-RF24 library support.
+RF24 library support.  - DONE
 
-Lowpowersleep library support.
+Lowpowersleep library support.  - DONE
 
-VCCVoltage userlib to read VCC.
+VCCVoltage userlib to read VCC. - DONE
 
-Read and run bitsy code from EEPROM with example.
+Read and run bitsy code from EEPROM with example.  - DONE
 
-Write bitsy code to EEPROM using Serial with example.
+Write bitsy code to EEPROM using Serial with example. - DONE
 
-Write bitsy code to EEPROM using nrf24 with example.
+Write bitsy code to EEPROM using nrf24 with example.  - DONE
 
 
 
@@ -30,9 +30,9 @@ MEDIUM Priority
 
 Advanced interrupt usage with interrupts on multiple pins enabled.
 
-Dynamic memory support for objects.
+Dynamic memory support for objects. - DONE
 
-range() support needs get_iter instruction to be implemented.
+range() support needs get_iter instruction to be implemented. - DONE
 
 Add unittest for FunctionStack that uses the generic block allocater. Dynamic memory support will break this.
 
@@ -43,4 +43,3 @@ Strings
 bitsy userlib to report the runtime memory usage (current, high, low)
 
 A lot of common examples.
-

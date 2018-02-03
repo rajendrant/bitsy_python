@@ -36,6 +36,14 @@ userlibs_list = [
         'functions': ['set_on_recv_callback', 'send_response', 'local_ip'],
     },
     {
+        'name': 'readvcc',
+        'functions': ['readvcc'],
+    },
+    {
+        'name': 'lowpower',
+        'functions': ['powerdown'],
+    },
+    {
         'name': 'testuserlib',
         'functions': ['printstr', 'println', 'math_add', 'math_power',
             'init_callback', 'trigger_callback'],
