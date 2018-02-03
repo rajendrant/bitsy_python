@@ -33,24 +33,24 @@ Variable DataType::CreateForType(uint8_t t, uint8_t argcount, Variable args[]) {
       BITSY_ASSERT(argcount == 1);
       return IterCreate(args[0]);
     case Variable::CustomType::RANGE: {
-      int32_t start=0, end, inc=1;
+      int32_t r[3];
+      r[0]=0;
+      r[2]=1;
       if (argcount==1) {
-        end = args[0].as_int32();
+        r[1] = args[0].as_int32();
       } else if (argcount==2) {
-        start = args[0].as_int32();
-        end = args[1].as_int32();
+        r[0] = args[0].as_int32();
+        r[1] = args[1].as_int32();
       } else if (argcount==3) {
-        start = args[0].as_int32();
-        end = args[1].as_int32();
-        inc = args[2].as_int32();
+        r[0] = args[0].as_int32();
+        r[1] = args[1].as_int32();
+        r[2] = args[2].as_int32();
       } else {
         BITSY_ASSERT(false);
         break;
       }
       v.set_CustomType(t, BitsyHeap::CreateVar(12, &var));
-      memcpy(var, &start, 4);
-      memcpy(var+4, &end, 4);
-      memcpy(var+8, &inc, 4);
+      memcpy(var, r, 12);
       break;
     }
     default:

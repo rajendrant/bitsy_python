@@ -27,9 +27,9 @@ def send_bitsy_program(ser, prog):
     if not read_until(ser, 'READY\r\n'):
         return
     total = (len(prog)-1)//30+1
-    ser.write('LEN %d'%(total))
+    ser.write('LEN %d\r\n'%(total))
     for pos in range(0, total):
-        ser.write(struct.pack('!30sBB', prog[pos*30 : (pos+1)*30], pos, total))
+        ser.write(struct.pack('!30sB', prog[pos*30 : (pos+1)*30], pos))
 
     if read_until(ser, 'RESET\r\n'):
         print 'Successfully wrote'

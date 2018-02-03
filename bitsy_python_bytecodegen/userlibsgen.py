@@ -25,7 +25,7 @@ userlibs_list = [
     },
     {
         'name': 'nrf24',
-        'functions': ['init', 'set_on_recv_callback', 'send', 'recv_until'],
+        'functions': ['init', 'set_on_recv_callback', 'send', 'recv_until', 'powerdown'],
     },
     {
         'name': 'eeprom',

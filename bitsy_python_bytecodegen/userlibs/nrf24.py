@@ -13,3 +13,6 @@ def send(*arg):
 def recv_until(*arg):
     pass
 
+def powerdown(*arg):
+    pass
+

@@ -76,4 +76,9 @@ Variable recv_until(uint8_t argcount, Variable arg[]) {
   return Variable(0);
 }
 
+Variable powerdown(uint8_t argcount, Variable arg[]) {
+  radio.powerDown();
+  return Variable(0);
+}
+
 };
