@@ -42,7 +42,7 @@ Variable set_on_recv_callback(uint8_t argcount, Variable arg[]) {
       arg[0].val.custom_type.type==Variable::CustomType::USER_FUNCTION) {
     on_recv_callback = arg[0].val.custom_type.val;
   }
-  return Variable::Zero();
+  return 0;
 }
 
 void send_to_callback(const uint8_t *buf, uint8_t len) {
@@ -64,13 +64,12 @@ Variable send(uint8_t argcount, Variable arg[]) {
   uint8_t len = arg[2].as_uint8();
   if (bitsy_python::BitsyHeap::GetVar(arg[1].val.custom_type.val, &buf) < len)
     return Variable::Zero();
-  ota_send2(buf, len, arg[0].as_uint8());
-  return Variable(1);
+  return ota_send2(buf, len, arg[0].as_uint8());
 }
 
 Variable powerdown(uint8_t argcount, Variable arg[]) {
   radio.powerDown();
-  return Variable(0);
+  return 0;
 }
 
 };

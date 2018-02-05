@@ -16,7 +16,6 @@ def on_wifi_packet_recv(pkt):
     send = bytearray(l)
     for i in range(l):
         send[i] = pkt[i+1]
-    print 'took', arduino.millis()-start
     nrf24.send(pkt[0], send, l)
     print 'took', arduino.millis()-start
 
@@ -30,9 +29,9 @@ def main():
     arduino.pinMode(0, 1) # 1=OUTPUT, 0=INPUT, 2=INPUT_PULLUP
     while True:
         arduino.digitalWrite(0, 1)
-        #arduino.digitalWrite(2, 1)
+        arduino.digitalWrite(2, 0)
         arduino.delay(1000)
-        #arduino.digitalWrite(2, 0)
+        arduino.digitalWrite(2, 1)
         arduino.digitalWrite(0, 0)
         arduino.delay(1000)
         print 'loop'

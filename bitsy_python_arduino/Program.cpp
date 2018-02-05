@@ -15,6 +15,7 @@ namespace bitsy_python {
 
 namespace Program {
 
+uint8_t curr_fn = 0xFF;
 uint16_t ins_ptr_function_start = 0;
 uint8_t code_len_bits = 0;
 
@@ -104,13 +105,15 @@ FunctionParams setup_function_call(uint8_t fn) {
   get_number(); // args
   ret.vars = get_number().as_int32();
   ret.is_callback_mode = 0;
-  ret.fn = fn;
+  ret.fn = curr_fn;
+  curr_fn = fn;
   return ret;
 }
 
 void return_function(const FunctionParams& ret) {
   BitString::curr_pos = ret.old_ins_ptr;
   update_for_function(ret.fn);
+  curr_fn = ret.fn;
 }
 
 Variable get_number() {
