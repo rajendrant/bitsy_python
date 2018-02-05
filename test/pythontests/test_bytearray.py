@@ -8,6 +8,7 @@ def main():
     a,b = unpack()
     print a,b
     search()
+    copy()
 
 def iterate():
     s=bytearray(4)
@@ -53,3 +54,18 @@ def search():
         print 'not found A'
     if 'b' not in s:
         print 'not found b'
+
+def do_copy(s):
+    l=len(s)-1
+    c=bytearray(l)
+    for i in range(l):
+      c[i]=s[i+1]
+    print c
+
+def copy():
+    s=bytearray(4)
+    s[0] = 'a'
+    s[1] = 'b'
+    s[2] = 'c'
+    s[3] = 'd'
+    do_copy(s)
