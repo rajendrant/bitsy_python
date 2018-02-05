@@ -7,9 +7,7 @@
 
 #define INDEX(p) ((p) >> 3)
 
-#ifdef DESKTOP
-#define BUF(n) _buf[(n)]
-#elif defined(ARDUINO)
+#if defined(ARDUINO)
 #include <EEPROM.h>
 #ifdef ESP8266
 uint8_t prog_bytes[PROG_BYTE_SIZE];
@@ -21,18 +19,6 @@ namespace bitsy_python {
 namespace BitString {
 
 uint16_t curr_pos = INVALID_CURR_POS;
-
-uint8_t BUF(uint16_t n) {
-  if (n>=PROG_BYTE_SIZE) {
-    mark_insane();
-    return 0xFF;
-  }
-#if defined(AVR)
-  return EEPROM.read(n);
-#elif defined(ESP8266)
-  return prog_bytes[n];
-#endif
-}
 
 #ifdef DESKTOP
 uint8_t *_buf;
@@ -50,6 +36,21 @@ void init() {
 #endif
 }
 #endif
+
+uint8_t BUF(uint16_t n) {
+#ifdef DESKTOP
+  return _buf[n];
+#endif
+  if (n>=PROG_BYTE_SIZE) {
+    mark_insane();
+    return 0xFF;
+  }
+#if defined(AVR)
+  return EEPROM.read(n);
+#elif defined(ESP8266)
+  return prog_bytes[n];
+#endif
+}
 
 bool is_sane() { return BitString::curr_pos!=INVALID_CURR_POS; }
 

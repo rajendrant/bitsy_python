@@ -21,7 +21,7 @@ bool IterForLoopIter(const Variable& iter, Variable *elem) {
          iter.val.custom_type.type == Variable::CustomType::ITER);
   uint8_t *var;
   uint8_t len = BitsyHeap::GetVar(iter.val.custom_type.val, &var);
-  BITSY_ASSERT(len == 2+2);
+  BITSY_ASSERT(len == 2+4);
   uint32_t ind;
   Variable::CustomType iter_val;
   memcpy(&iter_val, var, 2);
