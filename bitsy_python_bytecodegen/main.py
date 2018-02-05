@@ -179,7 +179,7 @@ def print_dis(m):
   allcode = bitstring.BitArray()
   prevlen=int(math.ceil(10.0*(len(codes)+1)/8)) + 2
   allcode.append(bitstring.BitArray(uint=len(codes), length=8))
-  sanitychecker = random.randint(0, 255)
+  sanitychecker = random.randint(0, 127)
   allcode.append(bitstring.BitArray(uint=sanitychecker, length=8))
   for c in codes:
     allcode.append(bitstring.BitArray(uint=prevlen, length=10))
@@ -188,7 +188,7 @@ def print_dis(m):
   if len(allcode)%8 != 0:
     allcode.append(bitstring.BitArray(uint=0, length=8-(len(allcode)%8)))
   for c in codes: allcode.append(c)
-  allcode.append(bitstring.BitArray(uint=sanitychecker, length=8))
+  allcode.append(bitstring.BitArray(int=~sanitychecker, length=8))
   return allcode
 
 def ins_encode(insname, newcode):

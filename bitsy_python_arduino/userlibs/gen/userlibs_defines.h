@@ -131,8 +131,6 @@ Variable userlib_module_nrf24(uint8_t function, uint8_t argcount, Variable arg[]
     case 2:
       return nrf24::send(argcount, arg);
     case 3:
-      return nrf24::recv_until(argcount, arg);
-    case 4:
       return nrf24::powerdown(argcount, arg);
     default:
       BITSY_ASSERT(false);

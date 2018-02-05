@@ -2,6 +2,8 @@
 #include <Arduino.h>
 #endif
 
+extern void ota_update_loop();
+
 namespace arduino {
 
 Variable digitalRead(uint8_t argcount, Variable arg[]) {
@@ -43,9 +45,17 @@ Variable analogWrite(uint8_t argcount, Variable arg[]) {
   return Variable::Zero();
 }
 
+void delay(uint16_t ms)  {
+  for(auto end=millis()+ms; end>=millis();) {
+    ::delay(5);
+    ::ota_update_loop();
+    yield();
+  }
+}
+
 Variable delay(uint8_t argcount, Variable arg[]) {
   if (argcount == 1) {
-    ::delay(arg[0].as_int32());
+    arduino::delay(arg[0].as_int32());
   }
   return Variable::Zero();
 }

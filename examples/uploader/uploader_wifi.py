@@ -13,6 +13,7 @@ args = parser.parse_args()
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 address = (args.server, args.port)
 prog = open(args.bitsy_file).read()
+sock.settimeout(2)
 
 def upload_program():
     try:

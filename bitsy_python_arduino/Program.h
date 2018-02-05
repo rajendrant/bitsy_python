@@ -27,8 +27,6 @@ void FromEEPROM();
 // module.
 bool sanity_check();
 
-bool is_sane();
-
 uint8_t get_next_instruction(Variable *arg);
 
 // Gets the number at the current ins pointer, and updates the ins_ptr.

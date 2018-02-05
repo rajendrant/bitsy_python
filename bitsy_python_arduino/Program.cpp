@@ -74,14 +74,12 @@ uint8_t get_next_instruction(Variable *arg) {
 bool sanity_check() {
   uint8_t total_functions = BitString::get_bit8(0, 8);
   uint16_t module_len = BitString::get_bit16(MODULE_HEADER + total_functions * HEADER_PER_FUNCTION, HEADER_PER_FUNCTION) * 8;
-  if(BitString::get_bit8(8, 8) != BitString::get_bit8(module_len, 8)) {
-    BitString::curr_pos = 0;
+  if(BitString::get_bit8(8, 8) != ((~BitString::get_bit8(module_len, 8))&0xFF)) {
+    BitString::mark_insane();
     return false;
   }
   return true;
 }
-
-bool is_sane() { return BitString::curr_pos; }
 
 FunctionParams setup_function_call(uint8_t fn) {
   Program::FunctionParams ret;

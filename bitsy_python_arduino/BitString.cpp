@@ -9,21 +9,30 @@
 
 #ifdef DESKTOP
 #define BUF(n) _buf[(n)]
-#elif defined(ARDUINO) && defined(AVR)
+#elif defined(ARDUINO)
 #include <EEPROM.h>
-#define BUF(n) EEPROM.read(n)
-#elif defined(ARDUINO) && defined(ESP8266)
-#include <EEPROM.h>
-#define PROG_BYTE_SIZE 1024
+#ifdef ESP8266
 uint8_t prog_bytes[PROG_BYTE_SIZE];
-#define BUF(n) prog_bytes[n]
+#endif
 #endif
 
 namespace bitsy_python {
 
 namespace BitString {
 
-uint16_t curr_pos = 0;
+uint16_t curr_pos = INVALID_CURR_POS;
+
+uint8_t BUF(uint16_t n) {
+  if (n>=PROG_BYTE_SIZE) {
+    mark_insane();
+    return 0xFF;
+  }
+#if defined(AVR)
+  return EEPROM.read(n);
+#elif defined(ESP8266)
+  return prog_bytes[n];
+#endif
+}
 
 #ifdef DESKTOP
 uint8_t *_buf;
@@ -32,6 +41,7 @@ uint16_t size;
 void init(uint8_t *buf, uint16_t sz) {_buf=buf; size=sz;}
 #else
 void init() {
+  curr_pos = 0;
 #ifdef ESP8266
   EEPROM.begin(PROG_BYTE_SIZE);
   for(uint16_t i=0; i<PROG_BYTE_SIZE; i++)
@@ -40,6 +50,11 @@ void init() {
 #endif
 }
 #endif
+
+bool is_sane() { return BitString::curr_pos!=INVALID_CURR_POS; }
+
+void mark_insane() { BitString::curr_pos=INVALID_CURR_POS; }
+
 
 uint8_t get_bit8(uint16_t pos, uint8_t len) {
   BITSY_ASSERT(len > 0 && len <= 8);

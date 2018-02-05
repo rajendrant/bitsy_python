@@ -68,14 +68,6 @@ Variable send(uint8_t argcount, Variable arg[]) {
   return Variable(1);
 }
 
-Variable recv_until(uint8_t argcount, Variable arg[]) {
-  if (argcount == 1) {
-    for(auto end = millis() + arg[0].as_uint8(); millis() < end; )
-      ::ota_update_nrf24();
-  }
-  return Variable(0);
-}
-
 Variable powerdown(uint8_t argcount, Variable arg[]) {
   radio.powerDown();
   return Variable(0);

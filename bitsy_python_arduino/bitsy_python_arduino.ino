@@ -25,7 +25,9 @@ void setup() {
 #ifdef ENABLE_BITSY_USERLIB_NRF24
 #ifdef ESP8266
   nrf24::radio.init(NRF24_GATEWAY, 4, 5);
-#else // Arduino nano/pro_mini with atmega328
+#elif defined(ARDUINO_AVR_PRO)  // Arduino pro_mini with atmega328
+  nrf24::radio.init(3, 9, 10);
+#else // Arduino nano with atmega328
   nrf24::radio.init(0, 8, 10);
 #endif
 #endif
@@ -38,12 +40,13 @@ void setup() {
 }
 
 void loop() {
-  for (uint8_t i=2; i--; ) {
+  for (uint8_t i=4; i--; ) {
     if (!bitsy_python::BitsyPythonVM::executeOneStep()) {
       Serial.println("REINIT");
       bitsy_python::BitsyPythonVM::init();
-      delay(1000);
+      arduino::delay(10000);
     }
+    yield();
   }
   ota_update_loop();
 }

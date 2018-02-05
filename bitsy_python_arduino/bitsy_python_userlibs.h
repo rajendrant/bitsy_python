@@ -18,7 +18,7 @@ void bitsy_print(char ch) {
 void BITSY_PYTHON_PRINT(const char* str) {
 #if defined(DESKTOP) || defined(ENABLE_BITSY_USERLIB_SERIAL)
 #ifdef ENABLE_BITSY_USERLIB_SERIAL
-  if(*str=='\n') delay(10);
+  Serial.flush();
 #endif
   while (*str != '\0') {
     bitsy_print(*str);

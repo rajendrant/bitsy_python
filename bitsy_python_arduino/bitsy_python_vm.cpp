@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 #include "bitsy_alloc.h"
+#include "BitString.h"
 #include "BitsyHeap.h"
 #include "Builtins.h"
 #include "datatypes/datatype.h"
@@ -213,10 +214,8 @@ void init() {
   ExecStack::init();
   FunctionStack::init();
   BitsyHeap::init();
-  if (Program::sanity_check()) {
+  if (Program::sanity_check())
     FunctionStack::setup_function_call(Program::setup_function_call(0));
-    // printf("main %d %d %d\n", fn.args, fn.vars, fn.len);
-  }
 }
 
 void execute() {
@@ -225,7 +224,7 @@ void execute() {
 }
 
 bool executeOneStep() {
-  if (!Program::is_sane())
+  if (!BitString::is_sane())
     return false;
 
   Variable arg;
@@ -398,8 +397,9 @@ bool executeOneStep() {
       break;
     default:
       BITSY_PYTHON_PRINT("UNSUPPORTED INS ");
-      BITSY_PYTHON_PRINT_VAR(Variable(ins));
+      BITSY_PYTHON_PRINT_VAR(ins);
       // BITSY_PYTHON_PRINT(get_ins_name(ins));
+      BitString::mark_insane();
       BITSY_ASSERT(false);
   }
   return true;
