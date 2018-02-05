@@ -172,8 +172,7 @@ def print_dis(m):
     number_encode(f.__code__.co_argcount, code)
     number_encode(len(f.__code__.co_varnames), code)
     dump_code(f, globalls, functions, modules, code)
-    if len(code)%8 != 0:
-      code.append(bitstring.BitArray(uint=0, length=8-(len(code)%8)))
+    assert len(code)%8 == 0
     codes.append(code)
   # append header
   allcode = bitstring.BitArray()
@@ -323,14 +322,26 @@ def dump_code(f, globalls, functions, modules, newcode):
       nested_loops.pop()
     #print insname, var if var else ''
 
+  per_target_len = int(math.ceil(math.log(len(newcode), 2)))
+  total_len = get_function_length(len(newcode) + len(target_address_loc)*per_target_len)
+  while total_len > 2**per_target_len:
+    per_target_len += 1
+    total_len = get_function_length(len(newcode) + len(target_address_loc)*per_target_len)
   target_address_loc.reverse()
   for insert_pos, _ in target_address_loc:
     for i in range(bisect.bisect(bytecode_map, [insert_pos,0]), len(bytecode_map)):
-      bytecode_map[i][0] += 10
+      bytecode_map[i][0] += per_target_len
   bytecode_map = {v[1] : v[0] for v in bytecode_map}
   for insert_pos, target in target_address_loc:
-    newcode.insert(bitstring.BitArray(uint=bytecode_map[target], length=10), insert_pos)
+    newcode.insert(bitstring.BitArray(uint=bytecode_map[target], length=per_target_len), insert_pos)
+  if len(newcode)%8 != 0:
+    newcode.append(bitstring.BitArray(uint=0, length=8-(len(newcode)%8)))
+  assert len(newcode) == total_len
 
+def get_function_length(l):
+  if l%8!=0:
+    return l + 8-(l%8)
+  return l
 
 """
 sanity-check:

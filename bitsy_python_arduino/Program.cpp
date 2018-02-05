@@ -16,6 +16,7 @@ namespace bitsy_python {
 namespace Program {
 
 uint16_t ins_ptr_function_start = 0;
+uint8_t code_len_bits = 0;
 
 uint8_t get_next_instruction(Variable *arg) {
   uint8_t ins = 0;
@@ -64,8 +65,8 @@ uint8_t get_next_instruction(Variable *arg) {
     // case SETUP_LOOP:
     case FOR_ITER:
     // case BREAK_LOOP:
-      arg->set_uint12(BitString::get_bit16(BitString::curr_pos, 10));
-      BitString::curr_pos += 10;
+      arg->set_int32(BitString::get_bit16(BitString::curr_pos, code_len_bits));
+      BitString::curr_pos += code_len_bits;
       break;
   }
   return ins;
@@ -81,20 +82,35 @@ bool sanity_check() {
   return true;
 }
 
+uint8_t get_code_len_bits(uint16_t len) {
+  uint8_t ret=1;
+  while (len >>= 1)
+    ++ret;
+  return ret;
+}
+
+void update_for_function(uint8_t fn) {
+  ins_ptr_function_start = BitString::get_bit16(MODULE_HEADER + fn * HEADER_PER_FUNCTION, HEADER_PER_FUNCTION) * 8;
+  code_len_bits =
+    get_code_len_bits(BitString::get_bit16(MODULE_HEADER + (fn+1) * HEADER_PER_FUNCTION, HEADER_PER_FUNCTION) * 8
+                      - ins_ptr_function_start);
+}
+
 FunctionParams setup_function_call(uint8_t fn) {
   Program::FunctionParams ret;
   ret.old_ins_ptr = BitString::curr_pos;
-  ret.old_start_ins_ptr = ins_ptr_function_start;
-  BitString::curr_pos = ins_ptr_function_start = BitString::get_bit16(MODULE_HEADER + fn * HEADER_PER_FUNCTION, HEADER_PER_FUNCTION) * 8;
+  update_for_function(fn);
+  BitString::curr_pos = ins_ptr_function_start;
   get_number(); // args
   ret.vars = get_number().as_int32();
   ret.is_callback_mode = 0;
+  ret.fn = fn;
   return ret;
 }
 
 void return_function(const FunctionParams& ret) {
   BitString::curr_pos = ret.old_ins_ptr;
-  ins_ptr_function_start = ret.old_start_ins_ptr;
+  update_for_function(ret.fn);
 }
 
 Variable get_number() {

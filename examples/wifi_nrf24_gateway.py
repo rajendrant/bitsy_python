@@ -26,5 +26,13 @@ def main():
     arduino.delay(2000)
     ip = esp8266wifiudp.local_ip()
     print 'IP address', ip&0xFF, ((ip>>8)&0xFF), ((ip>>16)&0xFF), ((ip>>24)&0xFF)
+    arduino.pinMode(2, 1) # 1=OUTPUT, 0=INPUT, 2=INPUT_PULLUP
+    arduino.pinMode(0, 1) # 1=OUTPUT, 0=INPUT, 2=INPUT_PULLUP
     while True:
-        arduino.delay(100)
+        arduino.digitalWrite(0, 1)
+        #arduino.digitalWrite(2, 1)
+        arduino.delay(1000)
+        #arduino.digitalWrite(2, 0)
+        arduino.digitalWrite(0, 0)
+        arduino.delay(1000)
+        print 'loop'

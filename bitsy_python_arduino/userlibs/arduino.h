@@ -24,7 +24,7 @@ Variable digitalWrite(uint8_t argcount, Variable arg[]) {
 
 Variable pinMode(uint8_t argcount, Variable arg[]) {
   if (argcount == 2) {
-    ::pinMode(arg[0].as_uint8(), arg[0].as_uint8());
+    ::pinMode(arg[0].as_uint8(), arg[1].as_uint8());
   }
   return Variable::Zero();
 }

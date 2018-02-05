@@ -13,10 +13,10 @@ namespace FunctionStack {
 uint16_t start = 0, top = 0;
 
 typedef struct {
-  uint8_t var_count;
   uint16_t ins_ptr;
-  uint16_t start_ins_ptr;
   uint16_t start;
+  uint8_t var_count;
+  uint8_t fn;
   uint8_t is_callback_mode : 1;
 }__attribute__((packed)) FunctionStackHeader;
 
@@ -37,8 +37,8 @@ void setup_function_call(const Program::FunctionParams& p) {
   FunctionStackHeader *hdr = (FunctionStackHeader*)(stack+top);
   hdr->var_count = p.vars;
   hdr->ins_ptr = p.old_ins_ptr;
-  hdr->start_ins_ptr = p.old_start_ins_ptr;
   hdr->is_callback_mode = p.is_callback_mode;
+  hdr->fn = p.fn;
   hdr->start = start;
   start = top;
   top += HDR_START + HDR_SIZE_FOR_VARS(p.vars) + p.vars;
@@ -50,8 +50,8 @@ Program::FunctionParams return_function() {
   top = start;
   FunctionStackHeader *hdr = (FunctionStackHeader*)(stack+start);
   p.old_ins_ptr = hdr->ins_ptr;
-  p.old_start_ins_ptr = hdr->start_ins_ptr;
   p.is_callback_mode = hdr->is_callback_mode;
+  p.fn = hdr->fn;
   start = hdr->start;
   while (top_block_size() > top + 100) {
     top_block_free();
@@ -85,7 +85,7 @@ Variable getNthVariable(uint8_t n) {
 void setNthVariable(uint8_t n, const Variable& v) {
   FunctionStackHeader *hdr = (FunctionStackHeader*)(stack+start);
   BITSY_ASSERT(n < hdr->var_count);
-  uint16_t pre = start + HDR_START + HDR_SIZE_FOR_VARS(stack[start]);
+  uint16_t pre = start + HDR_START + HDR_SIZE_FOR_VARS(hdr->var_count);
   for (uint8_t i = 0; i < n; i++) {
     pre += Variable::get_size_from_type(get_var_hdr(i));
   }
