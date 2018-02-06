@@ -25,9 +25,8 @@ def upload_program():
         while True:
             resp, _ = sock.recvfrom(1024)
             pos = ord(resp[0])
-            print pos
+            print pos, time.time()
             if pos>=0 and pos<total:
-                time.sleep(0.02)
                 sock.sendto(struct.pack('!B30sB', args.nrf24, prog[pos*30 : (pos+1)*30], pos), address)
             if pos == total-1: break
     except IOError as e:

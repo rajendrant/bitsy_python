@@ -18,8 +18,8 @@ bool ota_update(uint8_t end, bool (*sender)(const uint8_t *buf, uint8_t len),
 #endif
   delay(100);
   for (auto endtime=millis()+10000; pos < end && millis() < endtime; ) {
-    for(uint8_t tries=4; tries-- && !sender(&pos, 1); delay(100));
-    for(auto t=millis()+200; millis()<t; ) {
+    for(uint8_t tries=4; tries-- && !sender(&pos, 1); delay(200));
+    for(auto t=millis()+500; millis()<t; ) {
       uint8_t prog[32], len;
       if((len=receiver(prog, sizeof(prog))) && prog[len-1]==pos) {
         for(int i=0; i<len-1; i++) {
