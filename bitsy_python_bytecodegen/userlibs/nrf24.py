@@ -13,3 +13,6 @@ def send(*arg):
 def powerdown(*arg):
     pass
 
+def powerup(*arg):
+    pass
+

@@ -9,8 +9,10 @@ namespace nrf24 {
 
 NRFLite radio;
 uint16_t on_recv_callback = 0xFF;
+uint8_t is_powered_down = 0;
 
 bool ota_send2(const uint8_t *buf, uint8_t len, uint8_t to_radio) {
+  is_powered_down = 0;
   return radio.send(to_radio, (void*)buf, len);
 }
 
@@ -19,6 +21,8 @@ bool ota_send(const uint8_t *buf, uint8_t len) {
 }
 
 uint8_t ota_recv(uint8_t *buf, uint8_t len) {
+  if (is_powered_down)
+    return 0;
   uint8_t l=radio.hasData();
   if (l==0 || l>len) return 0;
   radio.readData(buf);
@@ -34,6 +38,7 @@ Variable init(uint8_t argcount, Variable arg[]) {
     bitrate = arg[3].as_uint8();
   if (argcount >= 5)
     channel = arg[4].as_uint8();
+  is_powered_down = 0;
   return radio.init(radioId, cePin, csnPin, (NRFLite::Bitrates)bitrate, channel);
 }
 
@@ -67,7 +72,13 @@ Variable send(uint8_t argcount, Variable arg[]) {
   return ota_send2(buf, len, arg[0].as_uint8());
 }
 
+Variable powerup(uint8_t argcount, Variable arg[]) {
+  is_powered_down = 0;
+  return 0;
+}
+
 Variable powerdown(uint8_t argcount, Variable arg[]) {
+  is_powered_down = 1;
   radio.powerDown();
   return 0;
 }
