@@ -15,9 +15,7 @@ namespace bitsy_python {
 
 namespace Program {
 
-uint8_t curr_fn = 0xFF;
 uint16_t ins_ptr_function_start = 0;
-uint8_t code_len_bits = 0;
 
 uint8_t get_next_instruction(Variable *arg) {
   uint8_t ins = 0;
@@ -38,7 +36,8 @@ uint8_t get_next_instruction(Variable *arg) {
     switch (global_type) {
       case 0:
         // TODO: global variable.
-        BITSY_ASSERT(false);
+        arg->set_uint8(0);
+        //BITSY_ASSERT(false);
       case 1:
         *arg = Variable::FunctionVariable(arg->as_int32());
         break;
@@ -66,8 +65,8 @@ uint8_t get_next_instruction(Variable *arg) {
     // case SETUP_LOOP:
     case FOR_ITER:
     // case BREAK_LOOP:
-      arg->set_int32(BitString::get_bit16(BitString::curr_pos, code_len_bits));
-      BitString::curr_pos += code_len_bits;
+      arg->set_uint12(BitString::get_bit16(BitString::curr_pos, 10));
+      BitString::curr_pos += 10;
       break;
   }
   return ins;
@@ -76,44 +75,29 @@ uint8_t get_next_instruction(Variable *arg) {
 bool sanity_check() {
   uint8_t total_functions = BitString::get_bit8(0, 8);
   uint16_t module_len = BitString::get_bit16(MODULE_HEADER + total_functions * HEADER_PER_FUNCTION, HEADER_PER_FUNCTION) * 8;
-  if(BitString::get_bit8(8, 8) != ((~BitString::get_bit8(module_len, 8))&0xFF)) {
-    BitString::mark_insane();
+  if(BitString::get_bit8(8, 8) != BitString::get_bit8(module_len, 8)) {
+    BitString::curr_pos = 0;
     return false;
   }
   return true;
 }
 
-uint8_t get_code_len_bits(uint16_t len) {
-  uint8_t ret=1;
-  while (len >>= 1)
-    ++ret;
-  return ret;
-}
-
-void update_for_function(uint8_t fn) {
-  ins_ptr_function_start = BitString::get_bit16(MODULE_HEADER + fn * HEADER_PER_FUNCTION, HEADER_PER_FUNCTION) * 8;
-  code_len_bits =
-    get_code_len_bits(BitString::get_bit16(MODULE_HEADER + (fn+1) * HEADER_PER_FUNCTION, HEADER_PER_FUNCTION) * 8
-                      - ins_ptr_function_start);
-}
+bool is_sane() { return BitString::curr_pos; }
 
 FunctionParams setup_function_call(uint8_t fn) {
   Program::FunctionParams ret;
   ret.old_ins_ptr = BitString::curr_pos;
-  update_for_function(fn);
-  BitString::curr_pos = ins_ptr_function_start;
+  ret.old_start_ins_ptr = ins_ptr_function_start;
+  BitString::curr_pos = ins_ptr_function_start = BitString::get_bit16(MODULE_HEADER + fn * HEADER_PER_FUNCTION, HEADER_PER_FUNCTION) * 8;
   get_number(); // args
   ret.vars = get_number().as_int32();
   ret.is_callback_mode = 0;
-  ret.fn = curr_fn;
-  curr_fn = fn;
   return ret;
 }
 
 void return_function(const FunctionParams& ret) {
   BitString::curr_pos = ret.old_ins_ptr;
-  update_for_function(ret.fn);
-  curr_fn = ret.fn;
+  ins_ptr_function_start = ret.old_start_ins_ptr;
 }
 
 Variable get_number() {

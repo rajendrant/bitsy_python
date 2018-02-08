@@ -274,7 +274,9 @@ def dump_code(f, globalls, functions, modules, newcode):
       var = f.__code__.co_consts[var]
       const_encode(var, newcode)
     elif insname.endswith('_GLOBAL'):
+      print var, type(var)
       var = f.__code__.co_names[var]
+      print var, type(var)
       if var in globalls:
         newcode.append(bitstring.BitArray(bin='000'))
         const_encode(globalls[var], newcode)
@@ -293,8 +295,10 @@ def dump_code(f, globalls, functions, modules, newcode):
         newcode.append(bitstring.BitArray(bin='100'))
         const_encode(var=='True', newcode)
       else:
-        print var
-        assert False
+        newcode.append(bitstring.BitArray(bin='000'))
+        const_encode(0, newcode)
+        #print var
+        #assert False
     elif insname.endswith('_FAST'):
       const_encode(var, newcode)
       var = f.__code__.co_varnames[var]
