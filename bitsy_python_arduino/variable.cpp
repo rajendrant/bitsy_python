@@ -142,6 +142,8 @@ bool Variable::is_custom_heap_type() const {
     case CustomType::BYTEARRAY:
     case CustomType::RANGE:
     case CustomType::ITER:
+    case CustomType::INT32:
+    case CustomType::FLOAT:
       return true;
     }
   }

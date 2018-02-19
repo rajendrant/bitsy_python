@@ -30,6 +30,8 @@ class Variable {
       BYTEARRAY,
       RANGE,
       ITER,
+      INT32,
+      FLOAT,
     };
     uint8_t type : 4;
     uint16_t val : 12;

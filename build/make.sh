@@ -4,8 +4,7 @@ SRC=( bitsy_alloc.cpp BlockStack.cpp ByteStack.cpp BitStack.cpp BitString.cpp \
 FunctionStack.cpp  ExecStack.cpp \
 Program.cpp instructions.cpp variable.cpp bitsy_python_vm.cpp \
 BitsyHeap.cpp gc.cpp Builtins.cpp \
-datatypes/datatype.cpp datatypes/bytearray.cpp datatypes/str.cpp
-datatypes/iter.cpp)
+datatypes/datatype.cpp datatypes/iter.cpp)
 
 BUILD="$( cd "$(dirname "$0")" ; pwd -P )"
 WORKSPACEDIR="$( cd "$(dirname "$BUILD")" ; pwd -P )"

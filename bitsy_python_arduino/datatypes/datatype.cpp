@@ -53,6 +53,20 @@ Variable DataType::CreateForType(uint8_t t, uint8_t argcount, Variable args[]) {
       memcpy(var, r, 12);
       break;
     }
+    case Variable::CustomType::INT32: {
+      BITSY_ASSERT(argcount == 1);
+      int32_t i32 = args[0].as_int32();
+      v.set_CustomType(t, BitsyHeap::CreateVar(4, &var));
+      memcpy(var, &i32, 4);
+      break;
+    }
+    case Variable::CustomType::FLOAT: {
+      BITSY_ASSERT(argcount == 1);
+      float f = args[0].as_float();
+      v.set_CustomType(t, BitsyHeap::CreateVar(4, &var));
+      memcpy(var, &f, 4);
+      break;
+    }
     default:
       BITSY_ASSERT(false);
   }

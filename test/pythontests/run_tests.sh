@@ -29,7 +29,8 @@ diff -Z expected.txt actual.txt | head -30
 if [ $? -ne 0 ]; then
 printf "TEST FAILED"
 else
-rm ${var}.pyc ${var}.bitsy actual.txt expected.txt
+#rm ${var}.pyc ${var}.bitsy actual.txt expected.txt
+cat actual.txt # expected.txt
 fi
 cd ~-
 

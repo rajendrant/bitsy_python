@@ -145,7 +145,7 @@ ins_transform = {
 assert len(ins_order)+len(ins_transform) == len(ins_supported)
 
 def print_dis(m):
-  #print dis.dis(m)
+  print dis.dis(m)
   globalls = {}
   functions = {'main':0}
   modules = {}
@@ -154,11 +154,12 @@ def print_dis(m):
     f = getattr(m, k)
     if type(f)==types.FunctionType:
       functions[k] = len(functions)
-    elif type(f) in (types.BooleanType, types.IntType, types.LongType):
-      globalls[k] = len(globalls)
     elif type(f) == types.ModuleType:
       assert('userlibs.'+k in userlibsgen.userlibs)
       modules['userlibs.'+k] = f
+    elif not k.startswith('__'):
+      assert(type(f) in (types.BooleanType, types.IntType, types.LongType, types.StringType))
+      globalls[k] = len(globalls)
   functions['main']=0
   codes = []
   for k,i in sorted(functions.items(), key=lambda x:x[1]):
@@ -274,9 +275,7 @@ def dump_code(f, globalls, functions, modules, newcode):
       var = f.__code__.co_consts[var]
       const_encode(var, newcode)
     elif insname.endswith('_GLOBAL'):
-      print var, type(var)
       var = f.__code__.co_names[var]
-      print var, type(var)
       if var in globalls:
         newcode.append(bitstring.BitArray(bin='000'))
         const_encode(globalls[var], newcode)
@@ -295,10 +294,8 @@ def dump_code(f, globalls, functions, modules, newcode):
         newcode.append(bitstring.BitArray(bin='100'))
         const_encode(var=='True', newcode)
       else:
-        newcode.append(bitstring.BitArray(bin='000'))
-        const_encode(0, newcode)
-        #print var
-        #assert False
+        print var
+        assert False
     elif insname.endswith('_FAST'):
       const_encode(var, newcode)
       var = f.__code__.co_varnames[var]
