@@ -4,8 +4,7 @@ SRC=( bitsy_alloc.cpp BlockStack.cpp ByteStack.cpp BitStack.cpp BitString.cpp \
 FunctionStack.cpp  ExecStack.cpp BitsyHeap.cpp gc.cpp \
 bitsy_python_vm.cpp \
 Program.cpp instructions.cpp variable.cpp Builtins.cpp \
-datatypes/datatype.cpp datatypes/bytearray.cpp datatypes/str.cpp \
-datatypes/iter.cpp)
+datatypes/datatype.cpp datatypes/iter.cpp)
 
 UNITTESTS=( BlockStack_test ByteStack_test BitStack_test \
 FunctionStack_test ExecStack_test BitString_test Program_test \

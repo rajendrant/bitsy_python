@@ -53,6 +53,7 @@ ins_supported = set((
   'LOAD_ATTR',
   'NOP', 'STOP_CODE',
   'UNPACK_SEQUENCE',
+  'BUILD_LIST',
 ))
 
 ins_order = (
@@ -105,6 +106,7 @@ ins_order = (
 
   'BINARY_SUBSCR', 'STORE_SUBSCR',
   'UNPACK_SEQUENCE',
+  'BUILD_LIST',
 )
 
 ins_arg2 = {
@@ -118,6 +120,7 @@ ins_arg2 = {
   'FOR_ITER', 'CONTINUE_LOOP', 'SETUP_LOOP',
   'LOAD_ATTR',
   'UNPACK_SEQUENCE',
+  'BUILD_LIST',
 }
 
 # instructions that have a target bytecode address or target bytecode delta in
@@ -315,6 +318,8 @@ def dump_code(f, globalls, functions, modules, newcode):
       assert m
       const_encode(m['functions'][var], newcode)
     elif insname=='UNPACK_SEQUENCE':
+      const_encode(var, newcode)
+    elif insname=='BUILD_LIST':
       const_encode(var, newcode)
 
     if insname=='SETUP_LOOP':

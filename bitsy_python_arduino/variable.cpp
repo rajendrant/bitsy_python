@@ -150,4 +150,29 @@ bool Variable::is_custom_heap_type() const {
   return false;
 }
 
+Variable Variable::ToHeap() const {
+  Variable v=*this;
+  switch(type) {
+    case UINT8:
+      v.set_CustomType(CustomType::UINT12, val.uint8);
+      break;
+    case INT32:
+    case FLOAT:
+      BITSY_ASSERT(false);
+      break;
+  }
+  return v;
+}
+
+Variable Variable::ToWithin() const {
+  Variable v=*this;
+  switch(type) {
+    case INT32:
+    case FLOAT:
+      BITSY_ASSERT(false);
+      break;
+  }
+  return v;
+}
+
 //}

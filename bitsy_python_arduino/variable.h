@@ -65,6 +65,9 @@ class Variable {
   void set_int32(int32_t v);
   void set_float(float v);
 
+  Variable ToHeap() const;
+  Variable ToWithin() const;
+
   uint8_t size() const;
   bool is_custom_heap_type() const;
 

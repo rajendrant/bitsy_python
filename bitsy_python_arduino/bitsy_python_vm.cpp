@@ -382,6 +382,14 @@ bool executeOneStep() {
       }
       break;
     }
+    case BUILD_LIST: {
+      uint8_t count=arg.as_uint8();
+      Variable args[count];
+      while(count>0)
+        args[--count]=ExecStack::pop();
+      ExecStack::push(DataType::CreateForType(Variable::CustomType::LIST, arg.as_uint8(), args));
+      break;
+    }
     /*case SETUP_LOOP:
     case POP_BLOCK:
         break;

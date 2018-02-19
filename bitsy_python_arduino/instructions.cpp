@@ -41,6 +41,8 @@ const char* get_ins_name(uint8_t ins) {
       "NOP", "STOP_CODE",
 
       "BINARY_SUBSCR", "STORE_SUBSCR",
+      "UNPACK_SEQUENCE",
+      "BUILD_LIST",
   };
   return ins_order[ins];
 }
@@ -59,6 +61,7 @@ bool is_instr_arg(uint8_t ins) {
     case COMPARE_OP:
     case LOAD_ATTR:
     case UNPACK_SEQUENCE:
+    case BUILD_LIST:
       return true;
   }
   return false;

@@ -7,6 +7,9 @@
 #include "../bitsy_python_vm.h"
 #include "iter.h"
 
+extern void BITSY_PYTHON_PRINT(const char* str);
+extern void BITSY_PYTHON_PRINT_VAR(const Variable& v);
+
 namespace bitsy_python {
 
 // static
@@ -67,6 +70,13 @@ Variable DataType::CreateForType(uint8_t t, uint8_t argcount, Variable args[]) {
       memcpy(var, &f, 4);
       break;
     }
+    case Variable::CustomType::LIST: {
+      v.set_CustomType(t, BitsyHeap::CreateVar(1+2*argcount, &var));
+      var[0] = argcount;
+      for(uint8_t i=0; i<argcount; i++)
+        SetIndex(v, i, args[i]);
+      break;
+    }
     default:
       BITSY_ASSERT(false);
   }
@@ -85,6 +95,13 @@ Variable DataType::GetIndex(const Variable &v, uint8_t ind) {
     case Variable::CustomType::STRING:
       BITSY_ASSERT(len > ind);
       ret.set_CustomType(Variable::CustomType::CHARACTER, var[ind]);
+      break;
+    case Variable::CustomType::LIST:
+      if(len>0 && ind<var[0]) {
+        ret.type=Variable::CUSTOM;
+        memcpy(&ret.val.custom_type, var+1+2*ind, 2);
+        ret = ret.ToWithin();
+      }
       break;
     default:
       BITSY_ASSERT(false);
@@ -109,6 +126,12 @@ void DataType::SetIndex(Variable &v, uint8_t ind, const Variable& val) {
       break;
     case Variable::CustomType::STRING:
       // TypeError: 'str' object does not support item assignment
+    case Variable::CustomType::LIST:
+      if(len>0 && ind<var[0]) {
+        Variable v=val.ToHeap();
+        memcpy(var+1+2*ind, &v.val.custom_type, 2);
+      }
+      break;
     default:
       BITSY_ASSERT(false);
   }
@@ -125,6 +148,8 @@ uint16_t DataType::Len(const Variable &v) {
     case Variable::CustomType::BYTEARRAY:
     case Variable::CustomType::STRING:
       return len;
+    case Variable::CustomType::LIST:
+      return var[0];
     default:
       BITSY_ASSERT(false);
   }
@@ -154,6 +179,14 @@ void DataType::Print(const Variable &v, void (*print)(char)) {
     case Variable::CustomType::BYTEARRAY:
     case Variable::CustomType::STRING:
       for (uint8_t i = 0; i < len; i++) print(var[i]);
+      break;
+    case Variable::CustomType::LIST:
+      BITSY_PYTHON_PRINT("[");
+      for (uint8_t i = 0; i < var[0]; i++) {
+        BITSY_PYTHON_PRINT_VAR(GetIndex(v, i));
+        if(i+1!=var[0])BITSY_PYTHON_PRINT(", ");
+      }
+      BITSY_PYTHON_PRINT("]");
       break;
     default:
       BITSY_ASSERT(false);
