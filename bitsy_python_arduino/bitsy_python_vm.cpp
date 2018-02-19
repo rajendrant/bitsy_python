@@ -10,6 +10,7 @@
 #include "datatypes/iter.h"
 #include "ExecStack.h"
 #include "FunctionStack.h"
+#include "gc.h"
 #include "Program.h"
 #include "instructions.h"
 #include "userlibs/userlibs.h"
@@ -329,6 +330,7 @@ bool executeOneStep() {
               module_id, v.val.custom_type.val & 0x3F, argcount, argvars));
       } else if (v.val.custom_type.type ==
                  Variable::CustomType::BUILTIN_FUNCTION) {
+        gc();
         ExecStack::push(handle_builtin_call((BitsyBuiltin)v.val.custom_type.val,
                                             argcount, argvars));
       } else {
@@ -354,11 +356,9 @@ bool executeOneStep() {
       BITSY_PYTHON_PRINT("\n");
       break;
     case GET_ITER:
+      gc();
       arg = ExecStack::pop();
-      ExecStack::push(arg);
-      arg = DataType::CreateForType(Variable::CustomType::ITER, 1, &arg);
-      ExecStack::pop();
-      ExecStack::push(arg);
+      ExecStack::push(DataType::CreateForType(Variable::CustomType::ITER, 1, &arg));
       break;
     case FOR_ITER: {
       Variable iter, elem;
@@ -383,6 +383,7 @@ bool executeOneStep() {
       break;
     }
     case BUILD_LIST: {
+      gc();
       uint8_t count=arg.as_uint8();
       Variable args[count];
       while(count>0)

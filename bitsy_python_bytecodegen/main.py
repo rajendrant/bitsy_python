@@ -148,7 +148,7 @@ ins_transform = {
 assert len(ins_order)+len(ins_transform) == len(ins_supported)
 
 def print_dis(m):
-  print dis.dis(m)
+  #print dis.dis(m)
   globalls = {}
   functions = {'main':0}
   modules = {}

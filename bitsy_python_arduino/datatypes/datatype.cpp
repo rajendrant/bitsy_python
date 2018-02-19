@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "../gc.h"
 #include "../bitsylimit.h"
 #include "../bitsy_python_vm.h"
 #include "iter.h"
@@ -14,6 +15,7 @@ namespace bitsy_python {
 
 // static
 Variable DataType::CreateStr(const char *str, uint8_t len) {
+  gc();
   Variable v;
   uint8_t *var;
   uint8_t id = BitsyHeap::CreateVar(len-1, &var);
@@ -226,24 +228,36 @@ bool DataType::InOperator(const Variable& cont, const Variable& e) {
   return false;
 }
 
+static void mark_if_custom_heap_type(const uint8_t *type, uint8_t start_id, uint32_t *map) {
+  Variable v;
+  v.type = Variable::CUSTOM;
+  memcpy(&v.val.custom_type, type, 2);
+  if (v.is_custom_heap_type() && v.val.custom_type.val>=start_id &&
+      v.val.custom_type.val<start_id+32) {
+    *map |= 0x1L<<(v.val.custom_type.val-start_id);
+  }
+}
+
 // static
 void DataType::updateUsedContainers(uint8_t start_id, const Variable &v, uint32_t *map) {
   BITSY_ASSERT(v.type == Variable::CUSTOM);
   switch (v.val.custom_type.type) {
-    case Variable::CustomType::ITER: {
-      uint8_t *val;
-      BitsyHeap::GetVar(v.val.custom_type.val, &val);
-      Variable iter;
-      iter.type = Variable::CUSTOM;
-      memcpy(&iter.val.custom_type, val, 2);
-      if (iter.is_custom_heap_type() && iter.val.custom_type.val>=start_id &&
-          iter.val.custom_type.val<start_id+32) {
-        *map |= 0x1L<<(iter.val.custom_type.val-start_id);
-      }
-      break;
-    }
+    case Variable::CustomType::ITER:
     case Variable::CustomType::LIST:
-      BITSY_ASSERT(false);
+      break;
+    default:
+      return;
+  }
+  uint8_t *var;
+  BitsyHeap::GetVar(v.val.custom_type.val, &var);
+  switch (v.val.custom_type.type) {
+    case Variable::CustomType::ITER:
+      mark_if_custom_heap_type(var, start_id, map);
+      break;
+    case Variable::CustomType::LIST:
+      for (uint8_t i = 0; i < var[0]; i++)
+        mark_if_custom_heap_type(var+1+2*i, start_id, map);
+      break;
   }
 }
 

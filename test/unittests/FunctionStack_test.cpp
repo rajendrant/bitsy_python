@@ -162,6 +162,8 @@ void testvarmultiple() {
 
 void testCustomHeapVaiable() {
   bitsy_alloc_init();
+  BitsyHeap::init();
+
   Variable heap_0, heap_1, heap_2;
   heap_0.type = Variable::CUSTOM;
   heap_0.val.custom_type.type = Variable::CustomType::STRING;

@@ -4,7 +4,6 @@
 #include <string.h>
 
 #include "bitsy_alloc.h"
-#include "gc.h"
 
 namespace bitsy_python {
 
@@ -65,9 +64,6 @@ var_id_t CreateVar(uint8_t size, uint8_t **val) {
   uint8_t id;
 
   BITSY_ASSERT(size>0);
-
-  // Attempt to garbage collect before creating a new heap variable.
-  gc();
 
   if (free_id != INVALID_VARID) {
     // TODO(rajendrant): Use the free ids only after certain (>100) variables

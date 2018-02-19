@@ -87,6 +87,7 @@ void test2() {
 void testCustomHeapVaiable() {
   bitsy_alloc_init();
   ExecStack::init();
+  BitsyHeap::init();
 
   Variable heap_0, heap_1, heap_2;
   heap_0.type = Variable::CUSTOM;
