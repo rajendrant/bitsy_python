@@ -54,6 +54,7 @@ ins_supported = set((
   'NOP', 'STOP_CODE',
   'UNPACK_SEQUENCE',
   'BUILD_LIST',
+  'SLICE+0', 'SLICE+1', 'SLICE+2', 'SLICE+3',
 ))
 
 ins_order = (
@@ -107,6 +108,7 @@ ins_order = (
   'BINARY_SUBSCR', 'STORE_SUBSCR',
   'UNPACK_SEQUENCE',
   'BUILD_LIST',
+  'SLICE+0', 'SLICE+1', 'SLICE+2', 'SLICE+3',
 )
 
 ins_arg2 = {
@@ -260,7 +262,7 @@ def dump_code(f, globalls, functions, modules, newcode):
     bytecode_counter += 1
 
     insname = dis.opname[ins]
-    assert insname in ins_supported
+    assert insname in ins_supported, "Unsupported ins "+insname
     is_load = insname.startswith('LOAD_')
     is_store = insname.startswith('STORE_')
     is_delete = insname.startswith('DELETE_')
