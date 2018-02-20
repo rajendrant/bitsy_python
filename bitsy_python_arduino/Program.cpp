@@ -4,6 +4,7 @@
 #include "BitString.h"
 #include "datatypes/datatype.h"
 #include "instructions.h"
+#include "ExecStack.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,7 +38,8 @@ uint8_t get_next_instruction(Variable *arg) {
   if (ins == LOAD_GLOBAL || ins == STORE_GLOBAL || ins == DELETE_GLOBAL) {
     switch (global_type) {
       case 0:
-        // TODO: global variable.
+        if(ins==LOAD_GLOBAL)
+          *arg = DataType::getGlobalVar(arg->as_uint8());
         break;
       case 1:
         *arg = Variable::FunctionVariable(arg->as_int32());
@@ -74,12 +76,15 @@ uint8_t get_next_instruction(Variable *arg) {
 }
 
 bool sanity_check() {
-  uint8_t total_functions = BitString::get_bit8(0, 8);
+  uint8_t total_functions = BitString::get_bit8(0, 4);
+  uint8_t global_vars = BitString::get_bit8(4, 4);
   uint16_t module_len = BitString::get_bit16(MODULE_HEADER + total_functions * HEADER_PER_FUNCTION, HEADER_PER_FUNCTION) * 8;
   if(BitString::get_bit8(8, 8) != ((~BitString::get_bit8(module_len, 8))&0xFF)) {
     BitString::mark_insane();
     return false;
   }
+  if (global_vars)
+    ExecStack::push(DataType::initGlobalVars(global_vars));
   return true;
 }
 

@@ -163,7 +163,7 @@ def print_dis(m):
       assert('userlibs.'+k in userlibsgen.userlibs)
       modules['userlibs.'+k] = f
     elif not k.startswith('__'):
-      assert(type(f) in (types.BooleanType, types.IntType, types.LongType, types.StringType))
+      assert(type(f) in (types.NoneType, types.BooleanType, types.IntType, types.LongType, types.StringType))
       globalls[k] = len(globalls)
   functions['main']=0
   codes = []
@@ -181,9 +181,12 @@ def print_dis(m):
     assert len(code)%8 == 0
     codes.append(code)
   # append header
+  assert len(globalls) <= 0xF
+  assert len(codes) <= 0xF
   allcode = bitstring.BitArray()
   prevlen=int(math.ceil(10.0*(len(codes)+1)/8)) + 2
-  allcode.append(bitstring.BitArray(uint=len(codes), length=8))
+  allcode.append(bitstring.BitArray(uint=len(codes), length=4))
+  allcode.append(bitstring.BitArray(uint=len(globalls), length=4))
   sanitychecker = random.randint(0, 127)
   allcode.append(bitstring.BitArray(uint=sanitychecker, length=8))
   for c in codes:

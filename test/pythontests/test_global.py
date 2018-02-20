@@ -7,8 +7,11 @@ def f2():
     print s
 
 # Global scope
-s = "I love Geeksforgeeks"
+s=None
+
 def main():
+  global s
+  s = "I love Geeksforgeeks"
   f()
   f2()
   print s

@@ -26,10 +26,10 @@ class Variable {
 
       // These variables live in the heap and their ID is stored in val
       STRING,
-      LIST,
       BYTEARRAY,
       RANGE,
       ITER,
+      LIST,
       INT32,
       FLOAT,
     };

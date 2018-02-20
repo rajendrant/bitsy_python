@@ -13,6 +13,8 @@ extern void BITSY_PYTHON_PRINT_VAR(const Variable& v);
 
 namespace bitsy_python {
 
+#define GLOBAL_VARIABLE_ID 0
+
 // static
 Variable DataType::CreateStr(const char *str, uint8_t len) {
   gc();
@@ -259,6 +261,30 @@ void DataType::updateUsedContainers(uint8_t start_id, const Variable &v, uint32_
         mark_if_custom_heap_type(var+1+2*i, start_id, map);
       break;
   }
+}
+
+// static
+Variable DataType::initGlobalVars(uint8_t global_vars) {
+  Variable args[global_vars];
+  auto v = CreateForType(Variable::CustomType::LIST, global_vars, args);
+  BITSY_ASSERT(v.type==Variable::CUSTOM &&
+      v.val.custom_type.type == Variable::CustomType::LIST &&
+      v.val.custom_type.val == GLOBAL_VARIABLE_ID);
+  return v;
+}
+
+// static
+Variable DataType::getGlobalVar(uint8_t id) {
+  Variable list;
+  list.set_CustomType(Variable::CustomType::LIST, GLOBAL_VARIABLE_ID);
+  return GetIndex(list, id);
+}
+
+// static
+void DataType::setGlobalVar(uint8_t id, const Variable& v) {
+  Variable list;
+  list.set_CustomType(Variable::CustomType::LIST, GLOBAL_VARIABLE_ID);
+  SetIndex(list, id, v);
 }
 
 }

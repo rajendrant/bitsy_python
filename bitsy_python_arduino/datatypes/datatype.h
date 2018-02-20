@@ -25,6 +25,11 @@ class DataType {
 
   static bool InOperator(const Variable& cont, const Variable& e);
 
+  // Functions for global variables.
+  static Variable initGlobalVars(uint8_t global_vars);
+  static Variable getGlobalVar(uint8_t id);
+  static void setGlobalVar(uint8_t id, const Variable& v);
+
   BitsyHeap::var_id_t id;
 
  private:

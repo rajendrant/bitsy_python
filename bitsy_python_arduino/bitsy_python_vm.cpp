@@ -293,8 +293,7 @@ bool executeOneStep() {
       break;
 
     case LOAD_FAST:
-      arg = FunctionStack::getNthVariable(arg.as_uint8());
-      ExecStack::push(arg);
+      ExecStack::push(FunctionStack::getNthVariable(arg.as_uint8()));
       break;
     case LOAD_CONST:
     case LOAD_GLOBAL:
@@ -305,6 +304,9 @@ bool executeOneStep() {
       break;
     case DELETE_FAST:
       // TODO - support needed ?
+      break;
+    case STORE_GLOBAL:
+      DataType::setGlobalVar(arg.as_uint8(), ExecStack::pop());
       break;
 
     case CALL_FUNCTION: {
