@@ -228,7 +228,7 @@ bool executeOneStep() {
   if (!BitString::is_sane())
     return false;
 
-  Variable arg;
+  Variable arg, v;
   auto ins = Program::get_next_instruction(&arg);
   /*
   Serial.print("ins ");
@@ -289,7 +289,7 @@ bool executeOneStep() {
     case JUMP_IF_TRUE_OR_POP:
     case JUMP_IF_FALSE_OR_POP:
     case JUMP_ABSOLUTE:
-      jump_arithmetic(ins, arg.as_uint12());
+      jump_arithmetic(ins, arg.as_int32());
       break;
 
     case LOAD_FAST:
@@ -316,7 +316,7 @@ bool executeOneStep() {
       for (uint8_t i = 0; i < argcount; i++) {
         argvars[argcount - i - 1] = ExecStack::pop();
       }
-      auto v = ExecStack::pop();
+      v = ExecStack::pop();
       BITSY_ASSERT(v.type == Variable::CUSTOM);
       if (v.val.custom_type.type == Variable::CustomType::USER_FUNCTION) {
         FunctionStack::setup_function_call(
@@ -326,10 +326,11 @@ bool executeOneStep() {
         }
       } else if (v.val.custom_type.type ==
                  Variable::CustomType::USER_MODULE_FUNCTION) {
-        uint8_t module_id = (v.val.custom_type.val >> 6) & 0x3F;
-        if (is_userlib_module_enabled((v.val.custom_type.val >> 6) & 0x3F))
+        uint8_t module_id = v.val.custom_type.val&0x3F;
+        if (is_userlib_module_enabled(module_id)) {
           ExecStack::push(call_userlib_function(
-              module_id, v.val.custom_type.val & 0x3F, argcount, argvars));
+              module_id, v.val.custom_type.val>>6, argcount, argvars));
+        }
       } else if (v.val.custom_type.type ==
                  Variable::CustomType::BUILTIN_FUNCTION) {
         gc();
@@ -348,12 +349,10 @@ bool executeOneStep() {
       return !FunctionStack::is_empty();
     }
 
-    case PRINT_ITEM: {
-      auto v = ExecStack::pop();
-      BITSY_PYTHON_PRINT_VAR(v);
+    case PRINT_ITEM:
+      BITSY_PYTHON_PRINT_VAR(ExecStack::pop());
       BITSY_PYTHON_PRINT(" ");
       break;
-    }
     case PRINT_NEWLINE:
       BITSY_PYTHON_PRINT("\n");
       break;
@@ -369,7 +368,7 @@ bool executeOneStep() {
         ExecStack::push(iter);
         ExecStack::push(elem);
       } else {
-        Program::jump_to_target(arg.as_uint12());
+        Program::jump_to_target(arg.as_int32());
       }
       break;
     }
@@ -393,18 +392,14 @@ bool executeOneStep() {
       ExecStack::push(DataType::CreateForType(Variable::CustomType::LIST, arg.as_uint8(), args));
       break;
     }
-    /*case SETUP_LOOP:
-    case POP_BLOCK:
-        break;
-    case BREAK_LOOP:
-        Program::jump_to_target(arg.as_uint12());
-        break;
-    case CONTINUE_LOOP:
-        Program::jump_to_target(arg.as_uint12());
-        break;*/
     case LOAD_ATTR:
-      ExecStack::push(Variable::ModuleFunctionVariable(
-          ExecStack::pop(), arg.as_uint12()));
+      v = ExecStack::pop();  // Module id
+      BITSY_ASSERT(v.type == Variable::CUSTOM &&
+             v.val.custom_type.type == Variable::CustomType::USER_MODULE_FUNCTION);
+      BITSY_ASSERT(((v.val.custom_type.val>>6)&0x3F) == 0);
+      ExecStack::push(Variable::CustomTypeVariable(
+          Variable::CustomType::USER_MODULE_FUNCTION,
+          v.val.custom_type.val | (arg.as_uint12()<<6)));
       break;
     default:
       BITSY_PYTHON_PRINT("UNSUPPORTED INS ");

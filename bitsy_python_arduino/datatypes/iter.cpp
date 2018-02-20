@@ -6,14 +6,12 @@
 
 namespace bitsy_python {
 Variable IterCreate(const Variable& v) {
-  Variable iter;
   uint8_t *var;
   uint8_t id = BitsyHeap::CreateVar(2+4, &var);
   BITSY_ASSERT(v.type==Variable::CUSTOM);
-  iter.set_CustomType(Variable::CustomType::ITER, id);
   memcpy(var, &v.val.custom_type, 2);
   memset(var+2, 0, 4);
-  return iter;
+  return Variable::CustomTypeVariable(Variable::CustomType::ITER, id);
 }
 
 bool IterForLoopIter(const Variable& iter, Variable *elem) {

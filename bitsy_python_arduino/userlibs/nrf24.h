@@ -52,9 +52,8 @@ Variable set_on_recv_callback(uint8_t argcount, Variable arg[]) {
 
 void send_to_callback(const uint8_t *buf, uint8_t len) {
   if (on_recv_callback != 0xFF) {
-    Variable v;
     uint8_t *vbuf;
-    v.set_CustomType(Variable::CustomType::BYTEARRAY,
+    auto v = Variable::CustomTypeVariable(Variable::CustomType::BYTEARRAY,
                      bitsy_python::BitsyHeap::CreateVar(len, &vbuf));
     memcpy(vbuf, buf, len);
     bitsy_python::BitsyPythonVM::callUserFunction(on_recv_callback, v);

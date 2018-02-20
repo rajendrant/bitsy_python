@@ -48,8 +48,10 @@ uint8_t get_next_instruction(Variable *arg) {
         arg->set_CustomType(Variable::CustomType::BUILTIN_FUNCTION,
                             arg->as_uint12());
         break;
-      case 3:
-        *arg = Variable::ModuleVariable(arg->as_uint12());
+      case 3: // Module
+        *arg = Variable::CustomTypeVariable(
+            Variable::CustomType::USER_MODULE_FUNCTION,
+            arg->as_uint8());
         break;
       case 4:
         // None or True or False

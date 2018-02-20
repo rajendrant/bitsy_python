@@ -19,9 +19,9 @@ Variable beginTransmission(uint8_t argcount, Variable arg[]) {
 Variable endTransmission(uint8_t argcount, Variable arg[]) {
   Variable ret;
   if (argcount == 1) {
-    ret.set_uint12(Wire.endTransmission());
+    ret.set_uint8(Wire.endTransmission());
   } else if (argcount == 1) {
-    ret.set_uint12(Wire.endTransmission(arg[0].as_bool()));
+    ret.set_uint8(Wire.endTransmission(arg[0].as_bool()));
   }
   return ret;
 }
@@ -29,7 +29,7 @@ Variable endTransmission(uint8_t argcount, Variable arg[]) {
 Variable write(uint8_t argcount, Variable arg[]) {
   Variable ret;
   if (argcount == 1) {
-    ret.set_uint12(Wire.write(arg[0].as_uint8()));
+    ret.set_uint8(Wire.write(arg[0].as_uint8()));
     return ret;
   }
   return ret;
@@ -38,7 +38,7 @@ Variable write(uint8_t argcount, Variable arg[]) {
 Variable available(uint8_t argcount, Variable arg[]) {
   Variable ret;
   if (argcount == 0) {
-    ret.set_uint12(Wire.available());
+    ret.set_uint8(Wire.available());
     return ret;
   }
   return ret;
@@ -47,7 +47,7 @@ Variable available(uint8_t argcount, Variable arg[]) {
 Variable read(uint8_t argcount, Variable arg[]) {
   Variable ret;
   if (argcount == 0) {
-    ret.set_uint12(Wire.read());
+    ret.set_uint8(Wire.read());
     return ret;
   }
   return ret;

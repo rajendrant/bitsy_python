@@ -18,12 +18,10 @@ namespace bitsy_python {
 // static
 Variable DataType::CreateStr(const char *str, uint8_t len) {
   gc();
-  Variable v;
   uint8_t *var;
   uint8_t id = BitsyHeap::CreateVar(len-1, &var);
   strncpy((char *)var, str, len-1);
-  v.set_CustomType(Variable::CustomType::STRING, id);
-  return v;
+  return Variable::CustomTypeVariable(Variable::CustomType::STRING, id);
 }
 
 // static
@@ -33,8 +31,7 @@ Variable DataType::CreateForType(uint8_t t, uint8_t argcount, Variable args[]) {
   switch (t) {
     case Variable::CustomType::BYTEARRAY: {
       BITSY_ASSERT(argcount == 1);
-      v.set_CustomType(t, BitsyHeap::CreateVar(args[0].as_uint12(), &var));
-      break;
+      return Variable::CustomTypeVariable(t, BitsyHeap::CreateVar(args[0].as_uint8(), &var));
     }
     case Variable::CustomType::ITER:
       BITSY_ASSERT(argcount == 1);
@@ -98,8 +95,7 @@ Variable DataType::GetIndex(const Variable &v, uint8_t ind) {
     case Variable::CustomType::BYTEARRAY:
     case Variable::CustomType::STRING:
       BITSY_ASSERT(len > ind);
-      ret.set_CustomType(Variable::CustomType::CHARACTER, var[ind]);
-      break;
+      return Variable::CustomTypeVariable(Variable::CustomType::CHARACTER, var[ind]);
     case Variable::CustomType::LIST:
       if(len>0 && ind<var[0]) {
         ret.type=Variable::CUSTOM;
@@ -114,7 +110,7 @@ Variable DataType::GetIndex(const Variable &v, uint8_t ind) {
 }
 
 // static
-void DataType::SetIndex(Variable &v, uint8_t ind, const Variable& val) {
+void DataType::SetIndex(const Variable &v, uint8_t ind, const Variable& val) {
   BITSY_ASSERT(v.type == Variable::CUSTOM);
   uint8_t *var;
   uint8_t len = BitsyHeap::GetVar(v.val.custom_type.val, &var);
@@ -211,7 +207,7 @@ bool DataType::InOperator(const Variable& cont, const Variable& e) {
       if (e.type==Variable::UINT8 || (e.type==Variable::CUSTOM &&
           (e.val.custom_type.type==Variable::CustomType::CHARACTER ||
            e.val.custom_type.type==Variable::CustomType::UINT12))) {
-        v = e.as_uint12();
+        v = e.as_uint8();
       } else if (e.type==Variable::CUSTOM &&
                  e.val.custom_type.type==Variable::CustomType::STRING) {
         uint8_t *strvar;
@@ -275,16 +271,12 @@ Variable DataType::initGlobalVars(uint8_t global_vars) {
 
 // static
 Variable DataType::getGlobalVar(uint8_t id) {
-  Variable list;
-  list.set_CustomType(Variable::CustomType::LIST, GLOBAL_VARIABLE_ID);
-  return GetIndex(list, id);
+  return GetIndex(Variable::CustomTypeVariable(Variable::CustomType::LIST, GLOBAL_VARIABLE_ID), id);
 }
 
 // static
 void DataType::setGlobalVar(uint8_t id, const Variable& v) {
-  Variable list;
-  list.set_CustomType(Variable::CustomType::LIST, GLOBAL_VARIABLE_ID);
-  SetIndex(list, id, v);
+  SetIndex(Variable::CustomTypeVariable(Variable::CustomType::LIST, GLOBAL_VARIABLE_ID), id, v);
 }
 
 }

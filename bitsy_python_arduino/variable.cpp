@@ -76,39 +76,18 @@ Variable Variable::Zero() {
 }
 
 // static
+Variable Variable::CustomTypeVariable(uint8_t type, uint16_t val) {
+  Variable v;
+  BITSY_ASSERT(sizeof(v.val.custom_type) == 2);
+  v.type = Variable::CUSTOM;
+  v.val.custom_type.type = type;
+  v.val.custom_type.val = val;
+  return v;
+}
+
+// static
 Variable Variable::FunctionVariable(uint8_t id) {
-  Variable v;
-  BITSY_ASSERT(sizeof(v.val.custom_type) == 2);
-  v.type = Variable::CUSTOM;
-  v.val.custom_type.type = Variable::CustomType::USER_FUNCTION;
-  v.val.custom_type.val = id;
-  return v;
-}
-
-// static
-Variable Variable::ModuleVariable(uint8_t id) {
-  BITSY_ASSERT(id <= 0x3F);
-  Variable v;
-  BITSY_ASSERT(sizeof(v.val.custom_type) == 2);
-  v.type = Variable::CUSTOM;
-  v.val.custom_type.type = Variable::CustomType::USER_MODULE;
-  v.val.custom_type.val = id;
-  return v;
-}
-
-// static
-Variable Variable::ModuleFunctionVariable(const Variable& module, uint8_t id) {
-  BITSY_ASSERT(id <= 0x3f);
-  BITSY_ASSERT(module.type == Variable::CUSTOM &&
-         module.val.custom_type.type == Variable::CustomType::USER_MODULE);
-  BITSY_ASSERT(module.val.custom_type.val <= 0x3F);
-  Variable v;
-  BITSY_ASSERT(sizeof(v.val.custom_type) == 2);
-  v.type = Variable::CUSTOM;
-  v.val.custom_type.type = Variable::CustomType::USER_MODULE_FUNCTION;
-  v.val.custom_type.val =
-      (module.val.custom_type.val & 0x3F) << 6 | (id & 0x3F);
-  return v;
+  return CustomTypeVariable(Variable::CustomType::USER_FUNCTION, id);
 }
 
 void Variable::set_CustomType(uint8_t t, uint16_t v) {

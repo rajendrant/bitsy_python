@@ -14,7 +14,7 @@ Variable handle_builtin_call(BitsyBuiltin type, uint8_t argcount,
       break;
     case BitsyBuiltin::LEN:
       BITSY_ASSERT(argcount == 1);
-      v.set_uint12(DataType::Len(arg[0]));
+      v.set_uint8(DataType::Len(arg[0]));
       break;
     case BitsyBuiltin::BYTEARRAY:
       BITSY_ASSERT(argcount == 1);

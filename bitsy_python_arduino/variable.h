@@ -19,7 +19,6 @@ class Variable {
       USER_FUNCTION,
       GLOBAL_VARIABLE,
       BUILTIN_FUNCTION,
-      USER_MODULE,
       USER_MODULE_FUNCTION,
       CHARACTER,
       UINT12,
@@ -48,8 +47,6 @@ class Variable {
   static Variable Zero();
   static Variable CustomTypeVariable(uint8_t type, uint16_t val);
   static Variable FunctionVariable(uint8_t id);
-  static Variable ModuleVariable(uint8_t id);
-  static Variable ModuleFunctionVariable(const Variable& module, uint8_t id);
 
   Variable(uint8_t v=0);
 

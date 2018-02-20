@@ -53,7 +53,7 @@ Variable read(uint8_t argcount, Variable arg[]) {
   Variable ret;
   if (argcount == 1) {
     Servo *s = GetOrAlloc(arg[0].as_uint8());
-    ret.set_uint12(s->read());
+    ret.set_uint8(s->read());
   }
   return ret;
 }

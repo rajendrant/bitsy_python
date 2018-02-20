@@ -17,7 +17,7 @@ class DataType {
 
   static Variable GetIndex(const Variable& v, uint8_t ind);
 
-  static void SetIndex(Variable &v, uint8_t ind, const Variable& val);
+  static void SetIndex(const Variable &v, uint8_t ind, const Variable& val);
 
   static void Print(const Variable& v, void (*print)(char));
 
