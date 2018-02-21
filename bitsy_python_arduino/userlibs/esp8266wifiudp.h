@@ -71,13 +71,11 @@ void send_to_callback(const uint8_t *buf, uint8_t len) {
 }
 
 Variable send_response(uint8_t argcount, Variable arg[]) {
-  if (argcount != 2 || arg[0].type!=Variable::CUSTOM ||
+  if (argcount != 1 || arg[0].type!=Variable::CUSTOM ||
       arg[0].val.custom_type.type!=Variable::CustomType::BYTEARRAY)
-    return Variable::Zero();
+    return Variable();
   uint8_t *buf;
-  uint8_t len = arg[1].as_uint8();
-  if (bitsy_python::BitsyHeap::GetVar(arg[0].val.custom_type.val, &buf) < len)
-    return Variable::Zero();
+  uint8_t len = bitsy_python::BitsyHeap::GetVar(arg[0].val.custom_type.val, &buf);
   ota_send(buf, len);
   return Variable(1);
 }

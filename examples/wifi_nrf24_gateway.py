@@ -5,7 +5,7 @@ from userlibs import nrf24
 def on_nrf24_packet_recv(pkt):
     start=arduino.millis()
     print 'nrf24', len(pkt)
-    esp8266wifiudp.send_response(pkt, len(pkt))
+    esp8266wifiudp.send_response(pkt)
     print 'took', arduino.millis()-start
 
 def on_wifi_packet_recv(pkt):
@@ -16,7 +16,7 @@ def on_wifi_packet_recv(pkt):
     send = bytearray(l)
     for i in range(l):
         send[i] = pkt[i+1]
-    nrf24.send(pkt[0], send, l)
+    nrf24.send(pkt[0], send)
     print 'took', arduino.millis()-start
 
 def main():
