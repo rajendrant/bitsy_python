@@ -35,7 +35,7 @@ Variable get_number();
 FunctionParams setup_function_call(uint8_t fn);
 void return_function(const FunctionParams& p);
 
-void jump_to_target(uint16_t target);
+void jump_to_target(const Variable& target);
 
 }
 }

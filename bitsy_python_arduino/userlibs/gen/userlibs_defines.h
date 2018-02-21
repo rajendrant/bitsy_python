@@ -227,46 +227,6 @@ Variable userlib_module_testuserlib(uint8_t function, uint8_t argcount, Variable
 }
 #endif
 
-bool is_userlib_module_enabled(uint8_t module) {
-  switch (module) {
-#ifdef ENABLE_BITSY_USERLIB_ARDUINO
-    case 0: // arduino
-#endif
-#ifdef ENABLE_BITSY_USERLIB_SERIAL
-    case 1: // serial
-#endif
-#ifdef ENABLE_BITSY_USERLIB_SPI
-    case 2: // spi
-#endif
-#ifdef ENABLE_BITSY_USERLIB_I2C
-    case 3: // i2c
-#endif
-#ifdef ENABLE_BITSY_USERLIB_SERVO
-    case 4: // servo
-#endif
-#ifdef ENABLE_BITSY_USERLIB_NRF24
-    case 5: // nrf24
-#endif
-#ifdef ENABLE_BITSY_USERLIB_EEPROM
-    case 6: // eeprom
-#endif
-#ifdef ENABLE_BITSY_USERLIB_ESP8266WIFIUDP
-    case 7: // esp8266wifiudp
-#endif
-#ifdef ENABLE_BITSY_USERLIB_READVCC
-    case 8: // readvcc
-#endif
-#ifdef ENABLE_BITSY_USERLIB_LOWPOWER
-    case 9: // lowpower
-#endif
-#ifdef ENABLE_BITSY_USERLIB_TESTUSERLIB
-    case 10: // testuserlib
-#endif
-      return true;
-  }
-  return false;
-}
-
 Variable call_userlib_function(uint8_t module, uint8_t function, uint8_t argcount, Variable arg[]) {
     switch(module) {
 #ifdef ENABLE_BITSY_USERLIB_ARDUINO
@@ -313,8 +273,6 @@ Variable call_userlib_function(uint8_t module, uint8_t function, uint8_t argcoun
     case 10:
       return userlib_module_testuserlib(function, argcount, arg);
 #endif
-    default:
-      BITSY_ASSERT(false);
   }
-  return Variable::Zero();
+  return Variable();
 }

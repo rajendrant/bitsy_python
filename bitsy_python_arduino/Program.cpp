@@ -162,8 +162,8 @@ Variable get_number() {
   return v;
 }
 
-void jump_to_target(uint16_t target) {
-  BitString::curr_pos = ins_ptr_function_start + target;
+void jump_to_target(const Variable &target) {
+  BitString::curr_pos = ins_ptr_function_start + target.as_uint12();
 }
 
 #ifdef DESKTOP

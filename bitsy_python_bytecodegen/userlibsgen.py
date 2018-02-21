@@ -95,25 +95,6 @@ def main():
 """)
     for m in userlibs_list:
         gen_userlib_module_handler_api(out, m)
-
-    out.write("""\
-
-bool is_userlib_module_enabled(uint8_t module) {
-  switch (module) {
-""")
-    for idd, m in enumerate(userlibs_list):
-        out.write("""\
-#ifdef ENABLE_BITSY_USERLIB_%s
-    case %d: // %s
-#endif
-""" % (m['name'].upper(), idd, m['name']))
-    out.write("""\
-      return true;
-  }
-  return false;
-}
-""")
-
     out.write("""\
 
 Variable call_userlib_function(uint8_t module, uint8_t function, uint8_t argcount, Variable arg[]) {
@@ -128,10 +109,8 @@ Variable call_userlib_function(uint8_t module, uint8_t function, uint8_t argcoun
 """ % (m['name'].upper(), idd, m['name']))
 
     out.write("""\
-    default:
-      BITSY_ASSERT(false);
   }
-  return Variable::Zero();
+  return Variable();
 }
 """)
     outpy = open(os.path.dirname(os.path.abspath(__file__))+'/userlibs/__init__.py', 'w')

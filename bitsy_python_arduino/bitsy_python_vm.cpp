@@ -175,7 +175,7 @@ void unary_arithmetic(uint8_t ins) {
   return;
 }
 
-void jump_arithmetic(uint8_t ins, uint16_t jump) {
+void jump_arithmetic(uint8_t ins, const Variable& jump) {
   bool cond = true;
   if (ins==JUMP_ABSOLUTE)
     goto end;
@@ -289,12 +289,11 @@ bool executeOneStep() {
     case JUMP_IF_TRUE_OR_POP:
     case JUMP_IF_FALSE_OR_POP:
     case JUMP_ABSOLUTE:
-      jump_arithmetic(ins, arg.as_int32());
+      jump_arithmetic(ins, arg);
       break;
 
     case LOAD_FAST:
-      ExecStack::push(FunctionStack::getNthVariable(arg.as_uint8()));
-      break;
+      arg = FunctionStack::getNthVariable(arg.as_uint8());
     case LOAD_CONST:
     case LOAD_GLOBAL:
       ExecStack::push(arg);
@@ -310,35 +309,34 @@ bool executeOneStep() {
       break;
 
     case CALL_FUNCTION: {
-      uint8_t argcount = arg.as_int32();
+      uint8_t argcount = arg.as_uint8();
       BITSY_ASSERT(!(argcount & 0xF0));  // Keyword arguments not supported.
       Variable argvars[argcount];
-      for (uint8_t i = 0; i < argcount; i++) {
-        argvars[argcount - i - 1] = ExecStack::pop();
-      }
+      while (argcount)
+        argvars[--argcount] = ExecStack::pop();
+      argcount = arg.as_uint8();
       v = ExecStack::pop();
       BITSY_ASSERT(v.type == Variable::CUSTOM);
-      if (v.val.custom_type.type == Variable::CustomType::USER_FUNCTION) {
-        FunctionStack::setup_function_call(
-          Program::setup_function_call(v.val.custom_type.val));
-        for (uint8_t i = 0; i < argcount; i++) {
-          FunctionStack::setNthVariable(i, argvars[i]);
-        }
-      } else if (v.val.custom_type.type ==
-                 Variable::CustomType::USER_MODULE_FUNCTION) {
-        uint8_t module_id = v.val.custom_type.val&0x3F;
-        if (is_userlib_module_enabled(module_id)) {
-          ExecStack::push(call_userlib_function(
-              module_id, v.val.custom_type.val>>6, argcount, argvars));
-        }
-      } else if (v.val.custom_type.type ==
-                 Variable::CustomType::BUILTIN_FUNCTION) {
-        gc();
-        ExecStack::push(handle_builtin_call((BitsyBuiltin)v.val.custom_type.val,
-                                            argcount, argvars));
-      } else {
-        BITSY_ASSERT(false);
+      switch (v.val.custom_type.type) {
+        case Variable::CustomType::USER_FUNCTION:
+          FunctionStack::setup_function_call(
+            Program::setup_function_call(v.val.custom_type.val));
+          for (uint8_t i = 0; i < argcount; i++)
+            FunctionStack::setNthVariable(i, argvars[i]);
+          return true;
+        case Variable::CustomType::USER_MODULE_FUNCTION:
+          v = call_userlib_function(
+                v.val.custom_type.val&0x3F, v.val.custom_type.val>>6, argcount, argvars);
+          break;
+        case Variable::CustomType::BUILTIN_FUNCTION:
+          gc();
+          v = handle_builtin_call((BitsyBuiltin)v.val.custom_type.val,
+                                              argcount, argvars);
+          break;
+        default:
+          BITSY_ASSERT(false);
       }
+      ExecStack::push(v);
       break;
     }
     case RETURN_VALUE: {
@@ -368,7 +366,7 @@ bool executeOneStep() {
         ExecStack::push(iter);
         ExecStack::push(elem);
       } else {
-        Program::jump_to_target(arg.as_int32());
+        Program::jump_to_target(arg);
       }
       break;
     }
