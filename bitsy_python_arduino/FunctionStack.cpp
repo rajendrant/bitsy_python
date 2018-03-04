@@ -112,9 +112,8 @@ uint32_t getCustomHeapVariableMap(uint8_t start_id) {
       type = ((stack[f + HDR_START + v / 4] >> (2 * (v % 4))) & 0x3);
       size = Variable::get_size_from_type(type);
       if (type == Variable::CUSTOM) {
-        Variable var;
-        var.type = Variable::CUSTOM;
-        memcpy(&var.val, stack + pre, size);
+        Variable::CustomType var;
+        memcpy(&var, stack + pre, size);
         updateCustomHeapVariableMap(start_id, var, &map);
       }
       pre += size;

@@ -5,6 +5,8 @@
 
 // namespace bitsy_python {
 
+#define VARIABLE_SIZE_CUSTOM_TYPE 2
+
 class Variable {
  public:
   enum Type {
@@ -66,7 +68,8 @@ class Variable {
   Variable ToWithin() const;
 
   uint8_t size() const;
-  bool is_custom_heap_type() const;
+
+  static bool is_custom_heap_type(Variable::CustomType v);
 
   static uint8_t get_size_from_type(uint8_t type);
 };

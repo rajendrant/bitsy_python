@@ -110,21 +110,20 @@ uint8_t Variable::get_size_from_type(uint8_t type) {
       return 4;
   }
   // case CUSTOM:
-  return 2;
+  return VARIABLE_SIZE_CUSTOM_TYPE;
 }
 
-bool Variable::is_custom_heap_type() const {
-  if (type==CUSTOM) {
-    switch(val.custom_type.type) {
-    case CustomType::STRING:
-    case CustomType::LIST:
-    case CustomType::BYTEARRAY:
-    case CustomType::RANGE:
-    case CustomType::ITER:
-    case CustomType::INT32:
-    case CustomType::FLOAT:
-      return true;
-    }
+// static
+bool Variable::is_custom_heap_type(Variable::CustomType v) {
+  switch(v.type) {
+  case CustomType::STRING:
+  case CustomType::LIST:
+  case CustomType::BYTEARRAY:
+  case CustomType::RANGE:
+  case CustomType::ITER:
+  case CustomType::INT32:
+  case CustomType::FLOAT:
+    return true;
   }
   return false;
 }

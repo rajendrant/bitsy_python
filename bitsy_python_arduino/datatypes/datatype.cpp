@@ -99,7 +99,7 @@ Variable DataType::GetIndex(const Variable &v, uint8_t ind) {
     case Variable::CustomType::LIST:
       if(len>0 && ind<var[0]) {
         ret.type=Variable::CUSTOM;
-        memcpy(&ret.val.custom_type, var+1+2*ind, 2);
+        memcpy(&ret.val.custom_type, var+1+2*ind, VARIABLE_SIZE_CUSTOM_TYPE);
         ret = ret.ToWithin();
       }
       break;
@@ -129,7 +129,7 @@ void DataType::SetIndex(const Variable &v, uint8_t ind, const Variable& val) {
     case Variable::CustomType::LIST:
       if(len>0 && ind<var[0]) {
         Variable v=val.ToHeap();
-        memcpy(var+1+2*ind, &v.val.custom_type, 2);
+        memcpy(var+1+2*ind, &v.val.custom_type, VARIABLE_SIZE_CUSTOM_TYPE);
       }
       break;
     default:
@@ -227,19 +227,17 @@ bool DataType::InOperator(const Variable& cont, const Variable& e) {
 }
 
 static void mark_if_custom_heap_type(const uint8_t *type, uint8_t start_id, uint32_t *map) {
-  Variable v;
-  v.type = Variable::CUSTOM;
-  memcpy(&v.val.custom_type, type, 2);
-  if (v.is_custom_heap_type() && v.val.custom_type.val>=start_id &&
-      v.val.custom_type.val<start_id+32) {
-    *map |= 0x1L<<(v.val.custom_type.val-start_id);
+  Variable::CustomType v;
+  memcpy(&v, type, VARIABLE_SIZE_CUSTOM_TYPE);
+  if (Variable::is_custom_heap_type(v) && v.val>=start_id &&
+      v.val<start_id+32) {
+    *map |= 0x1L<<(v.val-start_id);
   }
 }
 
 // static
-void DataType::updateUsedContainers(uint8_t start_id, const Variable &v, uint32_t *map) {
-  BITSY_ASSERT(v.type == Variable::CUSTOM);
-  switch (v.val.custom_type.type) {
+void DataType::updateUsedContainers(uint8_t start_id, Variable::CustomType v, uint32_t *map) {
+  switch (v.type) {
     case Variable::CustomType::ITER:
     case Variable::CustomType::LIST:
       break;
@@ -247,8 +245,8 @@ void DataType::updateUsedContainers(uint8_t start_id, const Variable &v, uint32_
       return;
   }
   uint8_t *var;
-  BitsyHeap::GetVar(v.val.custom_type.val, &var);
-  switch (v.val.custom_type.type) {
+  BitsyHeap::GetVar(v.val, &var);
+  switch (v.type) {
     case Variable::CustomType::ITER:
       mark_if_custom_heap_type(var, start_id, map);
       break;

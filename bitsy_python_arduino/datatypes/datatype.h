@@ -21,7 +21,7 @@ class DataType {
 
   static void Print(const Variable& v, void (*print)(char));
 
-  static void updateUsedContainers(uint8_t start_id, const Variable &v, uint32_t *map);
+  static void updateUsedContainers(uint8_t start_id, Variable::CustomType v, uint32_t *map);
 
   static bool InOperator(const Variable& cont, const Variable& e);
 

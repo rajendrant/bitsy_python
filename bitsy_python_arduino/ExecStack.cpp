@@ -44,7 +44,7 @@ uint32_t ExecStack::getCustomHeapVariableMap(uint8_t start_id) {
       byteind++;
     }
     if (bits == Variable::CUSTOM)
-      updateCustomHeapVariableMap(start_id, var, &map);
+      updateCustomHeapVariableMap(start_id, var.val.custom_type, &map);
   }
   return map;
 }
