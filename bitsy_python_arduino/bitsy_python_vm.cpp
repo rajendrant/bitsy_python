@@ -42,28 +42,22 @@ void binary_arithmetic(uint8_t ins, uint8_t arg) {
   done=true;
   switch (ins) {
     case BINARY_MODULO:
-    case INPLACE_MODULO:
       // Modulo operation only applicable for ints.
       iret = i2 % i1;
       break;
     case BINARY_LSHIFT:
-    case INPLACE_LSHIFT:
       iret = i2 << i1;
       break;
     case BINARY_RSHIFT:
-    case INPLACE_RSHIFT:
       iret = i2 >> i1;
       break;
     case BINARY_AND:
-    case INPLACE_AND:
       iret = i2 & i1;
       break;
     case BINARY_XOR:
-    case INPLACE_XOR:
       iret = i2 ^ i1;
       break;
     case BINARY_OR:
-    case INPLACE_OR:
       iret = i2 | i1;
       break;
     case COMPARE_OP:
@@ -109,35 +103,31 @@ void binary_arithmetic(uint8_t ins, uint8_t arg) {
   is_float = (v1.type == Variable::FLOAT || v2.type == Variable::FLOAT);
   f1=v1.as_float();
   f2=v2.as_float();
-  if (ins==BINARY_FLOOR_DIVIDE || ins==INPLACE_FLOOR_DIVIDE) {
+  if (ins==BINARY_FLOOR_DIVIDE) {
     ret.set_int32((int32_t)(f2 / f1));
     goto end;
   }
   done = true;
   switch (ins) {
     case BINARY_MULTIPLY:
-    case INPLACE_MULTIPLY:
       if (is_float)
         fret = f2 * f1;
       else
         iret = i2 * i1;
       break;
     case BINARY_ADD:
-    case INPLACE_ADD:
       if (is_float)
         fret = f2 + f1;
       else
         iret = i2 + i1;
       break;
     case BINARY_SUBTRACT:
-    case INPLACE_SUBTRACT:
       if (is_float)
         fret = f2 - f1;
       else
         iret = i2 - i1;
       break;
     case BINARY_TRUE_DIVIDE:
-    case INPLACE_TRUE_DIVIDE:
       if (is_float)
         fret = f2 / f1;
       else
@@ -267,17 +257,6 @@ bool executeOneStep() {
     case BINARY_AND:
     case BINARY_XOR:
     case BINARY_OR:
-    case INPLACE_MULTIPLY:
-    case INPLACE_TRUE_DIVIDE:
-    case INPLACE_FLOOR_DIVIDE:
-    case INPLACE_ADD:
-    case INPLACE_SUBTRACT:
-    case INPLACE_MODULO:
-    case INPLACE_LSHIFT:
-    case INPLACE_RSHIFT:
-    case INPLACE_AND:
-    case INPLACE_XOR:
-    case INPLACE_OR:
     case BINARY_SUBSCR:
     case COMPARE_OP:
     case STORE_SUBSCR:
