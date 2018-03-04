@@ -31,7 +31,7 @@ uint8_t ota_recv(uint8_t *buf, uint8_t len) {
 
 Variable init(uint8_t argcount, Variable arg[]) {
   if (argcount < 3)
-    return Variable::Zero();
+    return 0;
   uint8_t radioId=arg[0].as_uint8(), cePin=arg[1].as_uint8(), csnPin=arg[2].as_uint8();
   uint8_t bitrate=NRFLite::BITRATE2MBPS, channel=100;
   if (argcount >= 4)

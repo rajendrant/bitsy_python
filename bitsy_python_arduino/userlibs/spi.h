@@ -6,14 +6,14 @@ Variable begin(uint8_t argcount, Variable arg[]) {
   if (argcount == 0) {
     SPI.begin();
   }
-  return Variable::Zero();
+  return 0;
 }
 
 Variable end(uint8_t argcount, Variable arg[]) {
   if (argcount == 0) {
     SPI.end();
   }
-  return Variable::Zero();
+  return 0;
 }
 
 Variable beginTransaction(uint8_t argcount, Variable arg[]) {
@@ -21,14 +21,14 @@ Variable beginTransaction(uint8_t argcount, Variable arg[]) {
     // TODO(rajendrant): Pass down settings as arguments.
     // SPI.beginTransaction();
   }
-  return Variable::Zero();
+  return 0;
 }
 
 Variable endTransaction(uint8_t argcount, Variable arg[]) {
   if (argcount == 0) {
     SPI.endTransaction();
   }
-  return Variable::Zero();
+  return 0;
 }
 
 Variable transfer(uint8_t argcount, Variable arg[]) {

@@ -69,13 +69,6 @@ bool Variable::as_bool() const {
 }
 
 // static
-Variable Variable::Zero() {
-  Variable v;
-  v.set_uint12(0);
-  return v;
-}
-
-// static
 Variable Variable::CustomTypeVariable(uint8_t type, uint16_t val) {
   Variable v;
   BITSY_ASSERT(sizeof(v.val.custom_type) == 2);

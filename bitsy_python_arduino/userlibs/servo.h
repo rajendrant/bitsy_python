@@ -37,7 +37,7 @@ Variable attach(uint8_t argcount, Variable arg[]) {
   if (argcount == 1) {
     Servo *s = GetOrAlloc(arg[0].as_uint8());
   }
-  return Variable::Zero();
+  return 0;
 }
 
 Variable detach(uint8_t argcount, Variable arg[]) {
@@ -46,7 +46,7 @@ Variable detach(uint8_t argcount, Variable arg[]) {
     s->detach();
     Dealloc(arg[0].as_uint8());
   }
-  return Variable::Zero();
+  return 0;
 }
 
 Variable read(uint8_t argcount, Variable arg[]) {
@@ -63,6 +63,6 @@ Variable write(uint8_t argcount, Variable arg[]) {
     Servo *s = GetOrAlloc(arg[0].as_uint8());
     s->write(arg[1].as_uint8());
   }
-  return Variable::Zero();
+  return 0;
 }
 };

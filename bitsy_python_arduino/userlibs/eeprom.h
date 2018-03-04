@@ -18,6 +18,6 @@ Variable write(uint8_t argcount, Variable arg[]) {
     EEPROM.write(arg[0].as_uint8(), arg[1].as_uint8());
 #endif
   }
-  return Variable::Zero();
+  return 0;
 }
 }

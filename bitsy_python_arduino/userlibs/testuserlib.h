@@ -6,13 +6,13 @@ namespace testuserlib {
 Variable printstr(uint8_t argcount, Variable arg[]) {
   for (uint8_t i = 0; i < argcount - 1; i++) printf("%d ", arg[i].as_int32());
   printf("%d ", arg[argcount - 1].as_int32());
-  return Variable::Zero();
+  return 0;
 }
 
 Variable println(uint8_t argcount, Variable arg[]) {
   printstr(argcount, arg);
   printf("\n");
-  return Variable::Zero();
+  return 0;
 }
 
 Variable math_add(uint8_t argcount, Variable arg[]) {
@@ -29,7 +29,7 @@ Variable math_power(uint8_t argcount, Variable arg[]) {
     ret.set_float(pow(arg[0].as_float(), arg[1].as_float()));
     return ret;
   }
-  return Variable::Zero();
+  return 0;
 }
 
 uint16_t callback=0xFF;
@@ -40,13 +40,13 @@ Variable init_callback(uint8_t argcount, Variable arg[]) {
     callback = arg[0].val.custom_type.val;
     bitsy_python::BitsyPythonVM::callUserFunction(callback, Variable(123));
   }
-  return Variable::Zero();
+  return 0;
 }
 
 Variable trigger_callback(uint8_t argcount, Variable arg[]) {
   if (callback != 0xFF)
     bitsy_python::BitsyPythonVM::callUserFunction(callback, Variable(123));
-  return Variable::Zero();
+  return 0;
 }
 
 }

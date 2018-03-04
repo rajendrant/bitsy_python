@@ -6,14 +6,14 @@ Variable begin(uint8_t argcount, Variable arg[]) {
   if (argcount == 0) {
     Wire.begin();
   }
-  return Variable::Zero();
+  return 0;
 }
 
 Variable beginTransmission(uint8_t argcount, Variable arg[]) {
   if (argcount == 1) {
     Wire.beginTransmission(arg[0].as_uint8());
   }
-  return Variable::Zero();
+  return 0;
 }
 
 Variable endTransmission(uint8_t argcount, Variable arg[]) {

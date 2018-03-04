@@ -33,7 +33,7 @@ Variable userlib_module_arduino(uint8_t function, uint8_t argcount, Variable arg
     default:
       BITSY_ASSERT(false);
   }
-  return Variable::Zero();
+  return 0;
 }
 #endif
 
@@ -49,7 +49,7 @@ Variable userlib_module_serial(uint8_t function, uint8_t argcount, Variable arg[
     default:
       BITSY_ASSERT(false);
   }
-  return Variable::Zero();
+  return 0;
 }
 #endif
 
@@ -71,7 +71,7 @@ Variable userlib_module_spi(uint8_t function, uint8_t argcount, Variable arg[]) 
     default:
       BITSY_ASSERT(false);
   }
-  return Variable::Zero();
+  return 0;
 }
 #endif
 
@@ -95,7 +95,7 @@ Variable userlib_module_i2c(uint8_t function, uint8_t argcount, Variable arg[]) 
     default:
       BITSY_ASSERT(false);
   }
-  return Variable::Zero();
+  return 0;
 }
 #endif
 
@@ -115,7 +115,7 @@ Variable userlib_module_servo(uint8_t function, uint8_t argcount, Variable arg[]
     default:
       BITSY_ASSERT(false);
   }
-  return Variable::Zero();
+  return 0;
 }
 #endif
 
@@ -137,7 +137,7 @@ Variable userlib_module_nrf24(uint8_t function, uint8_t argcount, Variable arg[]
     default:
       BITSY_ASSERT(false);
   }
-  return Variable::Zero();
+  return 0;
 }
 #endif
 
@@ -153,7 +153,7 @@ Variable userlib_module_eeprom(uint8_t function, uint8_t argcount, Variable arg[
     default:
       BITSY_ASSERT(false);
   }
-  return Variable::Zero();
+  return 0;
 }
 #endif
 
@@ -171,7 +171,7 @@ Variable userlib_module_esp8266wifiudp(uint8_t function, uint8_t argcount, Varia
     default:
       BITSY_ASSERT(false);
   }
-  return Variable::Zero();
+  return 0;
 }
 #endif
 
@@ -185,7 +185,7 @@ Variable userlib_module_readvcc(uint8_t function, uint8_t argcount, Variable arg
     default:
       BITSY_ASSERT(false);
   }
-  return Variable::Zero();
+  return 0;
 }
 #endif
 
@@ -199,7 +199,7 @@ Variable userlib_module_lowpower(uint8_t function, uint8_t argcount, Variable ar
     default:
       BITSY_ASSERT(false);
   }
-  return Variable::Zero();
+  return 0;
 }
 #endif
 
@@ -223,7 +223,7 @@ Variable userlib_module_testuserlib(uint8_t function, uint8_t argcount, Variable
     default:
       BITSY_ASSERT(false);
   }
-  return Variable::Zero();
+  return 0;
 }
 #endif
 

@@ -24,7 +24,7 @@ Variable powerdown(uint8_t argcount, Variable arg[]) {
       p = SLEEP_8S;
   }
   LowPower.powerDown(p, ADC_OFF, BOD_OFF);
-  return Variable::Zero();
+  return 0;
 }
 
 }

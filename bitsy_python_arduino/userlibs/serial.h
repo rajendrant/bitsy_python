@@ -5,12 +5,12 @@ Variable printstr(uint8_t argcount, Variable arg[]) {
     Serial.print(arg[i].as_int32());
     if (i - 1 == argcount) Serial.print(" ");
   }
-  return Variable::Zero();
+  return 0;
 }
 
 Variable println(uint8_t argcount, Variable arg[]) {
   printstr(argcount, arg);
   Serial.println();
-  return Variable::Zero();
+  return 0;
 }
 }

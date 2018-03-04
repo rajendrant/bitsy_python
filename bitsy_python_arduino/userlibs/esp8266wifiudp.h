@@ -57,7 +57,7 @@ Variable set_on_recv_callback(uint8_t argcount, Variable arg[]) {
       arg[0].val.custom_type.type==Variable::CustomType::USER_FUNCTION) {
     on_recv_callback = arg[0].val.custom_type.val;
   }
-  return Variable::Zero();
+  return 0;
 }
 
 void send_to_callback(const uint8_t *buf, uint8_t len) {

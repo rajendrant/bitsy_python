@@ -46,7 +46,6 @@ class Variable {
   } val;
   unsigned char type : 2;
 
-  static Variable Zero();
   static Variable CustomTypeVariable(uint8_t type, uint16_t val);
   static Variable FunctionVariable(uint8_t id);
 
