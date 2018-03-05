@@ -17,7 +17,7 @@ typedef struct {
   uint16_t start;
   uint8_t var_count;
   uint8_t fn;
-  uint8_t is_callback_mode : 1;
+  uint8_t is_callback_mode; // : 1;
 }__attribute__((packed)) FunctionStackHeader;
 
 #define HDR_START sizeof(FunctionStackHeader)

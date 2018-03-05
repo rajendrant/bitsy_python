@@ -14,7 +14,7 @@ typedef struct {
   uint16_t old_ins_ptr;
   uint8_t vars;
   uint8_t fn;
-  uint8_t is_callback_mode : 1;
+  uint8_t is_callback_mode; // : 1;
 } FunctionParams;
 
 #ifdef DESKTOP

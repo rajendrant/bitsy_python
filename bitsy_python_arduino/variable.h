@@ -44,7 +44,7 @@ class Variable {
     float float32;
     CustomType custom_type;
   } val;
-  unsigned char type : 2;
+  unsigned char type; // : 2;
 
   static Variable CustomTypeVariable(uint8_t type, uint16_t val);
   static Variable FunctionVariable(uint8_t id);

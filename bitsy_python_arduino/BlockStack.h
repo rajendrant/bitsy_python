@@ -22,7 +22,7 @@ class BlockStack {
   friend class BlockStackTest;
   Block* GetBlocksForTesting() const;
 
-  uint8_t _top : BITS_PER_BLOCK_ID;
+  uint8_t _top; // : BITS_PER_BLOCK_ID
 };
 }
 #endif /* BLOCKSTACK_H_ */
