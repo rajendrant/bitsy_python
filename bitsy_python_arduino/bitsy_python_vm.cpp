@@ -336,7 +336,7 @@ bool executeOneStep() {
     case GET_ITER:
       gc();
       arg = ExecStack::pop();
-      ExecStack::push(DataType::CreateForType(Variable::CustomType::ITER, 1, &arg));
+      ExecStack::push(DataType::CreateIter(arg));
       break;
     case FOR_ITER: {
       Variable iter, elem;
@@ -366,7 +366,7 @@ bool executeOneStep() {
       Variable args[count];
       while(count>0)
         args[--count]=ExecStack::pop();
-      ExecStack::push(DataType::CreateForType(Variable::CustomType::LIST, arg.as_uint8(), args));
+      ExecStack::push(DataType::CreateList(arg.as_uint8(), args));
       break;
     }
     case LOAD_ATTR:

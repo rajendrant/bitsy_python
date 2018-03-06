@@ -18,8 +18,7 @@ Variable handle_builtin_call(BitsyBuiltin type, uint8_t argcount,
       break;
     case BitsyBuiltin::BYTEARRAY:
       BITSY_ASSERT(argcount == 1);
-      v = DataType::CreateForType(Variable::CustomType::BYTEARRAY, argcount,
-                                  arg);
+      v = DataType::CreateByteArray(arg[0].as_uint8());
       break;
     default:
       BITSY_ASSERT(false);
