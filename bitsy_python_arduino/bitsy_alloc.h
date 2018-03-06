@@ -13,8 +13,8 @@
 
 typedef struct {
   uint8_t bytes[BYTES_PER_BLOCK];
-  uint8_t next : BITS_PER_BLOCK_ID;
-  uint8_t prev : BITS_PER_BLOCK_ID;
+  uint8_t next; // : BITS_PER_BLOCK_ID;
+  uint8_t prev; // : BITS_PER_BLOCK_ID;
 } Block;
 
 extern Block blocks[TOTAL_BLOCKS];

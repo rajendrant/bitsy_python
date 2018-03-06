@@ -7,8 +7,8 @@ uint8_t freelist = INVALID_BLOCK;
 
 // The next block to allocate for the top and bottom blocks.
 struct {
-  uint8_t top : 4;
-  uint8_t bottom : 4;
+  uint8_t top; // : 4;
+  uint8_t bottom; // : 4;
 } __attribute__((packed)) block_next;
 
 void freelist_sanity_check() {
