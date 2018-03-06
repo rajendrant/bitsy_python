@@ -9,8 +9,7 @@ Variable handle_builtin_call(BitsyBuiltin type, uint8_t argcount,
   Variable v;
   switch (type) {
     case BitsyBuiltin::RANGE:
-      v = DataType::CreateForType(Variable::CustomType::RANGE, argcount,
-                                  arg);
+      v = DataType::CreateRange(argcount, arg);
       break;
     case BitsyBuiltin::LEN:
       BITSY_ASSERT(argcount == 1);

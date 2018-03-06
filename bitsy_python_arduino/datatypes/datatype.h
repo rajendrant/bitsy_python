@@ -15,7 +15,7 @@ Variable CreateIter(const Variable& container);
 Variable CreateInt32(int32_t no);
 Variable CreateFloat(float no);
 Variable CreateList(uint8_t argcount, Variable args[]);
-Variable CreateForType(uint8_t t, uint8_t argcount, Variable args[]);
+Variable CreateRange(uint8_t argcount, Variable args[]);
 
 uint16_t Len(const Variable& v);
 

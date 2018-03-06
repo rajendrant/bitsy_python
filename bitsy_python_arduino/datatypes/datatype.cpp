@@ -61,34 +61,26 @@ Variable CreateList(uint8_t argcount, Variable args[]) {
   return v;
 }
 
-Variable CreateForType(uint8_t t, uint8_t argcount, Variable args[]) {
+Variable CreateRange(uint8_t argcount, Variable args[]) {
   Variable v;
   uint8_t *var;
-  switch (t) {
-    case Variable::CustomType::RANGE: {
-      int32_t r[3];
-      r[0]=0;
-      r[2]=1;
-      if (argcount==1) {
-        r[1] = args[0].as_int32();
-      } else if (argcount==2) {
-        r[0] = args[0].as_int32();
-        r[1] = args[1].as_int32();
-      } else if (argcount==3) {
-        r[0] = args[0].as_int32();
-        r[1] = args[1].as_int32();
-        r[2] = args[2].as_int32();
-      } else {
-        BITSY_ASSERT(false);
-        break;
-      }
-      v.set_CustomType(t, BitsyHeap::CreateVar(12, &var));
-      memcpy(var, r, 12);
-      break;
-    }
-    default:
-      BITSY_ASSERT(false);
+  int32_t r[3];
+  r[0]=0;
+  r[2]=1;
+  if (argcount==1) {
+    r[1] = args[0].as_int32();
+  } else if (argcount==2) {
+    r[0] = args[0].as_int32();
+    r[1] = args[1].as_int32();
+  } else if (argcount==3) {
+    r[0] = args[0].as_int32();
+    r[1] = args[1].as_int32();
+    r[2] = args[2].as_int32();
+  } else {
+    BITSY_ASSERT(false);
   }
+  v.set_CustomType(Variable::CustomType::RANGE, BitsyHeap::CreateVar(12, &var));
+  memcpy(var, r, 12);
   return v;
 }
 
