@@ -3,6 +3,7 @@
 #include <stack>
 
 #include <assert.h>
+#include <algorithm>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -65,12 +66,12 @@ void test2() {
 bool checkIterator(const bitsy_python::ByteStack &s,
                    std::vector<uint8_t> expected) {
   std::vector<uint8_t> actual;
-  uint8_t *bytes, len;
-  uint32_t p=INVALID_ITERATOR;
-  while(s.getNextByte(&p, &bytes, &len)) {
-    for(int i=0; i<len; i++)
-      actual.push_back(bytes[i]);
+  uint8_t *bytes, len, p=0xFF;
+  while(s.getPrevByte(&p, &bytes, &len)) {
+    for(int i=len; i!=0; i--)
+      actual.push_back(bytes[i-1]);
   }
+  std::reverse(actual.begin(), actual.end());
   return expected == actual;
 }
 

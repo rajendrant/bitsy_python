@@ -20,9 +20,7 @@ void gc() {
 }
 
 void updateCustomHeapVariableMap(uint8_t start_id, Variable::CustomType v, uint32_t *map) {
-  if (Variable::is_custom_heap_type(v) &&
-        v.val>=start_id &&
-        v.val<start_id+32) {
+  if (Variable::is_custom_heap_type(v) && v.val>=start_id && v.val<start_id+32) {
     *map |= 0x1L<<(v.val-start_id);
     DataType::updateUsedContainers(start_id, v, map);
   }

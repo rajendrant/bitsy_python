@@ -44,10 +44,9 @@ void test1() {
 
 bool checkIterator(uint8_t count, uint8_t *b0=NULL, uint8_t *b1=NULL, uint8_t *b2=NULL) {
   std::vector<uint8_t*> actual;
-  uint32_t id = INVALID_ITERATOR;
-  uint8_t *ret;
-  while(s.getNextBlock(&id, &ret))
-    actual.push_back(ret);
+  uint8_t id = 0xFF, *ret;
+  while(s.getPrevBlock(&id, &ret))
+    actual.insert(actual.begin(), ret);
   if (count != actual.size())
     return false;
   return !((count>0 && b0!=actual[0]) || (count>1 && b1!=actual[1]) ||

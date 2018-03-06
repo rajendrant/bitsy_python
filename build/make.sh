@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SRC=( bitsy_alloc.cpp BlockStack.cpp ByteStack.cpp BitStack.cpp BitString.cpp \
+SRC=( bitsy_alloc.cpp BlockStack.cpp ByteStack.cpp BitString.cpp \
 FunctionStack.cpp  ExecStack.cpp \
 Program.cpp instructions.cpp variable.cpp bitsy_python_vm.cpp \
 BitsyHeap.cpp gc.cpp Builtins.cpp \

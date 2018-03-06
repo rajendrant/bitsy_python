@@ -29,15 +29,8 @@ Block* BlockStack::GetBlocksForTesting() const { return blocks; }
 
 uint8_t BlockStack::blocksize() const { return BYTES_PER_BLOCK; }
 
-bool BlockStack::getNextBlock(uint32_t *id, uint8_t **ret) const {
-  if(_top==INVALID_BLOCK)
-    return false;
-  if (*id==INVALID_ITERATOR) {
-    for (uint8_t curr = _top; curr != INVALID_BLOCK; curr = blocks[curr].prev)
-      *id = curr;
-  } else {
-      *id = blocks[*id].next;
-  }
+bool BlockStack::getPrevBlock(uint8_t *id, uint8_t **ret) const {
+  *id = (*id==0xFF) ? _top : blocks[*id].prev;
   if (*id==INVALID_BLOCK)
     return false;
   *ret = blocks[*id].bytes;

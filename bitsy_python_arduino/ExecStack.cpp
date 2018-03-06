@@ -1,52 +1,68 @@
 #include "ExecStack.h"
 
-#include "BitStack.h"
 #include "ByteStack.h"
 #include "gc.h"
 
 #include <stdio.h>
 
 namespace bitsy_python {
+namespace ExecStack {
 
-BitStack hdr;
 ByteStack data;
+uint8_t pos;
+uint8_t top;
 
-void ExecStack::init() {
-  hdr.init();
+void init() {
   data.init();
 }
 
-void ExecStack::push(const Variable &v) {
-  hdr.pushTwoBits(v.type);
+void push(const Variable &v) {
+  if (pos==8) {
+    data.pushByte(top);
+    pos = 0;
+  }
+  top = (top & ~(0x3<<pos)) | (v.type<<pos);
   data.pushBytes((uint8_t *)&v.val, v.size());
+  pos+=2;
 }
 
-Variable ExecStack::pop() {
+Variable pop() {
+  if (pos==0) {
+    top = data.popByte();
+    pos = 8;
+  }
+  pos-=2;
   Variable v;
-  v.type = hdr.popTwoBits();
+  v.type = (top>>pos)&0x3;
   data.popBytes((uint8_t *)&v.val, v.size());
   return v;
 }
 
-uint32_t ExecStack::getCustomHeapVariableMap(uint8_t start_id) {
+uint32_t getCustomHeapVariableMap(uint8_t start_id) {
   uint32_t map = 0;
-  uint8_t bits, *bytes, bytelen=0, byteind=0;
-  uint32_t p1=INVALID_ITERATOR, p2=INVALID_ITERATOR;
-  while(hdr.getNextTwoBits(&bits, &p1)) {
-    Variable var;
-    var.type = bits;
-    for(int i=0; i<var.size(); i++) {
-      if (bytelen==byteind) {
-        data.getNextByte(&p2, &bytes, &bytelen);
-        byteind = 0;
-      }
-      ((uint8_t *)&var.val)[i] = bytes[byteind];
-      byteind++;
+  uint8_t *bytes, bytelen=0;
+  uint8_t p1=0xFF;
+  uint8_t pos2=pos;
+  uint8_t top2=top;
+  data.getPrevByte(&p1, &bytes, &bytelen);
+  while(1) {
+    if (pos2==0) {
+      if (bytelen==0 && !data.getPrevByte(&p1, &bytes, &bytelen)) break;
+      top2 = bytes[--bytelen];
+      pos2 = 8;
     }
-    if (bits == Variable::CUSTOM)
-      updateCustomHeapVariableMap(start_id, var.val.custom_type, &map);
+    pos2-=2;
+    Variable v;
+    v.type = (top2>>pos2)&0x3;
+    for(uint8_t i=v.size(); i!=0; i--) {
+      if (bytelen==0 && !data.getPrevByte(&p1, &bytes, &bytelen)) break;
+      ((uint8_t *)&v.val)[i-1] = bytes[--bytelen];
+    }
+    if (v.type == Variable::CUSTOM)
+      updateCustomHeapVariableMap(start_id, v.val.custom_type, &map);
   }
   return map;
 }
 
+}
 }

@@ -16,7 +16,7 @@ class BlockStack {
   uint8_t *top() const;
   uint8_t blocksize() const;
 
-  bool getNextBlock(uint32_t *id, uint8_t **ret) const;
+  bool getPrevBlock(uint8_t *id, uint8_t **ret) const;
 
  private:
   friend class BlockStackTest;
