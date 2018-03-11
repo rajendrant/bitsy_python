@@ -14,38 +14,38 @@ class BlockStackTest {
 public:
 void test1() {
   bitsy_alloc_init();
-  s.init();
+  BlockStack::init();
 
   assert(GetSizeForTesting() == 0);
-  s.AllocTopBlock();
+  BlockStack::AllocTopBlock();
   assert(GetSizeForTesting() == 1);
-  auto first = s.top();
+  auto first = BlockStack::top();
 
-  s.AllocTopBlock();
+  BlockStack::AllocTopBlock();
   assert(GetSizeForTesting() == 2);
-  auto second = s.top();
-  assert(s.top() == second);
+  auto second = BlockStack::top();
+  assert(BlockStack::top() == second);
 
-  s.FreeTopBlock();
+  BlockStack::FreeTopBlock();
   assert(GetSizeForTesting() == 1);
-  assert(s.top() == first);
-  s.FreeTopBlock();
+  assert(BlockStack::top() == first);
+  BlockStack::FreeTopBlock();
   assert(GetSizeForTesting() == 0);
 
-  s.AllocTopBlock();
-  s.AllocTopBlock();
-  s.AllocTopBlock();
+  BlockStack::AllocTopBlock();
+  BlockStack::AllocTopBlock();
+  BlockStack::AllocTopBlock();
   assert(GetSizeForTesting() == 3);
-  s.FreeTopBlock();
-  s.FreeTopBlock();
-  s.FreeTopBlock();
+  BlockStack::FreeTopBlock();
+  BlockStack::FreeTopBlock();
+  BlockStack::FreeTopBlock();
   assert(GetSizeForTesting() == 0);
 }
 
 bool checkIterator(uint8_t count, uint8_t *b0=NULL, uint8_t *b1=NULL, uint8_t *b2=NULL) {
   std::vector<uint8_t*> actual;
   uint8_t id = 0xFF, *ret;
-  while(s.getPrevBlock(&id, &ret))
+  while(BlockStack::getPrevBlock(&id, &ret))
     actual.insert(actual.begin(), ret);
   if (count != actual.size())
     return false;
@@ -55,40 +55,38 @@ bool checkIterator(uint8_t count, uint8_t *b0=NULL, uint8_t *b1=NULL, uint8_t *b
 
 void testIterator() {
   bitsy_alloc_init();
-  s.init();
+  BlockStack::init();
 
   uint8_t *b0, *b1, *b2;
   assert(checkIterator(0));
-  s.AllocTopBlock();
-  b0=s.top();
+  BlockStack::AllocTopBlock();
+  b0=BlockStack::top();
   assert(checkIterator(1, b0));
-  s.AllocTopBlock();
-  b1=s.top();
+  BlockStack::AllocTopBlock();
+  b1=BlockStack::top();
   assert(checkIterator(2, b0, b1));
-  s.AllocTopBlock();
-  b2=s.top();
+  BlockStack::AllocTopBlock();
+  b2=BlockStack::top();
   assert(checkIterator(3, b0, b1, b2));
 
-  s.FreeTopBlock();
+  BlockStack::FreeTopBlock();
   assert(checkIterator(2, b0, b1));
-  s.FreeTopBlock();
+  BlockStack::FreeTopBlock();
   assert(checkIterator(1, b0));
-  s.FreeTopBlock();
+  BlockStack::FreeTopBlock();
   assert(checkIterator(0));
 }
 
 private:
-BlockStack s;
 
 uint8_t GetSizeForTesting() const {
-  Block *blocks = s.GetBlocksForTesting();
   uint8_t size = 0, size2 = 0, last = INVALID_BLOCK;
-  for (uint8_t curr = s._top; curr != INVALID_BLOCK; curr = blocks[curr].prev) {
+  for (uint8_t curr = BlockStack::_top; curr != INVALID_BLOCK; curr = blocks[curr].prev) {
     size++;
     last = curr;
   }
   if (size > 0) {
-    assert(blocks[s._top].next == INVALID_BLOCK);
+    assert(blocks[BlockStack::_top].next == INVALID_BLOCK);
     assert(blocks[last].prev == INVALID_BLOCK);
   }
   for (uint8_t curr = last; curr != INVALID_BLOCK; curr = blocks[curr].next) {

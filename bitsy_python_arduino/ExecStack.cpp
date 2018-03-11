@@ -8,33 +8,32 @@
 namespace bitsy_python {
 namespace ExecStack {
 
-ByteStack data;
 uint8_t pos;
 uint8_t top;
 
 void init() {
-  data.init();
+  ByteStack::init();
 }
 
 void push(const Variable &v) {
   if (pos==8) {
-    data.pushByte(top);
+    ByteStack::pushByte(top);
     pos = 0;
   }
   top = (top & ~(0x3<<pos)) | (v.type<<pos);
-  data.pushBytes((uint8_t *)&v.val, v.size());
+  ByteStack::pushBytes((uint8_t *)&v.val, v.size());
   pos+=2;
 }
 
 Variable pop() {
   if (pos==0) {
-    top = data.popByte();
+    top = ByteStack::popByte();
     pos = 8;
   }
   pos-=2;
   Variable v;
   v.type = (top>>pos)&0x3;
-  data.popBytes((uint8_t *)&v.val, v.size());
+  ByteStack::popBytes((uint8_t *)&v.val, v.size());
   return v;
 }
 
@@ -44,10 +43,10 @@ uint32_t getCustomHeapVariableMap(uint8_t start_id) {
   uint8_t p1=0xFF;
   uint8_t pos2=pos;
   uint8_t top2=top;
-  data.getPrevByte(&p1, &bytes, &bytelen);
+  ByteStack::getPrevByte(&p1, &bytes, &bytelen);
   while(1) {
     if (pos2==0) {
-      if (bytelen==0 && !data.getPrevByte(&p1, &bytes, &bytelen)) break;
+      if (bytelen==0 && !ByteStack::getPrevByte(&p1, &bytes, &bytelen)) break;
       top2 = bytes[--bytelen];
       pos2 = 8;
     }
@@ -55,7 +54,7 @@ uint32_t getCustomHeapVariableMap(uint8_t start_id) {
     Variable v;
     v.type = (top2>>pos2)&0x3;
     for(uint8_t i=v.size(); i!=0; i--) {
-      if (bytelen==0 && !data.getPrevByte(&p1, &bytes, &bytelen)) break;
+      if (bytelen==0 && !ByteStack::getPrevByte(&p1, &bytes, &bytelen)) break;
       ((uint8_t *)&v.val)[i-1] = bytes[--bytelen];
     }
     if (v.type == Variable::CUSTOM)

@@ -7,22 +7,18 @@
 #include "bitsy_alloc.h"
 
 namespace bitsy_python {
+namespace BlockStack {
 
-class BlockStack {
- public:
-  void init();
-  void AllocTopBlock();
-  void FreeTopBlock();
-  uint8_t *top() const;
-  uint8_t blocksize() const;
+extern uint8_t _top;
 
-  bool getPrevBlock(uint8_t *id, uint8_t **ret) const;
+void init();
+void AllocTopBlock();
+void FreeTopBlock();
+uint8_t *top();
+uint8_t blocksize();
 
- private:
-  friend class BlockStackTest;
-  Block* GetBlocksForTesting() const;
+bool getPrevBlock(uint8_t *id, uint8_t **ret);
 
-  uint8_t _top; // : BITS_PER_BLOCK_ID
-};
+}
 }
 #endif /* BLOCKSTACK_H_ */

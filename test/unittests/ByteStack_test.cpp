@@ -17,9 +17,8 @@ void test1() {
   bitsy_alloc_init();
 
   int test_iter=1000;
-  bitsy_python::ByteStack stack;
   std::stack<uint8_t> stack_expected;
-  stack.init();
+  bitsy_python::ByteStack::init();
   while(test_iter--) {
     uint8_t val[8] = {0,};
     if (stack_size.empty() || rand()%2==0) {
@@ -29,7 +28,7 @@ void test1() {
         val[i] = rand()%255;
         stack_expected.push(val[i]);
       }
-      stack.pushBytes(val, size);
+      bitsy_python::ByteStack::pushBytes(val, size);
     } else {
       uint8_t val_expected[8] = {0,};
       uint8_t size = stack_size.top();
@@ -38,7 +37,7 @@ void test1() {
         val_expected[size-i-1] = stack_expected.top();
         stack_expected.pop();
       }
-      stack.popBytes(val, size);
+      bitsy_python::ByteStack::popBytes(val, size);
       assert(!memcmp(val, val_expected, size));
     }
   }
@@ -48,26 +47,24 @@ void test2() {
   bitsy_alloc_init();
 
   int test_iter=1000;
-  bitsy_python::ByteStack stack;
   std::stack<uint8_t> stack_expected;
-  stack.init();
+  bitsy_python::ByteStack::init();
   while(test_iter--) {
     if (stack_expected.empty() || rand()%2==0) {
       uint8_t d = rand()%255;
       stack_expected.push(d);
-      stack.pushByte(d);
+      bitsy_python::ByteStack::pushByte(d);
     } else {
-      assert(stack.popByte() == stack_expected.top());
+      assert(bitsy_python::ByteStack::popByte() == stack_expected.top());
       stack_expected.pop();
     }
   }
 }
 
-bool checkIterator(const bitsy_python::ByteStack &s,
-                   std::vector<uint8_t> expected) {
+bool checkIterator(std::vector<uint8_t> expected) {
   std::vector<uint8_t> actual;
   uint8_t *bytes, len, p=0xFF;
-  while(s.getPrevByte(&p, &bytes, &len)) {
+  while(bitsy_python::ByteStack::getPrevByte(&p, &bytes, &len)) {
     for(int i=len; i!=0; i--)
       actual.push_back(bytes[i-1]);
   }
@@ -78,40 +75,38 @@ bool checkIterator(const bitsy_python::ByteStack &s,
 void testIterator() {
   bitsy_alloc_init();
 
-  bitsy_python::ByteStack s;
-  s.init();
-  assert(checkIterator(s, {}));
-  s.pushByte(101);
-  assert(checkIterator(s, {101}));
-  s.pushByte(23);
-  assert(checkIterator(s, {101, 23}));
-  s.pushByte(45);
-  assert(checkIterator(s, {101, 23, 45}));
+  bitsy_python::ByteStack::init();
+  assert(checkIterator({}));
+  bitsy_python::ByteStack::pushByte(101);
+  assert(checkIterator({101}));
+  bitsy_python::ByteStack::pushByte(23);
+  assert(checkIterator({101, 23}));
+  bitsy_python::ByteStack::pushByte(45);
+  assert(checkIterator({101, 23, 45}));
 
-  s.popByte();
-  assert(checkIterator(s, {101, 23}));
-  s.popByte();
-  assert(checkIterator(s, {101}));
-  s.popByte();
-  assert(checkIterator(s, {}));
+  bitsy_python::ByteStack::popByte();
+  assert(checkIterator({101, 23}));
+  bitsy_python::ByteStack::popByte();
+  assert(checkIterator({101}));
+  bitsy_python::ByteStack::popByte();
+  assert(checkIterator({}));
 }
 
 void testIterator2() {
   bitsy_alloc_init();
 
-  bitsy_python::ByteStack s;
-  s.init();
+  bitsy_python::ByteStack::init();
   std::vector<uint8_t> expected;
   for(int iter=0; iter<1000; iter++) {
     uint8_t v = rand()%200;
-    s.pushByte(v);
+    bitsy_python::ByteStack::pushByte(v);
     expected.push_back(v);
-    assert(checkIterator(s, expected));
+    assert(checkIterator(expected));
 
     if (rand()%2==0) {
-      s.popByte();
+      bitsy_python::ByteStack::popByte();
       expected.pop_back();
-      assert(checkIterator(s, expected));
+      assert(checkIterator(expected));
     }
   }
 }
