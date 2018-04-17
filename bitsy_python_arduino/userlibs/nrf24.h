@@ -11,9 +11,15 @@ NRFLite radio;
 uint16_t on_recv_callback = 0xFF;
 uint8_t is_powered_down = 0;
 
+void init() {
+  on_recv_callback = 0xFF;
+  is_powered_down = 0;
+}
+ 
 bool ota_send2(const uint8_t *buf, uint8_t len, uint8_t to_radio) {
   is_powered_down = 0;
-  return radio.send(to_radio, (void*)buf, len);
+  bool r = radio.send(to_radio, (void*)buf, len);
+  return r;
 }
 
 bool ota_send(const uint8_t *buf, uint8_t len) {

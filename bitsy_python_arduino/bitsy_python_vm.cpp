@@ -205,6 +205,7 @@ void init() {
   ExecStack::init();
   FunctionStack::init();
   BitsyHeap::init();
+  userlib_init();
   if (Program::sanity_check())
     FunctionStack::setup_function_call(Program::setup_function_call(0));
 }
@@ -220,6 +221,7 @@ bool executeOneStep() {
 
   Variable arg, v;
   auto ins = Program::get_next_instruction(&arg);
+  
   /*
   Serial.print("ins ");
   Serial.print(ins);

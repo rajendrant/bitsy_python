@@ -14,8 +14,8 @@ namespace BitsyHeap {
 
 uint8_t len, last, free_id;
 struct Header {
-  uint16_t v0 : 12;
-  uint16_t v1 : 12;
+  uint16_t v0;// : 12;
+  uint16_t v1;// : 12;
 }__attribute__((packed)) *hdr = NULL;
 
 var_id_t HdrCreate(uint8_t size, uint16_t *start) {

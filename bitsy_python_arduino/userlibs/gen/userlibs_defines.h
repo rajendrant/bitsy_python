@@ -157,17 +157,17 @@ Variable userlib_module_eeprom(uint8_t function, uint8_t argcount, Variable arg[
 }
 #endif
 
-#ifdef ENABLE_BITSY_USERLIB_ESP8266WIFIUDP
-#include "../esp8266wifiudp.h"
+#ifdef ENABLE_BITSY_USERLIB_ESP8266WIFITCP
+#include "../esp8266wifitcp.h"
 
-Variable userlib_module_esp8266wifiudp(uint8_t function, uint8_t argcount, Variable arg[]) {
+Variable userlib_module_esp8266wifitcp(uint8_t function, uint8_t argcount, Variable arg[]) {
   switch (function) {
     case 0:
-      return esp8266wifiudp::set_on_recv_callback(argcount, arg);
+      return esp8266wifitcp::set_on_recv_callback(argcount, arg);
     case 1:
-      return esp8266wifiudp::send_response(argcount, arg);
+      return esp8266wifitcp::send_response(argcount, arg);
     case 2:
-      return esp8266wifiudp::local_ip(argcount, arg);
+      return esp8266wifitcp::local_ip(argcount, arg);
     default:
       BITSY_ASSERT(false);
   }
@@ -196,6 +196,24 @@ Variable userlib_module_lowpower(uint8_t function, uint8_t argcount, Variable ar
   switch (function) {
     case 0:
       return lowpower::powerdown(argcount, arg);
+    default:
+      BITSY_ASSERT(false);
+  }
+  return 0;
+}
+#endif
+
+#ifdef ENABLE_BITSY_USERLIB_DHT
+#include "../dht.h"
+
+Variable userlib_module_dht(uint8_t function, uint8_t argcount, Variable arg[]) {
+  switch (function) {
+    case 0:
+      return dht::begin(argcount, arg);
+    case 1:
+      return dht::readhumidity(argcount, arg);
+    case 2:
+      return dht::readtemperature(argcount, arg);
     default:
       BITSY_ASSERT(false);
   }
@@ -257,9 +275,9 @@ Variable call_userlib_function(uint8_t module, uint8_t function, uint8_t argcoun
     case 6:
       return userlib_module_eeprom(function, argcount, arg);
 #endif
-#ifdef ENABLE_BITSY_USERLIB_ESP8266WIFIUDP
+#ifdef ENABLE_BITSY_USERLIB_ESP8266WIFITCP
     case 7:
-      return userlib_module_esp8266wifiudp(function, argcount, arg);
+      return userlib_module_esp8266wifitcp(function, argcount, arg);
 #endif
 #ifdef ENABLE_BITSY_USERLIB_READVCC
     case 8:
@@ -269,10 +287,14 @@ Variable call_userlib_function(uint8_t module, uint8_t function, uint8_t argcoun
     case 9:
       return userlib_module_lowpower(function, argcount, arg);
 #endif
-#ifdef ENABLE_BITSY_USERLIB_TESTUSERLIB
+#ifdef ENABLE_BITSY_USERLIB_DHT
     case 10:
+      return userlib_module_dht(function, argcount, arg);
+#endif
+#ifdef ENABLE_BITSY_USERLIB_TESTUSERLIB
+    case 11:
       return userlib_module_testuserlib(function, argcount, arg);
 #endif
   }
-  return Variable();
+  return 0;
 }

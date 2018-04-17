@@ -12,6 +12,8 @@ uint8_t pos;
 uint8_t top;
 
 void init() {
+  pos = 0;
+  top = 0;
   ByteStack::init();
 }
 

@@ -32,7 +32,7 @@ userlibs_list = [
         'functions': ['read', 'write'],
     },
     {
-        'name': 'esp8266wifiudp',
+        'name': 'esp8266wifitcp',
         'functions': ['set_on_recv_callback', 'send_response', 'local_ip'],
     },
     {
@@ -42,6 +42,10 @@ userlibs_list = [
     {
         'name': 'lowpower',
         'functions': ['powerdown'],
+    },
+    {
+        'name': 'dht',
+        'functions': ['begin', 'readhumidity', 'readtemperature'],
     },
     {
         'name': 'testuserlib',
@@ -78,7 +82,7 @@ Variable userlib_module_%s(uint8_t function, uint8_t argcount, Variable arg[]) {
     default:
       BITSY_ASSERT(false);
   }
-  return Variable::Zero();
+  return 0;
 }
 #endif
 """)
@@ -110,7 +114,7 @@ Variable call_userlib_function(uint8_t module, uint8_t function, uint8_t argcoun
 
     out.write("""\
   }
-  return Variable();
+  return 0;
 }
 """)
     outpy = open(os.path.dirname(os.path.abspath(__file__))+'/userlibs/__init__.py', 'w')

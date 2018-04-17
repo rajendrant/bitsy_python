@@ -7,6 +7,21 @@
 // The userlib functions are auto-generated and defined in the following file.
 #include "userlibs/gen/userlibs_defines.h"
 
+void userlib_init() {
+#ifdef ENABLE_BITSY_USERLIB_NRF24
+  nrf24::init();
+#endif
+#ifdef ENABLE_BITSY_USERLIB_ESP8266WIFITCP
+  esp8266wifitcp::init();
+#endif
+#ifdef ENABLE_BITSY_USERLIB_SERVO
+  servo::init();
+#endif
+#ifdef ENABLE_BITSY_USERLIB_DHT
+  dht::init();
+#endif
+}
+
 void bitsy_print(char ch) {
 #if defined(DESKTOP)
   printf("%c", ch);

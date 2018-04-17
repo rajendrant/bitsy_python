@@ -1,29 +1,32 @@
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 
-namespace esp8266wifiudp {
+namespace esp8266wifitcp {
 
-WiFiUDP wifiUDP;
+WiFiServer wifiServer(6666);
+WiFiClient wifiClient;
+
 char ssid[32], password[32];
-uint16_t udp_port;
 uint16_t on_recv_callback = 0xFF;
 uint32_t last_check = 0;
-uint32_t remote_ip;
-uint16_t remote_port;
+
+void init() {
+  on_recv_callback = 0xFF;
+  last_check = 0;
+}
 
 void do_connect() {
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
     delay(1000);
   }
-  wifiUDP.begin(udp_port);
+  wifiServer.begin();
 }
 
 void connect(const char *_ssid, const char *_password, uint16_t _port) {
   strncpy(ssid, _ssid, sizeof(ssid));
   strncpy(password, _password, sizeof(password));
   ssid[sizeof(ssid)-1] = password[sizeof(password)-1] = 0;
-  udp_port = _port;
   do_connect();
 }
 
@@ -38,18 +41,34 @@ void checkConnectivity() {
 }
 
 bool ota_send(const uint8_t *buf, uint8_t len) {
-  wifiUDP.beginPacket(remote_ip, remote_port);
-  wifiUDP.write(buf, len);
-  wifiUDP.endPacket();
+  if (wifiClient.connected()) {
+    wifiClient.write(len);
+    for(uint8_t i=0; i<len; i++)
+      wifiClient.write(buf[i]);
+  }
+  return wifiClient.connected();
 }
 
 uint8_t ota_recv(uint8_t *buf, uint8_t len) {
   checkConnectivity();
-  if (!wifiUDP.parsePacket())
-    return 0;
-  remote_ip = wifiUDP.remoteIP();
-  remote_port = wifiUDP.remotePort();
-  return wifiUDP.read(buf, len);
+  if (!wifiClient.connected()) {
+    wifiClient = wifiServer.available();
+  }
+  if (wifiClient.connected()) {
+    auto l=wifiClient.read();
+    if(l<=0 || l>len)
+      return 0;
+    len = l;
+    uint8_t i=0;
+    for(auto end = millis()+100; i<len && millis()<=end;) {
+      auto byte=wifiClient.read();
+      if(byte!=-1)
+        buf[i++] = byte;
+    }
+    if(i==len)
+      return len;
+  }
+  return 0;
 }
 
 Variable set_on_recv_callback(uint8_t argcount, Variable arg[]) {

@@ -17,7 +17,7 @@ bool ota_update(uint8_t end, bool (*sender)(const uint8_t *buf, uint8_t len),
   EEPROM.begin(4096);
 #endif
   delay(100);
-  for (auto endtime=millis()+10000; pos < end && millis() < endtime; ) {
+  for (auto endtime=millis()+10000; pos <= end && millis() < endtime; ) {
     for(uint8_t tries=4; tries-- && !sender(&pos, 1); delay(300));
     for(auto t=millis()+600; millis()<t; ) {
       uint8_t prog[32], len;
@@ -88,11 +88,11 @@ void ota_update_nrf24() {
 }
 #endif
 
-#ifdef ENABLE_BITSY_USERLIB_ESP8266WIFIUDP
+#ifdef ENABLE_BITSY_USERLIB_ESP8266WIFITCP
 void ota_update_esp8266wifi() {
-  ota_update_or_send_to_callback(esp8266wifiudp::ota_send,
-      esp8266wifiudp::ota_recv,
-      esp8266wifiudp::send_to_callback);
+  ota_update_or_send_to_callback(esp8266wifitcp::ota_send,
+      esp8266wifitcp::ota_recv,
+      esp8266wifitcp::send_to_callback);
 }
 #endif
 
@@ -106,7 +106,7 @@ void ota_update_loop() {
 #ifdef ENABLE_BITSY_USERLIB_NRF24
     ota_update_nrf24();
 #endif
-#ifdef ENABLE_BITSY_USERLIB_ESP8266WIFIUDP
+#ifdef ENABLE_BITSY_USERLIB_ESP8266WIFITCP
     ota_update_esp8266wifi();
 #endif
     last_ota_check = millis();

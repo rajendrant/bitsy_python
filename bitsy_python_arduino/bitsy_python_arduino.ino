@@ -4,10 +4,12 @@
 #define ENABLE_BITSY_USERLIB_ARDUINO
 #define ENABLE_BITSY_USERLIB_EEPROM
 #define ENABLE_BITSY_USERLIB_SPI
-#define ENABLE_BITSY_USERLIB_NRF24
+//#define ENABLE_BITSY_USERLIB_NRF24
 #define ENABLE_BITSY_USERLIB_SERIAL
 #ifdef ESP8266
-#define ENABLE_BITSY_USERLIB_ESP8266WIFIUDP
+#define ENABLE_BITSY_USERLIB_ESP8266WIFITCP
+#define ENABLE_BITSY_USERLIB_SERVO
+#define ENABLE_BITSY_USERLIB_DHT
 #else // Arduino nano/pro_mini with atmega328
 #define ENABLE_BITSY_USERLIB_READVCC
 #define ENABLE_BITSY_USERLIB_LOWPOWER
@@ -28,12 +30,12 @@ void setup() {
 #elif defined(ARDUINO_AVR_PRO)  // Arduino pro_mini with atmega328
   nrf24::radio.init(3, 9, 10);
 #else // Arduino nano with atmega328
-  nrf24::radio.init(0, 8, 10);
+  nrf24::radio.init(0, 9, 10);
 #endif
 #endif
 
-#ifdef ENABLE_BITSY_USERLIB_ESP8266WIFIUDP
-  esp8266wifiudp::connect("Ajarirus", "", 6666);
+#ifdef ENABLE_BITSY_USERLIB_ESP8266WIFITCP
+  esp8266wifitcp::connect("Ajarirus", "SeattleBallard", 6666);
 #endif
 
   Serial.println("INIT");
@@ -44,7 +46,8 @@ void loop() {
     if (!bitsy_python::BitsyPythonVM::executeOneStep()) {
       Serial.println("REINIT");
       bitsy_python::BitsyPythonVM::init();
-      arduino::delay(10000);
+      arduino::delay_local(1000);
+      break;
     }
     yield();
   }

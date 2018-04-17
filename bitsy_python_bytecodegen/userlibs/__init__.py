@@ -8,7 +8,8 @@ import i2c
 import servo
 import nrf24
 import eeprom
-import esp8266wifiudp
+import esp8266wifitcp
 import readvcc
 import lowpower
+import dht
 import testuserlib

@@ -45,9 +45,9 @@ Variable analogWrite(uint8_t argcount, Variable arg[]) {
   return 0;
 }
 
-void delay(uint16_t ms)  {
+void delay_local(uint16_t ms)  {
   for(auto end=millis()+ms; end>=millis();) {
-    ::delay(5);
+    ::delay(10);
     ::ota_update_loop();
     yield();
   }
@@ -55,7 +55,7 @@ void delay(uint16_t ms)  {
 
 Variable delay(uint8_t argcount, Variable arg[]) {
   if (argcount == 1) {
-    arduino::delay(arg[0].as_int32());
+    arduino::delay_local(arg[0].as_int32());
   }
   return 0;
 }
